@@ -1,0 +1,25 @@
+수파베이스 
+
+프로젝트 ID
+twgrykfzuslbccfxwzvq
+
+프로젝트 name
+dogcoach
+
+프로젝트 url
+https://twgrykfzuslbccfxwzvq.supabase.co
+
+콜백 url
+https://twgrykfzuslbccfxwzvq.supabase.co/auth/v1/callback
+
+퍼블리셔블 key
+sb_publishable_6TQtr4JTbZjyGW2Fgqoorg_E7ftJJKF
+
+시크릿 키
+sb_secret_Ju8aFilh4S5iWIXfYrw2fg_eV-Q51OT
+
+아논키 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3Z3J5a2Z6dXNsYmNjZnh3enZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgzOTc0MDIsImV4cCI6MjA4Mzk3MzQwMn0.oKdsS0k4uZfZ4RI_hf9CgARz8tNP1DaYMcLyj-NRemw
+
+서비스롤 키
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3Z3J5a2Z6dXNsYmNjZnh3enZxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODM5NzQwMiwiZXhwIjoyMDgzOTczNDAyfQ.D7KOQ-bk4OnBVWZT22BpN2G3yqLngWTkS47Ue1IUG7k
