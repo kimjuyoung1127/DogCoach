@@ -2,24 +2,42 @@
 
 ## Frontend (Next.js)
 Frontend/
-├── public/
+├── public/                      # Static assets (images, fonts, manifest)
 ├── src/
 │   ├── app/
-│   │   ├── (public)/            # Public pages (Landing, Login, Checkup, Result)
-│   │   ├── (app)/               # Protected app pages (Dashboard, Log, Analytics, etc.)
-│   │   └── api/                 # Next.js API Routes (Auth, proxy, etc.)
+│   │   ├── (public)/            # Public pages
+│   │   │   ├── layout.tsx       # Public layout (Header/Footer wrapper)
+│   │   │   ├── page.tsx         # Landing Page (Main)
+│   │   │   ├── login/           # Login Page
+│   │   │   ├── checkup/         # Diagnosis Survey Page
+│   │   │   └── result/          # Analysis Result Page
+│   │   ├── (app)/               # Protected app pages (Dashboard, Log, Analytics)
+│   │   └── api/                 # Next.js API Routes (Auth, proxy)
 │   ├── components/
-│   │   ├── cards/               # Business UI Cards (Behavior, Stats, Mission)
-│   │   ├── charts/              # Visualizations (Heatmap, Trends)
-│   │   ├── features/            # Feature-specific logic grouping
-│   │   ├── forms/               # Complex forms (Login, LogEntry, Profile)
-│   │   ├── layout/              # Global layout components (Header, Sidebar)
+│   │   ├── landing/             # Landing Page Strategy Sections
+│   │   │   ├── HeroSection.tsx          # Hero + Emotional Hook
+│   │   │   ├── SocialProofSection.tsx   # Users & Stats
+│   │   │   ├── ProblemSection.tsx       # Comparison (Generic vs Data)
+│   │   │   ├── ABCSolutionSection.tsx   # ABC Model Visualization
+│   │   │   ├── BehaviorMapSection.tsx   # Heatmap Feature
+│   │   │   ├── SeamlessSection.tsx      # PWA & Kakao Integration
+│   │   │   ├── ProcessSection.tsx       # 3-Step Flow
+│   │   │   ├── ExpertSynergySection.tsx # Vet Report Sharing
+│   │   │   └── PricingSection.tsx       # Plans
+│   │   ├── layout/              # Global layout components
+│   │   │   ├── Header.tsx       # Responsive Navigation
+│   │   │   ├── Footer.tsx       # Site Footer
+│   │   │   └── Sidebar.tsx      # App Sidebar
+│   │   ├── cards/               # Business UI Cards
+│   │   ├── charts/              # Visualizations
+│   │   ├── features/            # Feature-specific logic
+│   │   ├── forms/               # Complex logic forms
 │   │   ├── shared/              # Reusable shared components
 │   │   └── ui/                  # Atomic UI components (shadcn/ui)
-│   ├── hooks/                   # Custom Hooks (useAuth, useLogs, etc.)
-│   ├── lib/                     # Libraries & Utils (Supabase, API client, Zod)
+│   ├── hooks/                   # Custom Hooks
+│   ├── lib/                     # Libraries (Utils, Supabase)
 │   ├── store/                   # Global State (Zustand)
-│   ├── styles/                  # Global CSS
+│   ├── styles/                  # Global CSS (Tailwind v4)
 │   └── types/                   # Type Definitions
 └── ...
 
