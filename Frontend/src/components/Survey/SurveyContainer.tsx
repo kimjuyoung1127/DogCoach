@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { SurveyProgress } from "./SurveyProgress";
 import { SurveyData, INITIAL_DATA } from "./types";
@@ -16,6 +17,7 @@ import { KakaoSyncModal } from "./KakaoSyncModal";
 import { SurveyLoading } from "./SurveyLoading";
 
 export function SurveyContainer() {
+    const router = useRouter();
     const [step, setStep] = useState(1);
     const [data, setData] = useState<SurveyData>(INITIAL_DATA);
     const [showKakaoModal, setShowKakaoModal] = useState(false);
@@ -54,8 +56,8 @@ export function SurveyContainer() {
 
             // Mock API/Analysis Delay
             setTimeout(() => {
-                alert("설문이 완료되었습니다! (결과 페이지로 이동 예정)");
-                // Usually here you would router.push('/result')
+                // alert("설문이 완료되었습니다! (결과 페이지로 이동 예정)");
+                router.push('/result');
             }, 4000); // 4 seconds analysis
         }
     };

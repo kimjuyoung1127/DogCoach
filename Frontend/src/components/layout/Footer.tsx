@@ -1,6 +1,6 @@
 export function Footer() {
     return (
-        <footer className="bg-gray-900 text-gray-400 py-12 pb-[calc(3rem+env(safe-area-inset-bottom))]">
+        <footer className="bg-gray-900 text-gray-400 py-8 md:py-12 pb-[calc(3rem+env(safe-area-inset-bottom))]">
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                     <div className="col-span-1 md:col-span-2">
