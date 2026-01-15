@@ -10,7 +10,7 @@ Frontend/
 │   │   │   ├── page.tsx         # Landing Page (Main)
 │   │   │   ├── login/           # Login Page
 │   │   │   ├── checkup/         # Diagnosis Survey Page
-│   │   │   └── result/          # Analysis Result Page
+│   │   │   └── result/          # Analysis Result Page (Guest/User View + Challenge)
 │   │   ├── (app)/               # Protected app pages (Dashboard, Log, Analytics)
 │   │   └── api/                 # Next.js API Routes (Auth, proxy)
 │   ├── components/
@@ -29,6 +29,9 @@ Frontend/
 │   │   │   ├── Footer.tsx       # Site Footer
 │   │   │   └── Sidebar.tsx      # App Sidebar
 │   │   ├── cards/               # Business UI Cards
+│   │   ├── challenge/           # 7-Day Challenge Onboarding
+│   │   │   ├── ChallengeOnboardingModal.tsx # Journey Map Journey
+│   │   │   └── MissionActionOverlay.tsx     # Day 1 Mission & Feedback
 │   │   ├── charts/              # Visualizations
 │   │   ├── features/            # Feature-specific logic
 │   │   ├── forms/               # Complex logic forms
@@ -44,6 +47,14 @@ Frontend/
 │   │   │   ├── Step5Triggers.tsx    # ABC - Antecedents
 │   │   │   ├── Step6PastAttempts.tsx# ABC - Consequences
 │   │   │   └── Step7Temperament.tsx # Sensitivity Score
+│   │   └── ui/                  # Atomic UI components (shadcn/ui)
+│   │   ├── result/              # Analysis Result Page Components
+│   │   │   ├── ActionPlanCard.tsx       # AI Solution
+│   │   │   ├── AnalysisRadarChart.tsx   # 5-Axis Radar Chart
+│   │   │   ├── BarkingHeatmap.tsx       # Heatmap Visualization
+│   │   │   ├── ConversionCTA.tsx        # Guest Conversion Trigger
+│   │   │   ├── LockedAnalysisSection.tsx# Guest Teaser Content
+│   │   │   └── ResultHeader.tsx         # Persona & Context Snapshot
 │   │   └── ui/                  # Atomic UI components (shadcn/ui)
 │   ├── hooks/                   # Custom Hooks
 │   ├── lib/                     # Libraries (Utils, Supabase)
