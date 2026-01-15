@@ -16,6 +16,12 @@
 - **Dog**: 반려견 이름, 견종, 생년월일, 성별 등 기본 프로필.
     - `profile_image_url`: 대시보드 표시용 프로필 이미지.
 - **DogEnv**: 반려견의 주거 환경, 가족 구성원, 건강 상태 등 상세 메타데이터 (JSONB 활용).
+    - `profile_meta`: 몸무게, 입양일 등 추가 정보.
+    - `rewards_meta`: 좋아하는 보상, 간식 정보.
+    - `chronic_issues`: 주요 문제 행동 (Top 3).
+    - `triggers`: 문제 행동 유발 원인 (Antecedent).
+    - `past_attempts`: 실패했던 과거 대처법 (Consequence).
+    - `temperament`: 타고난 기질 및 예민도 점수.
 
 ### 3. `log.py` (행동 기록)
 사용자가 기록하는 문제 행동 로그입니다.
