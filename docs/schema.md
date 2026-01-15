@@ -27,6 +27,7 @@
 | `role` | `user_role` | Default: `'GUEST'` | 사용자 권한 |
 | `phone_number` | `VARCHAR(255)` | | 전화번호 (알림톡용) |
 | `status` | `user_status` | Default: `'ACTIVE'` | 계정 상태 |
+| `timezone` | `VARCHAR(50)` | Default: `'Asia/Seoul'` | 시간대 (글로벌 확장 대비) |
 | `created_at` | `TIMESTAMPTZ` | Default: `NOW()` | 가입 일시 |
 | `updated_at` | `TIMESTAMPTZ` | Default: `NOW()` | 수정 일시 |
 
@@ -56,6 +57,7 @@
 | `breed` | `VARCHAR(255)` | | 견종 |
 | `birth_date` | `DATE` | | 생년월일 |
 | `sex` | `dog_sex` | | 성별 |
+| `profile_image_url` | `TEXT` | | 프로필 이미지 URL |
 | `anonymous_sid` | `VARCHAR(255)` | | 게스트용 임시 식별자 |
 | `created_at` | `TIMESTAMPTZ` | Default: `NOW()` | 생성 일시 |
 | `updated_at` | `TIMESTAMPTZ` | Default: `NOW()` | 수정 일시 |
@@ -66,8 +68,14 @@
 | :--- | :--- | :--- | :--- |
 | **`id`** | `UUID` | **PK**, Default: `uuid_generate_v4()` | 환경 정보 ID |
 | `dog_id` | `UUID` | **FK** (`dogs.id`), Unique, On Delete: Cascade | 해당 반려견 |
-| `household_info` | `JSONB` | | 가족 구성, 주거 형태 등 |
-| `health_meta` | `JSONB` | | 질병, 알레르기, 식습관 등 |
+| `household_info` | `JSONB` | | 주거 형태, 가족 구성, 주 양육자 |
+| `health_meta` | `JSONB` | | 기저 질환, 알레르기 |
+| `profile_meta` | `JSONB` | | 몸무게, 입양일 |
+| `rewards_meta` | `JSONB` | | 좋아하는 간식, 보상 유형 |
+| `chronic_issues` | `JSONB` | | 주요 문제 행동 (Top 3) |
+| `triggers` | `JSONB` | | 문제 행동 유발 상황 (ABC - A) |
+| `past_attempts` | `JSONB` | | 실패했던 대처법 (ABC - C) |
+| `temperament` | `JSONB` | | 기질 및 민감도 (5점 척도) |
 | `activity_meta` | `JSONB` | | 산책, 놀이, 활동 정보 |
 | `created_at` | `TIMESTAMPTZ` | Default: `NOW()` | 생성 일시 |
 | `updated_at` | `TIMESTAMPTZ` | Default: `NOW()` | 수정 일시 |
@@ -82,6 +90,7 @@ ABC(선행사건-행동-결과) 기반의 행동 로그입니다.
 | :--- | :--- | :--- | :--- |
 | **`id`** | `UUID` | **PK**, Default: `uuid_generate_v4()` | 로그 ID |
 | `dog_id` | `UUID` | **FK** (`dogs.id`), On Delete: Cascade | 대상 반려견 |
+| `is_quick_log` | `BOOLEAN` | Default: `FALSE` | 퀵 버튼 기록 여부 |
 | `type_id` | `INTEGER` | | 문제 행동 유형 ID (마스터 코드) |
 | `antecedent` | `TEXT` | | 선행 사건 (A) |
 | `behavior` | `TEXT` | | 구체적 행동 (B) |
@@ -115,6 +124,7 @@ AI가 분석한 리포트 결과입니다.
 | `report_type` | `report_type` | Not Null | 리포트 유형 (일간/주간/통찰) |
 | `analysis_json` | `JSONB` | | 분석 결과 (원인, 조언 등) |
 | `action_items` | `JSONB` | | 추천 행동 (To-Do) 목록 |
+| `feedback_score` | `INTEGER` | Check: `1 <= score <= 5` | 유저 피드백 점수 (1~5) |
 | `created_at` | `TIMESTAMPTZ` | Default: `NOW()` | 생성 일시 |
 
 #### `action_tracker`
@@ -141,3 +151,29 @@ AI가 분석한 리포트 결과입니다.
 | `template_code` | `VARCHAR(100)` | | 알림톡 템플릿 코드 |
 | `sent_at` | `TIMESTAMPTZ` | Default: `NOW()` | 발송 시각 |
 | `read_at` | `TIMESTAMPTZ` | | 확인(읽음) 시각 |
+
+#### `log_summaries`
+AI 비용 최적화(RAG)를 위한 행동 로그 요약본입니다. (Plan Phase 4)
+| Column | Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| **`id`** | `UUID` | **PK**, Default: `uuid_generate_v4()` | 요약 ID |
+| `dog_id` | `UUID` | **FK** (`dogs.id`), On Delete: Cascade | 대상 반려견 |
+| `start_date` | `DATE` | Not Null | 요약 구간 시작 |
+| `end_date` | `DATE` | Not Null | 요약 구간 종료 |
+| `summary_text` | `TEXT` | Not Null | 요약 내용 |
+| `embedding` | `VECTOR(1536)` | | RAG 검색용 벡터 데이터 |
+| `created_at` | `TIMESTAMPTZ` | Default: `NOW()` | 생성 일시 |
+
+---
+
+## 3. Security (RLS Policies)
+모든 테이블은 RLS(Row Level Security)가 활성화되어야 하며, 기본적으로 `auth.uid()`를 기반으로 접근을 제어합니다.
+
+| Table | Policy | Action | Condition |
+| :--- | :--- | :--- | :--- |
+| `users` | `Users can view own profile` | SELECT | `auth.uid() = id` |
+| `users` | `Users can update own profile` | UPDATE | `auth.uid() = id` |
+| `dogs` | `Users can view own dogs` | SELECT | `auth.uid() = user_id` |
+| `dogs` | `Users can insert own dogs` | INSERT | `auth.uid() = user_id` |
+| `behavior_logs` | `Users can view logs of own dogs` | SELECT | `dog_id IN (SELECT id FROM dogs WHERE user_id = auth.uid())` |
+

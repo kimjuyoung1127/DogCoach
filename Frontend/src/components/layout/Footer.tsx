@@ -9,7 +9,7 @@ export function Footer() {
                             <span className="text-lg font-bold text-white">TailLog</span>
                         </div>
                         <p className="text-sm leading-relaxed max-w-xs break-keep">
-                            데이터와 AI로 만드는 과학적인 반려견 행동 교정.<br />
+                            데이터와 AI로 만드는 과학적인 반려견 행동 수정.<br />
                             강아지와 보호자 사이의 올바른 소통을 돕습니다.
                         </p>
                     </div>

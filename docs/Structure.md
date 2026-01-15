@@ -33,6 +33,17 @@ Frontend/
 │   │   ├── features/            # Feature-specific logic
 │   │   ├── forms/               # Complex logic forms
 │   │   ├── shared/              # Reusable shared components
+│   │   ├── survey/              # Onboarding Survey Components
+│   │   │   ├── SurveyContainer.tsx  # Main Logic
+│   │   │   ├── SurveyProgress.tsx   # Progress Bar
+│   │   │   ├── SurveyControls.tsx   # Navigation
+│   │   │   ├── Step1Profile.tsx     # Basic Info
+│   │   │   ├── Step2Environment.tsx # Env & Carer
+│   │   │   ├── Step3Health.tsx      # Health & Rewards
+│   │   │   ├── Step4Problems.tsx    # Chronic Issues
+│   │   │   ├── Step5Triggers.tsx    # ABC - Antecedents
+│   │   │   ├── Step6PastAttempts.tsx# ABC - Consequences
+│   │   │   └── Step7Temperament.tsx # Sensitivity Score
 │   │   └── ui/                  # Atomic UI components (shadcn/ui)
 │   ├── hooks/                   # Custom Hooks
 │   ├── lib/                     # Libraries (Utils, Supabase)
@@ -52,6 +63,13 @@ Backend/
 │   ├── db/                      # Database base & session info
 │   ├── middleware/              # Middleware (CORS, Error Handling)
 │   ├── models/                  # SQLAlchemy ORM Models
+│   │   ├── coaching.py          # Coaching & Advice logic
+│   │   ├── dog.py               # Dog profiles & stats
+│   │   ├── log.py               # Behavior logs
+│   │   ├── payment.py           # Subscriptions & payments
+│   │   ├── summary.py           # AI Weekly Summaries (RAG)
+│   │   ├── user.py              # User authentication & profile
+│   │   └── README.md            # Models documentation
 │   ├── repositories/            # Database Access Layer (CRUD)
 │   ├── schemas/                 # Pydantic Data Schemas
 │   ├── services/                # Business Logic Services
