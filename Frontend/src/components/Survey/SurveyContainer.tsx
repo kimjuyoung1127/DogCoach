@@ -12,10 +12,20 @@ import { Step5Triggers } from "./Step5Triggers";
 import { Step6PastAttempts } from "./Step6PastAttempts";
 import { Step7Temperament } from "./Step7Temperament";
 import { SurveyControls } from "./SurveyControls";
+import { KakaoSyncModal } from "./KakaoSyncModal";
+import { SurveyLoading } from "./SurveyLoading";
 
 export function SurveyContainer() {
     const [step, setStep] = useState(1);
     const [data, setData] = useState<SurveyData>(INITIAL_DATA);
+    const [showKakaoModal, setShowKakaoModal] = useState(false);
+
+    // Track if user has seen/interacted with the modal to avoid showing it repeatedly if they back-navigate
+    const [hasSeenKakaoModal, setHasSeenKakaoModal] = useState(false);
+
+    // Loading State
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+
     const TOTAL_STEPS = 7;
     const IS_DEBUG = process.env.NODE_ENV === 'development';
 
@@ -24,12 +34,29 @@ export function SurveyContainer() {
     };
 
     const handleNext = () => {
+        // Intercept logic for Step 3 -> 4
+        if (step === 3 && !hasSeenKakaoModal) {
+            setShowKakaoModal(true);
+            return;
+        }
+
+        proceedNext();
+    };
+
+    const proceedNext = () => {
         if (step < TOTAL_STEPS) {
             setStep(step + 1);
             window.scrollTo({ top: 0, behavior: "smooth" });
         } else {
+            // Survey Completed -> Start Analysis
             console.log("Survey Completed:", data);
-            alert("설문이 완료되었습니다! (결과 페이지로 이동 예정)");
+            setIsAnalyzing(true);
+
+            // Mock API/Analysis Delay
+            setTimeout(() => {
+                alert("설문이 완료되었습니다! (결과 페이지로 이동 예정)");
+                // Usually here you would router.push('/result')
+            }, 4000); // 4 seconds analysis
         }
     };
 
@@ -40,8 +67,35 @@ export function SurveyContainer() {
         }
     };
 
+    const handleKakaoConfirm = () => {
+        // Mock Kakao Login / Save action
+        // In reality, this would likely be a redirect or an API call
+        alert("카카오 계정으로 저장되었습니다! (Mock Action)");
+
+        setShowKakaoModal(false);
+        setHasSeenKakaoModal(true);
+        proceedNext();
+    };
+
+    const handleKakaoClose = () => {
+        // User chose to continue without saving
+        setShowKakaoModal(false);
+        setHasSeenKakaoModal(true);
+        proceedNext();
+    };
+
+    if (isAnalyzing) {
+        return <SurveyLoading dogName={data.dogName || "반려견"} />;
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col py-12 pb-24 relative">
+            <KakaoSyncModal
+                isOpen={showKakaoModal}
+                onClose={handleKakaoClose}
+                onConfirm={handleKakaoConfirm}
+            />
+
             {IS_DEBUG && (
                 <div className="absolute top-4 left-4 bg-red-100 text-red-600 px-2 py-1 rounded text-xs font-bold z-50 opacity-50 hover:opacity-100 transition-opacity cursor-pointer" onClick={() => setStep((s) => (s < TOTAL_STEPS ? s + 1 : 1))}>
                     🚧 DEBUG MODE ON (Click to Skip)
