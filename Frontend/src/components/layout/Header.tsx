@@ -24,7 +24,7 @@ export function Header() {
                     <Link href="/about" className="text-gray-600 hover:text-brand-lime transition-colors text-sm font-medium">서비스 소개</Link>
                     <Link href="/pricing" className="text-gray-600 hover:text-brand-lime transition-colors text-sm font-medium">요금제</Link>
                     <Link href="/login" className="text-gray-600 hover:text-brand-lime transition-colors text-sm font-medium">로그인</Link>
-                    <Link href="/checkup" className="px-5 py-2 rounded-full bg-brand-dark text-white text-sm font-bold hover:bg-gray-800 transition-colors">
+                    <Link href="/Survey" className="px-5 py-2 rounded-full bg-brand-dark text-white text-sm font-bold hover:bg-gray-800 transition-colors">
                         무료로 시작하기
                     </Link>
                 </nav>
@@ -45,7 +45,7 @@ export function Header() {
                         <Link href="/about" className="text-gray-600 font-medium">서비스 소개</Link>
                         <Link href="/pricing" className="text-gray-600 font-medium">요금제</Link>
                         <Link href="/login" className="text-gray-600 font-medium">로그인</Link>
-                        <Link href="/checkup" className="block text-center py-3 rounded-xl bg-brand-lime text-white font-bold">
+                        <Link href="/Survey" className="block text-center py-3 rounded-xl bg-brand-lime text-white font-bold">
                             무료 진단 시작하기
                         </Link>
                     </div>

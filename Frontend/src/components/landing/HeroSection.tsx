@@ -43,7 +43,7 @@ export function HeroSection() {
                     {/* CTA Group */}
                     <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 items-center">
                         <Link
-                            href="/checkup"
+                            href="/Survey"
                             className={cn(
                                 "group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all bg-brand-lime rounded-full overflow-hidden hover:scale-105 shadow-xl shadow-brand-lime/30"
                             )}
