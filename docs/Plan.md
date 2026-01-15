@@ -7,9 +7,9 @@
 [x] (dog_id, occurred_at) 복합 인덱스 및 AI용 벡터 인덱스 설정.
 
 🚪 Phase 2: 유저 유입 (Seamless Auth)
-[ ] 랜딩페이지 및 온보딩 설문 구현.
+[x ] 랜딩페이지 및 온보딩 설문 구현.
 
-[ ] anonymous_sid 쿠키 발급 및 게스트 데이터 저장.
+[ ] anonymous_sid 쿠키 및 게스트 데이터 저장.
 
 [ ] [필수] 로그인 시 데이터 소유권 이전(Migration) 트리거 구현: 게스트 데이터 -> 정회원 데이터 병합 로직.
 

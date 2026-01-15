@@ -42,6 +42,12 @@ class DogEnv(Base):
     dog_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("dogs.id", ondelete="CASCADE"), unique=True)
     household_info: Mapped[Optional[dict[str, Any]]] = mapped_column(JSONB, nullable=True)
     health_meta: Mapped[Optional[dict[str, Any]]] = mapped_column(JSONB, nullable=True)
+    profile_meta: Mapped[Optional[dict[str, Any]]] = mapped_column(JSONB, nullable=True)
+    rewards_meta: Mapped[Optional[dict[str, Any]]] = mapped_column(JSONB, nullable=True)
+    chronic_issues: Mapped[Optional[dict[str, Any]]] = mapped_column(JSONB, nullable=True)
+    triggers: Mapped[Optional[dict[str, Any]]] = mapped_column(JSONB, nullable=True)
+    past_attempts: Mapped[Optional[dict[str, Any]]] = mapped_column(JSONB, nullable=True)
+    temperament: Mapped[Optional[dict[str, Any]]] = mapped_column(JSONB, nullable=True)
     activity_meta: Mapped[Optional[dict[str, Any]]] = mapped_column(JSONB, nullable=True)
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
