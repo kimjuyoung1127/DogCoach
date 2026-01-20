@@ -1,4 +1,3 @@
-
 🏗️ Phase 1: 기반 인프라 (Security First)
 [x] Supabase Enum 및 테이블 생성.
 
@@ -7,14 +6,21 @@
 [x] (dog_id, occurred_at) 복합 인덱스 및 AI용 벡터 인덱스 설정.
 
 🚪 Phase 2: 유저 유입 (Seamless Auth)
-[x ] 랜딩페이지 및 온보딩 설문 구현.
+[x] 랜딩페이지 및 온보딩 설문 구현.
+
+[x] Web-to-App UX 전환 구현:
+    - Public: Footer 포함 (정보 탐색)
+    - App: Bottom Navigation / Sidebar (도구 사용)
+    - Dashboard: PWA Style Header + Notification Badge
 
 [ ] anonymous_sid 쿠키 및 게스트 데이터 저장.
 
 [ ] [필수] 로그인 시 데이터 소유권 이전(Migration) 트리거 구현: 게스트 데이터 -> 정회원 데이터 병합 로직.
 
 📝 Phase 3: 로그 수집 (Timezone Aware)
-[ ] 퀵 기록 및 상세 ABC 기록 UI.
+[x] 퀵 기록(QuickLogGrid) 및 대시보드 UI 구현.
+
+[ ] 상세 ABC 기록 UI.
 
 [ ] [필수] 타임존 보정 로직: 프론트엔드에서 유저의 로컬 시간대를 감지하여 users.timezone에 저장하고, 로그 조회 시 이를 반영.
 

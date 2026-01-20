@@ -5,13 +5,19 @@ Frontend/
 ├── public/                      # Static assets (images, fonts, manifest)
 ├── src/
 │   ├── app/
-│   │   ├── (public)/            # Public pages
-│   │   │   ├── layout.tsx       # Public layout (Header/Footer wrapper)
+│   │   ├── (public)/            # Public pages (Landing, Survey, Results)
+│   │   │   ├── layout.tsx       # Public layout (Header/Footer)
 │   │   │   ├── page.tsx         # Landing Page (Main)
 │   │   │   ├── login/           # Login Page
-│   │   │   ├── checkup/         # Diagnosis Survey Page
+│   │   │   ├── Survey/          # Diagnosis Survey Page (Replacing checkup)
 │   │   │   └── result/          # Analysis Result Page (Guest/User View + Challenge)
 │   │   ├── (app)/               # Protected app pages (Dashboard, Log, Analytics)
+│   │   │   ├── layout.tsx       # App Layout (Sidebar/BottomNav, No Footer)
+│   │   │   ├── dashboard/       # Dashboard Page (Main App Entry)
+│   │   │   ├── analytics/       # Data Visualization
+│   │   │   ├── coach/           # AI Coaching & Advice
+│   │   │   ├── log/             # Behavior Logging
+│   │   │   └── settings/        # User Settings
 │   │   └── api/                 # Next.js API Routes (Auth, proxy)
 │   ├── components/
 │   │   ├── landing/             # Landing Page Strategy Sections
@@ -25,22 +31,25 @@ Frontend/
 │   │   │   ├── ExpertSynergySection.tsx # Vet Report Sharing
 │   │   │   └── PricingSection.tsx       # Plans
 │   │   ├── layout/              # Global layout components
-│   │   │   ├── Header.tsx       # Responsive Navigation
-│   │   │   ├── Footer.tsx       # Site Footer
-│   │   │   └── Sidebar.tsx      # App Sidebar
-│   │   ├── cards/               # Business UI Cards
+│   │   │   ├── Header.tsx       # Public Header
+│   │   │   ├── Footer.tsx       # Public Footer
+│   │   │   ├── Sidebar.tsx      # App Desktop Sidebar
+│   │   │   └── BottomNav.tsx    # App Mobile Bottom Navigation (FAB included)
 │   │   ├── challenge/           # 7-Day Challenge Onboarding
 │   │   │   ├── ChallengeOnboardingModal.tsx # Journey Map Journey
 │   │   │   └── MissionActionOverlay.tsx     # Day 1 Mission & Feedback
 │   │   ├── charts/              # Visualizations
-│   │   ├── features/            # Feature-specific logic
-│   │   ├── forms/               # Complex logic forms
+│   │   ├── dashboard/           # Dashboard Components
+│   │   │   ├── ChallengeMap.tsx     # Endless Journey
+│   │   │   ├── DailyBriefing.tsx    # Top Layer
+│   │   │   ├── MissionTracker.tsx   # Mid Layer
+│   │   │   └── QuickLogGrid.tsx     # Action Grid (Zero Friction)
 │   │   ├── shared/              # Reusable shared components
-│   │   ├── survey/              # Onboarding Survey Components
+│   │   ├── Survey/              # Onboarding Survey Components
 │   │   │   ├── SurveyContainer.tsx  # Main Logic
 │   │   │   ├── SurveyProgress.tsx   # Progress Bar
 │   │   │   ├── SurveyControls.tsx   # Navigation
-│   │   │   ├── Step1Profile.tsx     # Basic Info
+│   │   │   ├── Step1Profile.tsx     # Basic Info (Split Gender/Neutering)
 │   │   │   ├── Step2Environment.tsx # Env & Carer
 │   │   │   ├── Step3Health.tsx      # Health & Rewards
 │   │   │   ├── Step4Problems.tsx    # Chronic Issues
