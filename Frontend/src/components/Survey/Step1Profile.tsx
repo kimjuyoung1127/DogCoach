@@ -89,53 +89,75 @@ export function Step1Profile({ data, updateData }: Props) {
                 />
             </div>
 
-            {/* Sex Selection */}
-            <div className="space-y-2">
-                <label className="text-sm font-bold text-gray-700">성별은 무엇인가요?</label>
-                <div className="grid grid-cols-2 gap-3">
-                    <SexButton
-                        label="수컷"
-                        subLabel="(중성화 안 함)"
-                        selected={data.sex === 'MALE'}
-                        onClick={() => updateData({ sex: 'MALE' })}
-                    />
-                    <SexButton
-                        label="암컷"
-                        subLabel="(중성화 안 함)"
-                        selected={data.sex === 'FEMALE'}
-                        onClick={() => updateData({ sex: 'FEMALE' })}
-                    />
-                    <SexButton
-                        label="수컷"
-                        subLabel="(중성화 완료)"
-                        selected={data.sex === 'MALE_NEUTERED'}
-                        onClick={() => updateData({ sex: 'MALE_NEUTERED' })}
-                    />
-                    <SexButton
-                        label="암컷"
-                        subLabel="(중성화 완료)"
-                        selected={data.sex === 'FEMALE_NEUTERED'}
-                        onClick={() => updateData({ sex: 'FEMALE_NEUTERED' })}
-                    />
+            {/* Sex & Neutered Selection Split */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Sex Selection */}
+                <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">성별</label>
+                    <div className="grid grid-cols-2 gap-3">
+                        <SexButton
+                            label="수컷"
+                            selected={data.sex?.startsWith('MALE') || false}
+                            onClick={() => {
+                                const isNeutered = data.sex?.includes('NEUTERED');
+                                updateData({ sex: isNeutered ? 'MALE_NEUTERED' : 'MALE' });
+                            }}
+                        />
+                        <SexButton
+                            label="암컷"
+                            selected={data.sex?.startsWith('FEMALE') || false}
+                            onClick={() => {
+                                const isNeutered = data.sex?.includes('NEUTERED');
+                                updateData({ sex: isNeutered ? 'FEMALE_NEUTERED' : 'FEMALE' });
+                            }}
+                        />
+                    </div>
+                </div>
+
+                {/* Neutered Selection */}
+                <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">중성화 여부</label>
+                    <div className="grid grid-cols-2 gap-3">
+                        <SexButton
+                            label="했어요"
+                            selected={data.sex?.includes('NEUTERED') || false}
+                            onClick={() => {
+                                if (data.sex?.startsWith('MALE')) updateData({ sex: 'MALE_NEUTERED' });
+                                if (data.sex?.startsWith('FEMALE')) updateData({ sex: 'FEMALE_NEUTERED' });
+                            }}
+                            disabled={!data.sex} // Disable if no sex selected
+                        />
+                        <SexButton
+                            label="안 했어요"
+                            selected={!!data.sex && !data.sex.includes('NEUTERED')}
+                            onClick={() => {
+                                if (data.sex?.startsWith('MALE')) updateData({ sex: 'MALE' });
+                                if (data.sex?.startsWith('FEMALE')) updateData({ sex: 'FEMALE' });
+                            }}
+                            disabled={!data.sex}
+                        />
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
 
-function SexButton({ label, subLabel, selected, onClick }: { label: string, subLabel: string, selected: boolean, onClick: () => void }) {
+function SexButton({ label, subLabel, selected, onClick, disabled }: { label: string, subLabel?: string, selected: boolean, onClick: () => void, disabled?: boolean }) {
     return (
         <button
             onClick={onClick}
+            disabled={disabled}
             className={cn(
-                "p-3 rounded-xl border transition-all text-center",
+                "p-3 rounded-xl border transition-all text-center h-14 flex flex-col items-center justify-center",
                 selected
                     ? "border-brand-lime bg-brand-lime/5 text-brand-lime font-bold ring-1 ring-brand-lime"
-                    : "border-gray-200 hover:border-brand-lime/50 text-gray-600"
+                    : "border-gray-200 hover:border-brand-lime/50 text-gray-600",
+                disabled && "opacity-50 cursor-not-allowed hover:border-gray-200"
             )}
         >
             <div className="text-sm">{label}</div>
-            <div className="text-xs text-gray-400 font-normal">{subLabel}</div>
+            {subLabel && <div className="text-xs text-gray-400 font-normal">{subLabel}</div>}
         </button>
     );
 }

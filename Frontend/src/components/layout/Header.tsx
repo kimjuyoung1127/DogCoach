@@ -19,6 +19,22 @@ export function Header() {
                     <span className="text-xl font-bold text-gray-900 tracking-tight">TailLog</span>
                 </Link>
 
+                {/* Debug Menu (Dev Only) */}
+                {process.env.NODE_ENV === 'development' && (
+                    <div className="hidden lg:flex items-center gap-2 ml-4 px-2 py-1 bg-gray-100 rounded text-xs">
+                        <span className="font-bold text-gray-500">🔧 DEV:</span>
+                        <Link href="/" className="hover:text-blue-600">Home</Link>
+                        <span className="text-gray-300">|</span>
+                        <Link href="/Survey" className="hover:text-blue-600">Survey</Link>
+                        <span className="text-gray-300">|</span>
+                        <Link href="/result" className="hover:text-blue-600">Result</Link>
+                        <span className="text-gray-300">|</span>
+                        <Link href="/dashboard" className="hover:text-blue-600">Dashboard</Link>
+                        <span className="text-gray-300">|</span>
+                        <Link href="/login" className="hover:text-blue-600">Login</Link>
+                    </div>
+                )}
+
                 {/* Desktop Nav */}
                 <nav className="hidden md:flex items-center gap-8">
                     <Link href="/about" className="text-gray-600 hover:text-brand-lime transition-colors text-sm font-medium">서비스 소개</Link>
