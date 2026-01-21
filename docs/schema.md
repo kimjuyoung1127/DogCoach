@@ -73,7 +73,8 @@
 | `profile_meta` | `JSONB` | | 몸무게, 입양일 |
 | `rewards_meta` | `JSONB` | | 좋아하는 간식, 보상 유형 |
 | `chronic_issues` | `JSONB` | | 주요 문제 행동 (Top 3) |
-| `triggers` | `JSONB` | | 문제 행동 유발 상황 (ABC - A) |
+| `antecedents` | `JSONB` | | 문제 행동 발생 상황 (ABC - A) |
+| `triggers` | `JSONB` | | 문제 행동 유발 트리거 (Specific) |
 | `past_attempts` | `JSONB` | | 실패했던 대처법 (ABC - C) |
 | `temperament` | `JSONB` | | 기질 및 민감도 (5점 척도) |
 | `activity_meta` | `JSONB` | | 산책, 놀이, 활동 정보 |
