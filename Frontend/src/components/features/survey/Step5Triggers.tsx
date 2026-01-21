@@ -3,6 +3,7 @@
 import { SurveyData } from "./types";
 import { cn } from "@/lib/utils";
 import { Bell, UserX, DoorOpen, Hand, Box, Monitor } from "lucide-react";
+import { SelectableCard } from "@/components/ui/SelectableCard";
 
 interface Props {
     data: SurveyData;
@@ -28,6 +29,12 @@ export function Step5Triggers({ data, updateData }: Props) {
         }
     };
 
+
+
+    // ...
+
+    // ...
+
     return (
         <div className="space-y-6">
             <div className="text-center mb-8">
@@ -37,24 +44,13 @@ export function Step5Triggers({ data, updateData }: Props) {
 
             <div className="grid grid-cols-1 gap-3">
                 {triggers.map((item) => (
-                    <button
+                    <SelectableCard
                         key={item.id}
+                        selected={data.triggers.includes(item.id)}
                         onClick={() => toggleTrigger(item.id)}
-                        className={cn(
-                            "w-full p-4 rounded-xl border text-left transition-all flex items-center gap-4",
-                            data.triggers.includes(item.id)
-                                ? "border-brand-lime bg-green-50 text-brand-dark shadow-sm"
-                                : "border-gray-100 bg-white hover:bg-gray-50 text-gray-600"
-                        )}
-                    >
-                        <div className={cn(
-                            "p-2 rounded-lg",
-                            data.triggers.includes(item.id) ? "bg-brand-lime text-white" : "bg-gray-100 text-gray-400"
-                        )}>
-                            {item.icon}
-                        </div>
-                        <span className="font-bold flex-1">{item.label}</span>
-                    </button>
+                        icon={item.icon}
+                        label={item.label}
+                    />
                 ))}
             </div>
         </div>

@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ResultHeader } from "@/components/result/ResultHeader";
-import { BarkingHeatmap } from "@/components/result/BarkingHeatmap";
-import { ActionPlanCard } from "@/components/result/ActionPlanCard";
-import { ConversionCTA } from "@/components/result/ConversionCTA";
-import { DebugLoginToggle } from "@/components/layout/materials/DebugLoginToggle";
-import { LockedAnalysisSection } from "@/components/result/LockedAnalysisSection";
-import { ChallengeOnboardingModal } from "@/components/challenge/ChallengeOnboardingModal";
-import { MissionActionOverlay } from "@/components/challenge/MissionActionOverlay";
+import { ResultHeader } from "@/components/features/result/ResultHeader";
+import { BarkingHeatmap } from "@/components/features/result/BarkingHeatmap";
+import { ActionPlanCard } from "@/components/features/result/ActionPlanCard";
+import { ConversionCTA } from "@/components/features/result/ConversionCTA";
+import { DebugLoginToggle } from "@/components/shared/layout/materials/DebugLoginToggle";
+import { LockedAnalysisSection } from "@/components/features/result/LockedAnalysisSection";
+import { ChallengeOnboardingModal } from "@/components/features/challenge/ChallengeOnboardingModal";
+import { MissionActionOverlay } from "@/components/features/challenge/MissionActionOverlay";
 
 export default function ResultPage() {
     const router = useRouter();

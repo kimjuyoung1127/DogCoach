@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ChallengeJourneyMap } from "@/components/challenge/ChallengeJourneyMap";
-import { MissionActionOverlay } from "@/components/challenge/MissionActionOverlay";
+import { ChallengeJourneyMap } from "@/components/features/challenge/ChallengeJourneyMap";
+import { MissionActionOverlay } from "@/components/features/challenge/MissionActionOverlay";
 import { Lock, Trophy, Zap, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -14,11 +14,11 @@ export default function CoachPage() {
     const [isMissionOpen, setIsMissionOpen] = useState(false);
 
     // Handler
-    const handleMissionComplete = (success: boolean) => {
+    const handleMissionComplete = (reaction: string) => {
         setIsMissionOpen(false);
-        if (success) {
+        if (reaction) {
             setXp((prev) => prev + 100);
-            alert("경험치 +100 획득! 훌륭해요! 🎉");
+            alert(`경험치 +100 획득! (반응: ${reaction}) 🎉`);
             // In a real app, we would advance the day here or after validation
         }
     };
@@ -34,7 +34,7 @@ export default function CoachPage() {
                         <span>Lv.{level}</span>
                     </div>
                 </div>
-                
+
                 {/* XP Bar */}
                 <div className="space-y-1">
                     <div className="flex justify-between text-xs text-gray-500 font-medium">
@@ -42,7 +42,7 @@ export default function CoachPage() {
                         <span>다음 레벨까지 {500 - xp} XP</span>
                     </div>
                     <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                        <motion.div 
+                        <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${(xp / 500) * 100}%` }}
                             className="h-full bg-brand-lime rounded-full"
@@ -58,11 +58,11 @@ export default function CoachPage() {
                         <Zap className="w-5 h-5 text-amber-500 fill-amber-500" />
                         <h2 className="font-bold text-gray-900">진행 중인 챌린지 🔥</h2>
                     </div>
-                    
+
                     <div className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100">
-                        <ChallengeJourneyMap 
-                            currentDay={currentDay} 
-                            onDayClick={() => setIsMissionOpen(true)} 
+                        <ChallengeJourneyMap
+                            currentDay={currentDay}
+                            onDayClick={() => setIsMissionOpen(true)}
                         />
                     </div>
                 </section>
@@ -71,24 +71,24 @@ export default function CoachPage() {
                 <section className="px-6 pb-6">
                     <h2 className="font-bold text-gray-900 mb-4">다음 단계 추천 커리큘럼</h2>
                     <div className="space-y-3">
-                        <CourseCard 
-                            title="분리불안 마스터 클래스" 
-                            duration="30일 완성" 
-                            locked={true} 
+                        <CourseCard
+                            title="분리불안 마스터 클래스"
+                            duration="30일 완성"
+                            locked={true}
                         />
-                        <CourseCard 
-                            title="산책 예절 마스터" 
-                            duration="14일 완성" 
-                            locked={true} 
+                        <CourseCard
+                            title="산책 예절 마스터"
+                            duration="14일 완성"
+                            locked={true}
                         />
                     </div>
                 </section>
             </main>
 
             {/* Mission Overlay Modal */}
-            <MissionActionOverlay 
-                isOpen={isMissionOpen} 
-                onClose={() => setIsMissionOpen(false)} 
+            <MissionActionOverlay
+                isOpen={isMissionOpen}
+                onClose={() => setIsMissionOpen(false)}
                 onComplete={handleMissionComplete}
             />
         </div>

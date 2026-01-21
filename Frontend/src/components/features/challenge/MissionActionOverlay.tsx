@@ -7,10 +7,11 @@ import confetti from "canvas-confetti";
 
 interface MissionActionOverlayProps {
     isOpen: boolean;
+    onClose?: () => void;
     onComplete: (reaction: string) => void;
 }
 
-export function MissionActionOverlay({ isOpen, onComplete }: MissionActionOverlayProps) {
+export function MissionActionOverlay({ isOpen, onClose, onComplete }: MissionActionOverlayProps) {
     const [isGuideOpen, setIsGuideOpen] = useState(false);
     const [isCompleted, setIsCompleted] = useState(false);
 
