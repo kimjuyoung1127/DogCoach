@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Bell } from "lucide-react";
-import { DailyBriefing } from "@/components/dashboard/DailyBriefing";
-import { QuickLogGrid } from "@/components/dashboard/QuickLogGrid";
-import { MissionTracker } from "@/components/dashboard/MissionTracker";
-import { ChallengeMap } from "@/components/dashboard/ChallengeMap";
+import { DailyBriefing } from "@/components/features/dashboard/DailyBriefing";
+import { QuickLogGrid } from "@/components/features/dashboard/QuickLogGrid";
+import { MissionTracker } from "@/components/features/dashboard/MissionTracker";
+import { ChallengeMap } from "@/components/features/dashboard/ChallengeMap";
 
 export default function DashboardPage() {
     return (

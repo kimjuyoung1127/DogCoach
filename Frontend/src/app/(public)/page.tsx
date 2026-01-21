@@ -1,13 +1,13 @@
 import { type Metadata } from "next";
-import { HeroSection } from "@/components/landing/HeroSection";
-import { SocialProofSection } from "@/components/landing/SocialProofSection";
-import { ProblemSection } from "@/components/landing/ProblemSection";
-import { ABCSolutionSection } from "@/components/landing/ABCSolutionSection";
-import { BehaviorMapSection } from "@/components/landing/BehaviorMapSection";
-import { SeamlessSection } from "@/components/landing/SeamlessSection";
-import { ProcessSection } from "@/components/landing/ProcessSection";
-import { ExpertSynergySection } from "@/components/landing/ExpertSynergySection";
-import { PricingSection } from "@/components/landing/PricingSection";
+import { HeroSection } from "@/components/features/landing/HeroSection";
+import { SocialProofSection } from "@/components/features/landing/SocialProofSection";
+import { ProblemSection } from "@/components/features/landing/ProblemSection";
+import { ABCSolutionSection } from "@/components/features/landing/ABCSolutionSection";
+import { BehaviorMapSection } from "@/components/features/landing/BehaviorMapSection";
+import { SeamlessSection } from "@/components/features/landing/SeamlessSection";
+import { ProcessSection } from "@/components/features/landing/ProcessSection";
+import { ExpertSynergySection } from "@/components/features/landing/ExpertSynergySection";
+import { PricingSection } from "@/components/features/landing/PricingSection";
 
 export const metadata: Metadata = {
     title: "TailLog | 데이터로 이해하는 반려견 행동 분석",

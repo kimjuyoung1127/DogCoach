@@ -1,5 +1,5 @@
-import { BottomNav } from "@/components/layout/BottomNav";
-import { Sidebar } from "@/components/layout/Sidebar";
+import { BottomNav } from "@/components/shared/layout/BottomNav";
+import { Sidebar } from "@/components/shared/layout/Sidebar";
 
 export default function AppLayout({
     children,

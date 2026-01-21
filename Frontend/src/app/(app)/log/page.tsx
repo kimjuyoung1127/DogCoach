@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar as CalendarIcon, BarChart2, List, ChevronLeft, ChevronRight, FileDown, Sparkles } from "lucide-react";
-import { LogCard, LogData } from "@/components/log/LogCard";
+import { LogCard, LogData } from "@/components/features/log/LogCard";
 import { cn } from "@/lib/utils";
 
 // Mock Data
@@ -109,7 +109,7 @@ export default function LogPage() {
                             <div className="mb-4 text-sm text-gray-500 font-medium">
                                 총 <span className="text-brand-lime font-bold">{MOCK_LOGS.length}개</span>의 기록이 있어요.
                             </div>
-                            
+
                             {MOCK_LOGS.map((log) => (
                                 <LogCard key={log.id} log={log} />
                             ))}
@@ -152,8 +152,8 @@ export default function LogPage() {
                                     <h3 className="font-bold text-gray-900">주간 AI 코칭 리포트</h3>
                                 </div>
                                 <p className="text-sm text-gray-600 leading-relaxed">
-                                    이번 주 머루는 <span className="text-brand-lime font-bold">외부 소음</span>에 가장 민감하게 반응했어요. 
-                                    특히 오후 2시에서 4시 사이의 짖음 빈도가 지난주 대비 20% 증가했습니다. 
+                                    이번 주 머루는 <span className="text-brand-lime font-bold">외부 소음</span>에 가장 민감하게 반응했어요.
+                                    특히 오후 2시에서 4시 사이의 짖음 빈도가 지난주 대비 20% 증가했습니다.
                                     산책 시 <span className="underline decoration-brand-lime decoration-2 underline-offset-4">'방향 전환 훈련'</span>을 병행하면 도움이 될 거예요.
                                 </p>
                             </div>

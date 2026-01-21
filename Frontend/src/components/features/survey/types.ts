@@ -20,6 +20,7 @@ export interface SurveyData {
 
     // Step 4: Problem Behaviors (Revised)
     chronicIssues: string[]; // Top 3 problems
+    antecedents: string[]; // ABC - Antecedent
 
     // Step 5: Triggers (Revised A)
     triggers: string[]; // e.g., 'doorbell'
@@ -44,6 +45,7 @@ export const INITIAL_DATA: SurveyData = {
     healthIssues: [],
     favoriteTreats: [],
     chronicIssues: [],
+    antecedents: [],
     triggers: [],
     pastAttempts: [],
     sensitivityScore: 3,

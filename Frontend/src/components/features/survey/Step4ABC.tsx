@@ -3,6 +3,8 @@
 import { SurveyData } from "./types";
 import { cn } from "@/lib/utils";
 import { Bell, UserX, DoorOpen, Hand } from "lucide-react";
+import { SelectableCard } from "@/components/ui/SelectableCard";
+import { Input } from "@/components/ui/Input";
 
 interface Props {
     data: SurveyData;
@@ -26,6 +28,10 @@ export function Step4ABC({ data, updateData }: Props) {
         }
     };
 
+
+
+    // ... (inside component)
+
     return (
         <div className="space-y-6">
             <div className="text-center mb-8">
@@ -35,34 +41,20 @@ export function Step4ABC({ data, updateData }: Props) {
 
             <div className="space-y-3">
                 {triggers.map((item) => (
-                    <button
+                    <SelectableCard
                         key={item.id}
+                        selected={data.antecedents.includes(item.id)}
                         onClick={() => toggleTrigger(item.id)}
-                        className={cn(
-                            "w-full p-4 rounded-xl border text-left transition-all flex items-center gap-4",
-                            data.antecedents.includes(item.id)
-                                ? "border-brand-lime bg-green-50 text-brand-dark shadow-sm"
-                                : "border-gray-100 bg-white hover:bg-gray-50 text-gray-600"
-                        )}
-                    >
-                        <div className={cn(
-                            "p-2 rounded-lg",
-                            data.antecedents.includes(item.id) ? "bg-brand-lime text-white" : "bg-gray-100 text-gray-400"
-                        )}>
-                            {item.icon}
-                        </div>
-                        <span className="font-bold flex-1">{item.label}</span>
-                    </button>
+                        icon={item.icon}
+                        label={item.label}
+                    />
                 ))}
             </div>
 
             <div className="pt-4">
                 <label className="text-sm font-bold text-gray-700 mb-2 block">기타 상황 (직접 입력)</label>
-                <input
-                    type="text"
-                    className="w-full h-12 px-4 rounded-xl border border-gray-200 focus:border-brand-lime focus:ring-2 focus:ring-brand-lime/20 outline-none transition-all placeholder-gray-300"
+                <Input
                     placeholder="예: 천둥 번개가 칠 때"
-                    // Simple handler for demo, ideally add to 'antecedents' custom list
                     onChange={(e) => { /* Handle custom input if needed */ }}
                 />
             </div>
