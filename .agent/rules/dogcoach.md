@@ -2,207 +2,256 @@
 trigger: always_on
 ---
 
-🎯 CLI 도구가 지켜야 할 핵심 원칙
-1. 파일 네이밍 규칙
-파일 타입	규칙	예
-React 컴포넌트	PascalCase + .tsx	BehaviorCard.tsx
-TypeScript 훅	camelCase + .ts	useBehaviorLogs.ts
-Python 모듈	snake_case + .py	behavior_log_service.py
-데이터베이스 테이블	snake_case + 복수형	behavior_logs
-상수	UPPER_SNAKE_CASE	API_BASE_URL
-2. 프로젝트 구조 (반드시 준수)
-# Project Structure
-
-## Frontend (Next.js)
-Frontend/
-├── public/
-├── src/
-│   ├── app/
-│   │   ├── (public)/            # Public pages (Landing, Login, Checkup, Result)
-│   │   ├── (app)/               # Protected app pages (Dashboard, Log, Analytics, etc.)
-│   │   └── api/                 # Next.js API Routes (Auth, proxy, etc.)
-│   ├── components/
-│   │   ├── cards/               # Business UI Cards (Behavior, Stats, Mission)
-│   │   ├── charts/              # Visualizations (Heatmap, Trends)
-│   │   ├── features/            # Feature-specific logic grouping
-│   │   ├── forms/               # Complex forms (Login, LogEntry, Profile)
-│   │   ├── layout/              # Global layout components (Header, Sidebar)
-│   │   ├── shared/              # Reusable shared components
-│   │   └── ui/                  # Atomic UI components (shadcn/ui)
-│   ├── hooks/                   # Custom Hooks (useAuth, useLogs, etc.)
-│   ├── lib/                     # Libraries & Utils (Supabase, API client, Zod)
-│   ├── store/                   # Global State (Zustand)
-│   ├── styles/                  # Global CSS
-│   └── types/                   # Type Definitions
-└── ...
-
-## Backend (FastAPI)
 Backend/
-├── alembic/                     # Database Migrations
+
 ├── app/
-│   ├── ai/                      # AI Modules (RAG, Prompts, Vectorstore)
-│   ├── api/
-│   │   └── v1/                  # API Endpoints (Auth, Dogs, Logs, Coaching)
-│   ├── core/                    # Core Configuration & Security
-│   ├── db/                      # Database base & session info
-│   ├── middleware/              # Middleware (CORS, Error Handling)
-│   ├── models/                  # SQLAlchemy ORM Models
-│   ├── repositories/            # Database Access Layer (CRUD)
-│   ├── schemas/                 # Pydantic Data Schemas
-│   ├── services/                # Business Logic Services
-│   ├── tasks/                   # Background Tasks (Scheduler, Notifications)
-│   ├── utils/                   # Helpers (Logger, Validators)
-│   └── main.py                  # Application Entry Point
-├── tests/                       # Unit & Integration Tests
-└── ...
 
-3. 코딩 규칙 요약
-TypeScript
-typescript
-// ✅ 올바름
-interface ComponentProps {
-  id: string;
-  onDelete?: (id: string) => void;
-}
+│   ├── core/                  # 프로젝트 전역 설정 (변경 빈도 낮음)
 
-export const MyComponent = memo(function MyComponent(props: ComponentProps) {
-  // ...
-});
+│   │   ├── config.py          # 환경변수
 
-MyComponent.displayName = 'MyComponent';
+│   │   ├── database.py        # DB 연결 세션 관리
 
-// ❌ 금지
-export function MyComponent(props: any) { }  // any 사용 금지
-const Component = (props) => { }              // 타입 정의 필수
+│   │   ├── security.py        # JWT 인증, RLS 로직
+
+│   │   └── exceptions.py      # 에러 핸들링
+
+│   │
+
+│   ├── shared/                # 모든 기능에서 공통으로 쓰는 도구
+
+│   │   ├── utils/             # Timezone, Logger
+
+│   │   ├── clients/           # S3(Storage), Kakao(Auth) 클라이언트
+
+│   │   └── models.py          # ★ 중요: 순환 참조 방지를 위해 ORM 모델은 이곳에 모으거나 분리 주의
+
+│   │
+
+│   ├── features/              # ★ 핵심: 프론트엔드 기능과 1:1 매칭
+
+│   │   ├── auth/              # 로그인, 회원가입 (Frontend: /login)
+
+│   │   │   ├── router.py      # API Endpoint
+
+│   │   │   ├── service.py     # 비즈니스 로직
+
+│   │   │   └── schemas.py     # Pydantic 데이터 검증
+
+│   │   │
+
+│   │   ├── onboarding/        # 설문, 강아지 등록 (Frontend: /Survey)
+
+│   │   │   ├── router.py
+
+│   │   │   ├── service.py     # 설문 데이터 -> DB 매핑 로직
+
+│   │   │   └── repository.py  # DB CRUD
+
+│   │   │
+
+│   │   ├── dashboard/         # 메인 홈 (Frontend: /dashboard)
+
+│   │   │   ├── router.py
+
+│   │   │   └── service.py     # 요약 데이터, 오늘의 미션 집계
+
+│   │   │
+
+│   │   ├── log/               # 기록 및 분석 (Frontend: /log)
+
+│   │   │   ├── router.py      # GET /logs, POST /logs
+
+│   │   │   ├── service.py     # 타임존 계산, 미디어 처리
+
+│   │   │   ├── repository.py  # 복합 인덱스 조회 최적화
+
+│   │   │   └── schemas.py     # LogCreate, LogResponse
+
+│   │   │
+
+│   │   ├── coach/             # AI 코칭 (Frontend: /coach)
+
+│   │   │   ├── router.py
+
+│   │   │   ├── service.py     # RAG 로직, AI 클라이언트 호출
+
+│   │   │   └── prompts.py     # 프롬프트 템플릿 관리
+
+│   │   │
+
+│   │   └── settings/          # 설정 (Frontend: /settings)
+
+│   │       ├── router.py
+
+│   │       └── service.py     # 알림 설정, 구독 관리
+
+│   │
+
+│   └── main.py                # FastAPI 앱 진입점 (각 feature router 통합) 이 구조를 토대로 백엔드 구현원칙 유지보수성극대화 플랜을 제시해줘 .
+
+강아지행동수정 웹사이트
+
+
+이 구조의 핵심은 **"기능(Feature)의 격리"**와 **"명확한 의존성 방향"**입니다.
+
+🧱 핵심 구현 원칙 (Rules of Engagement)
+이 구조가 엉키지 않고 유지보수하기 쉽게 유지되려면 다음 3가지 원칙을 반드시 지켜야 합니다.
+
+단방향 의존성 원칙 (One-Way Dependency)
+
+흐름: Router ➡ Service ➡ Repository (또는 DB Model)
+
+금지: Service가 Router를 알거나, Repository가 Service 로직을 포함하면 안 됩니다.
+
+참조: 다른 Feature의 로직이 필요할 때는 Service 간 호출보다는 Shared/Core 유틸을 사용하거나, 필요한 데이터만 Repository를 통해 가져와야 순환 참조를 막을 수 있습니다.
+
+공유 자원의 중앙화 (Shared Resources)
+
+Models: SQLAlchemy ORM 모델은 서로 관계(Foreign Key)가 얽혀 있으므로 app/shared/models.py (또는 shared/models/ 패키지)에 모아서 정의합니다. 이렇게 해야 features/log와 features/coach가 서로를 import 하지 않고도 동일한 DB 모델을 쓸 수 있습니다.
+
+Utils: 타임존 변환 로직은 app/shared/utils/timezone.py에 두고 모든 Feature에서 공통으로 사용합니다.
+
+철저한 타입 검증 (Pydantic First)
+
+DB의 JSONB 컬럼(household_info, triggers 등)은 반드시 Pydantic 모델로 매핑하여 다룹니다. dict 타입을 직접 쓰지 않도록 하여 데이터 무결성을 보장합니다.
+
+📅 단계별 구현 플랜 (Implementation Roadmap)
+제공된 폴더 구조에 맞춰 개발 순서를 정렬했습니다.
+
+Step 1. 기반 공사 (Core & Shared)
+가장 먼저 변하지 않는 인프라를 구축합니다.
+
+app/core/config.py: pydantic-settings를 사용해 환경변수(DB URL, OpenAI Key, Supabase Key)를 로드합니다.
+
+app/core/database.py: AsyncEngine과 AsyncSession을 설정하고, DI(Dependency Injection)용 get_db 함수를 작성합니다.
+
+app/shared/models.py: schema.md에 정의된 모든 테이블(users, dogs, behavior_logs 등)과 Enum을 SQLAlchemy 모델로 구현합니다.
+
+Tip: Base 클래스를 상속받아 created_at, updated_at을 믹스인(Mixin)으로 처리하면 중복 코드가 줄어듭니다.
+
+app/core/security.py: Supabase Auth 헤더(JWT)를 파싱하여 current_user를 반환하는 의존성을 구현합니다.
+
+Step 2. 유저 진입 및 식별 (Auth & Onboarding)
+사용자 데이터를 받아 DB에 안착시키는 단계입니다.
+
+features/auth/:
+
+로그인 로직보다는 유저 세션 검증과 프로필 조회(GET /me)에 집중합니다.
+
+router.py에서 Depends(get_current_user)가 잘 작동하는지 테스트합니다.
+
+features/onboarding/:
+
+schemas.py: 7단계 설문 데이터를 검증할 거대한 Pydantic 모델(SurveySubmission)을 정의합니다.
+
+service.py:
+
+입력받은 데이터를 Dog 객체와 DogEnv 객체로 분리.
+
+DogEnv의 JSONB 필드(triggers, household_info) 직렬화.
+
+behavior_logs에 "가장 큰 고민"을 Seed Data로 넣는 로직(Cold Start) 구현.
+
+Step 3. 핵심 도메인 구현 (Log & Dashboard)
+데이터가 쌓이고 조회되는 핵심 루프를 만듭니다.
+
+features/log/:
+
+repository.py: (dog_id, occurred_at) 복합 인덱스를 타도록 쿼리를 최적화합니다.
+
+service.py:
+
+미디어 업로드 요청 시 Presigned URL 생성 로직.
+
+타임존 미들웨어를 통해 들어온 occurred_at을 UTC로 변환하여 저장.
+
+features/dashboard/:
+
+service.py: 최근 로그 5개, 오늘의 미션 완료 여부, 연속 기록(Streak) 계산 로직을 구현합니다. 복잡한 통계 쿼리는 여기서 작성합니다.
+
+Step 4. 지능형 서비스 (Coach & Settings)
+데이터 기반의 가치를 제공합니다.
+
+features/coach/:
+
+prompts.py: AI 페르소나(강아지 시점 vs 전문가 시점)에 따른 프롬프트 템플릿 관리.
+
+service.py:
+
+OpenAI API 호출.
+
+RAG 구현: log 테이블이 아니라 log_summaries 테이블(벡터 포함)을 조회하여 컨텍스트 구성.
+
+features/settings/:
+
+알림 설정(JSONB), 구독 상태 관리 등 유저 설정 변경 API.
+
+💻 코드 예시: Feature 내부 구조 (Log Feature)
+이 구조가 실제로 어떻게 코드로 구현되는지 features/log 예시로 보여드립니다.
+
+1. app/features/log/schemas.py (데이터 검증)
+
 Python
-python
-# ✅ 올바름
-@router.post("/logs", response_model=BehaviorLogResponse)
+from pydantic import BaseModel, Field
+from datetime import datetime
+from typing import Optional
+
+class LogCreate(BaseModel):
+    dog_id: str
+    antecedent: str
+    behavior: str
+    consequence: str
+    intensity: int = Field(..., ge=1, le=10)
+    occurred_at: datetime  # 프론트에서 보낸 로컬 시간
+
+class LogResponse(LogCreate):
+    id: str
+    created_at: datetime
+2. app/features/log/service.py (비즈니스 로직)
+
+Python
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.features.log import repository, schemas
+from app.shared.utils.timezone import to_utc
+
+async def create_new_log(db: AsyncSession, log_in: schemas.LogCreate, user_timezone: str):
+    # 1. 타임존 변환 (Local -> UTC)
+    log_in.occurred_at = to_utc(log_in.occurred_at, user_timezone)
+    
+    # 2. 레포지토리 호출하여 저장
+    new_log = await repository.create_log(db, log_in)
+    
+    # 3. (Optional) AI 요약 트리거 체크 로직이 필요하다면 여기에 추가
+    # if await repository.count_logs(db, log_in.dog_id) % 50 == 0:
+    #     background_tasks.add_task(generate_summary, ...)
+    
+    return new_log
+3. app/features/log/router.py (API 엔드포인트)
+
+Python
+from fastapi import APIRouter, Depends, Header
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.database import get_db
+from app.features.log import service, schemas
+
+router = APIRouter()
+
+@router.post("/", response_model=schemas.LogResponse)
 async def create_log(
-    log_data: BehaviorLogCreate,
-    db: Session = Depends(get_db)
+    log_data: schemas.LogCreate,
+    x_timezone: str = Header(default="Asia/Seoul"), # 헤더에서 타임존 추출
+    db: AsyncSession = Depends(get_db)
 ):
-    """행동 로그 생성 - 명확한 docstring 필수"""
-    service = LogService(db)
-    return await service.create_log(log_data)
+    # Router는 오직 Service만 호출
+    return await service.create_new_log(db, log_data, x_timezone)
+🚀 유지보수 Check Point
+개발 진행 중 다음 상황이 발생하면 구조를 재점검하세요.
 
-# ❌ 금지
-def create_log(log_data):          # 타입 힌트 필수
-    # 주석만 있고 docstring 없음
-4. 컴포넌트 구조 패턴
-폼 컴포넌트 예시
-typescript
-// components/forms/BehaviorLogForm.tsx
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { behaviorLogSchema } from '@/lib/validators';
+순환 참조 에러 발생: features/A가 features/B를 import 하고 있는지 확인하세요. 공통 로직이라면 shared로 내려야 합니다.
 
-export function BehaviorLogForm({ onSubmit, isLoading }: Props) {
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    resolver: zodResolver(behaviorLogSchema),
-  });
+main.py가 너무 비대해짐: main.py는 각 Feature의 Router를 include_router 하는 역할만 해야 합니다.
 
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      {/* shadcn/ui 컴포넌트 사용 */}
-    </form>
-  );
-}
-서비스 계층 예시
-python
-# app/services/behavior_analysis_service.py
-class BehaviorAnalysisService:
-    def __init__(self, db: Session):
-        self.db = db
-        self.repo = BehaviorLogRepository(db)
-    
-    async def analyze_patterns(self, dog_id: str) -> dict:
-        """반려견 행동 패턴 분석"""
-        # 구현
-5. API 엔드포인트 설계
-text
-GET    /api/v1/dogs/:dog_id/logs          # 조회
-POST   /api/v1/dogs/:dog_id/logs          # 생성
-PATCH  /api/v1/dogs/:dog_id/logs/:log_id  # 부분 수정
-DELETE /api/v1/dogs/:dog_id/logs/:log_id  # 삭제
-규칙:
+JSON 처리 중 에러: repository 레벨에서 model_dump() 등을 사용해 확실하게 타입 변환이 이루어지는지 확인하세요.
 
-항상 /v1 버전 포함
-
-리소스는 복수형 사용
-
-상태 코드: 200 (OK), 201 (Created), 400 (Bad Request), 404 (Not Found)
-
-6. 데이터베이스 모델
-python
-class BehaviorLog(Base):
-    __tablename__ = "behavior_logs"
-    
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    dog_id = Column(UUID(as_uuid=True), ForeignKey("dogs.id"), index=True)
-    
-    # 타임스탐프 필수
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-필수 규칙:
-
-✅ UUID 기본 키 (uuid4)
-
-✅ created_at, updated_at 타임스탐프
-
-✅ 외래키는 nullable=False
-
-✅ 조회 필드에 index=True
-
-
-1. 프론트엔드 구조 최적화 (mungcoach-frontend)
-현재 구조에서 컴포넌트가 많아질 경우 components/forms, components/cards 폴더에 수십 개의 파일이 쌓여 관리가 어려워집니다. 이를 도메인(기능) 중심으로 한 번 더 묶어주는 것이 좋습니다.
-
-💡 제안: src/components/features/ 도입
-이유: 특정 페이지에서만 사용되는 비즈니스 로직이 담긴 컴포넌트들을 따로 관리하여, 수정 시 영향 범위를 최소화합니다.
-
-변경 예시:
-
-Plaintext
-
-src/components/
-├── features/                # 도메인별 복합 컴포넌트
-│   ├── onboarding/          # 설문 단계별 폼들
-│   ├── logs/                # ABC 기록 상세 로직
-│   ├── dashboard/           # 대시보드 전용 위젯
-│   └── coaching/            # AI 리포트 뷰어
-├── shared/                  # 프로젝트 전역 재사용 컴포넌트 (Shadcn 래퍼 등)
-└── ui/                      # 순수 Shadcn/UI 원자 컴포넌트
-💡 제안: Data Fetching 전략 명확화
-현재 store/에 Zustand가 있으나, 서버 데이터 캐싱과 로딩 상태 관리를 위해 TanStack Query (React Query) 도입을 강력 추천합니다.
-
-이유: useLogs.ts 같은 훅 내부에서 데이터 fetching 상태(isLoading, isError)를 직접 관리하면 유지보수가 훨씬 편해집니다.
-
-2. 백엔드 구조 최적화 (mungcoach-backend)
-백엔드에서 가장 복잡해질 부분은 AI 엔진과 데이터베이스 세션 관리입니다.
-
-💡 제안: app/db/ 폴더 분리
-main.py나 dependencies.py에 세션 로직이 섞이지 않도록 분리합니다.
-
-구조:
-
-Plaintext
-
-app/
-├── db/
-│   ├── base_class.py        # 모든 모델의 Base (Table name 자동 생성 등)
-│   └── session.py           # Engine 및 SessionLocal 설정
-💡 제안: AI 모듈 내 templates/ 분리
-AI 프롬프트는 코드가 아니라 **'설정 데이터'**에 가깝습니다. prompts.py 하나에 몰아넣기보다 상황별로 분리하는 것이 좋습니다.
-
-구조:
-
-Plaintext
-
-app/ai/
-├── templates/               # 상황별 프롬프트 (JinJa2 등 활용 권장)
-│   ├── daily_report.py
-│   ├── emergency_coaching.py
-│   └── analysis_logic.py
-├── rag_engine.py
-└── vectorstore.py
+이 플랜대로 진행하면 백엔드 코드가 프론트엔드 구조와 거울처럼 매칭되어, **"로그 기능 고쳐야지"**라고 생각했을 때 features/log 폴더 하나만 열면 모든 해결이 가능한 쾌적한 개발 환경이 구축될 것입니다.
