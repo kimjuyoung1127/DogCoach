@@ -30,6 +30,8 @@
 | `timezone` | `VARCHAR(50)` | Default: `'Asia/Seoul'` | 시간대 (글로벌 확장 대비) |
 | `created_at` | `TIMESTAMPTZ` | Default: `NOW()` | 가입 일시 |
 | `updated_at` | `TIMESTAMPTZ` | Default: `NOW()` | 수정 일시 |
+| `last_login_at` | `TIMESTAMPTZ` | | 마지막 로그인 일시 |
+| `provider` | `VARCHAR` | | 로그인 제공자 (kakao, email, apple) |
 
 #### `subscriptions`
 사용자의 구독 상태를 관리합니다.
@@ -42,6 +44,10 @@
 | `is_active` | `BOOLEAN` | Default: `FALSE` | 구독 활성화 여부 |
 | `created_at` | `TIMESTAMPTZ` | Default: `NOW()` | 생성 일시 |
 | `updated_at` | `TIMESTAMPTZ` | Default: `NOW()` | 수정 일시 |
+| `pg_provider` | `VARCHAR` | | 결제사 (예: kakaopay, toss) |
+| `pg_customer_key` | `VARCHAR` | | PG사 고객 식별키 |
+| `canceled_at` | `TIMESTAMPTZ` | | 구독 해지 신청 일시 |
+| `cancel_reason` | `TEXT` | | 해지 사유 |
 
 ---
 
@@ -165,6 +171,18 @@ AI 비용 최적화(RAG)를 위한 행동 로그 요약본입니다. (Plan Phase
 | `embedding` | `VECTOR(1536)` | | RAG 검색용 벡터 데이터 |
 | `created_at` | `TIMESTAMPTZ` | Default: `NOW()` | 생성 일시 |
 
+#### `user_settings`
+사용자별 설정 정보 (알림, AI 페르소나, 앱 설정 등)를 저장합니다.
+| Column | Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| **`id`** | `UUID` | **PK**, Default: `uuid_generate_v4()` | 설정 ID |
+| `user_id` | `UUID` | **FK** (`users.id`), Unique, On Delete: Cascade | 해당 사용자 |
+| `notification_pref` | `JSONB` | | 알림 설정 (채널, 유형, 방해금지 시간) |
+| `ai_persona` | `JSONB` | | AI 코칭 스타일 (말투, 시점) |
+| `marketing_agreed` | `BOOLEAN` | Default: `FALSE` | 마케팅 수신 동의 여부 |
+| `marketing_agreed_at` | `TIMESTAMPTZ` | | 마케팅 수신 동의 일시 |
+| `updated_at` | `TIMESTAMPTZ` | Default: `NOW()` | 수정 일시 |
+
 ---
 
 ## 3. Security (RLS Policies)
@@ -176,5 +194,9 @@ AI 비용 최적화(RAG)를 위한 행동 로그 요약본입니다. (Plan Phase
 | `users` | `Users can update own profile` | UPDATE | `auth.uid() = id` |
 | `dogs` | `Users can view own dogs` | SELECT | `auth.uid() = user_id` |
 | `dogs` | `Users can insert own dogs` | INSERT | `auth.uid() = user_id` |
+| `dogs` | `Users can insert own dogs` | INSERT | `auth.uid() = user_id` |
 | `behavior_logs` | `Users can view logs of own dogs` | SELECT | `dog_id IN (SELECT id FROM dogs WHERE user_id = auth.uid())` |
+| `user_settings` | `Users can view own settings` | SELECT | `auth.uid() = user_id` |
+| `user_settings` | `Users can update own settings` | UPDATE | `auth.uid() = user_id` |
+| `user_settings` | `Users can insert own settings` | INSERT | `auth.uid() = user_id` |
 
