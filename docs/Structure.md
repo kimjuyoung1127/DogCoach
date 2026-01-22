@@ -39,6 +39,13 @@ Frontend/
 │   │   │   │   ├── BarkingHeatmap.tsx
 │   │   │   │   ├── LockedAnalysisSection.tsx
 │   │   │   │   └── ResultHeader.tsx
+│   │   │   ├── settings/        # User Settings
+│   │   │   │   ├── NotificationSection.tsx
+│   │   │   │   ├── SubscriptionSection.tsx
+│   │   │   │   ├── AccountSection.tsx
+│   │   │   │   ├── AiPreferenceSettings.tsx
+│   │   │   │   ├── DataSection.tsx
+│   │   │   │   └── AppInfoSection.tsx
 │   │   │   └── survey/          # Onboarding Survey Logic
 │   │   │       ├── Step1Profile.tsx
 │   │   │       ├── Step4ABC.tsx
