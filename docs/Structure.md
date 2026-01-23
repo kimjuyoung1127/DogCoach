@@ -1,97 +1,70 @@
 # Project Structure
 
 ## Frontend (Next.js)
+```
 Frontend/
-├── public/                      # Static assets (images, fonts, manifest)
+├── public/                      # Static assets
 ├── src/
 │   ├── app/
-│   │   ├── (public)/            # Public pages (Landing, Survey, Results)
-│   │   │   ├── layout.tsx       # Public layout (Header/Footer)
-│   │   │   ├── page.tsx         # Landing Page (Main)
-│   │   │   ├── login/           # Login Page
-│   │   │   ├── Survey/          # Diagnosis Survey Page (Replacing checkup)
-│   │   │   └── result/          # Analysis Result Page (Guest/User View + Challenge)
-│   │   ├── (app)/               # Protected app pages (Dashboard, Log, Analytics)
-│   │   │   ├── layout.tsx       # App Layout (Sidebar/BottomNav, No Footer)
-│   │   │   ├── dashboard/       # Dashboard Page (Main App Entry)
-│   │   │   ├── analytics/       # Data Visualization
-│   │   │   ├── coach/           # AI Coaching & Advice
-│   │   │   ├── log/             # Behavior Logging
-│   │   │   └── settings/        # User Settings
-│   │   └── api/                 # Next.js API Routes (Auth, proxy)
+│   │   ├── (public)/            # Public pages
+│   │   │   ├── Survey/          # Diagnosis Survey Flow
+│   │   │   └── result/          # Analysis Result Page
+│   │   ├── (app)/               # Protected app pages
+│   │   │   ├── dashboard/       # Main App Entry
+│   │   │   └── log/             # Behavior Logging
+│   │   └── api/                 # Next.js API Routes (Proxy/Edge)
 │   ├── components/
-│   │   ├── features/            # Domain-specific Feature Modules
-│   │   │   ├── challenge/       # Gamification & Challenge Flow
-│   │   │   │   ├── ChallengeOnboardingModal.tsx
-│   │   │   │   └── MissionActionOverlay.tsx
-│   │   │   ├── dashboard/       # Dashboard Widgets
-│   │   │   │   ├── ChallengeMap.tsx
-│   │   │   │   ├── DailyBriefing.tsx
-│   │   │   │   ├── MissionTracker.tsx
-│   │   │   │   └── QuickLogGrid.tsx
-│   │   │   ├── landing/         # Landing Page Sections
-│   │   │   │   ├── HeroSection.tsx
-│   │   │   │   ├── SocialProofSection.tsx
-│   │   │   │   └── PricingSection.tsx
-│   │   │   ├── log/             # Behavior Logging Cards
-│   │   │   ├── result/          # Analysis Result Views
-│   │   │   │   ├── ActionPlanCard.tsx
-│   │   │   │   ├── BarkingHeatmap.tsx
-│   │   │   │   ├── LockedAnalysisSection.tsx
-│   │   │   │   └── ResultHeader.tsx
-│   │   │   ├── settings/        # User Settings
-│   │   │   │   ├── NotificationSection.tsx
-│   │   │   │   ├── SubscriptionSection.tsx
-│   │   │   │   ├── AccountSection.tsx
-│   │   │   │   ├── AiPreferenceSettings.tsx
-│   │   │   │   ├── DataSection.tsx
-│   │   │   │   └── AppInfoSection.tsx
-│   │   │   └── survey/          # Onboarding Survey Logic
-│   │   │       ├── Step1Profile.tsx
-│   │   │       ├── Step4ABC.tsx
-│   │   │       ├── Step5Triggers.tsx
-│   │   │       └── SurveyContainer.tsx
-│   │   ├── shared/              # Shared Business Components
-│   │   │   └── layout/          # Global Layouts
-│   │   │       ├── Header.tsx
-│   │   │       ├── Footer.tsx
-│   │   │       ├── Sidebar.tsx
-│   │   │       └── BottomNav.tsx
-│   │   └── ui/                  # Atomic UI Components (Buttons, Cards, Inputs)
-│   │       ├── Button.tsx
-│   │       ├── Card.tsx
-│   │       ├── Input.tsx
-│   │       └── SelectableCard.tsx
-│   ├── hooks/                   # Custom Hooks
-│   ├── lib/                     # Libraries (Utils, Supabase)
+│   │   ├── features/            # Feature Modules
+│   │   │   ├── survey/          # Survey Logic (Wizard Flow)
+│   │   │   │   ├── SurveyContainer.tsx
+│   │   │   │   ├── survey-mapper.ts  # [NEW] Data Transformation
+│   │   │   │   └── steps/...
+│   │   │   └── result/          # Analysis Result Views
+│   │   │   └── dashboard/       # Dashboard Widgets
+│   │   └── shared/              # Reusable UI Components
+│   ├── hooks/
+│   │   └── useAuth.ts           # [NEW] Supabase Auth & Guest Login
+│   ├── lib/
+│   │   ├── api.ts               # [NEW] Backend API Client (Fetch Wrapper)
+│   │   ├── supabase.ts          # [NEW] Supabase Client Setup
+│   │   └── utils.ts             # Tailwind Merge & Helper
 │   ├── store/                   # Global State (Zustand)
-│   ├── styles/                  # Global CSS (Tailwind v4)
-│   └── types/                   # Type Definitions
-└── ...
+│   └── types/                   # TypeScript Definitions
+```
 
-## Backend (FastAPI)
+## Backend (FastAPI - Feature-based Architecture)
+```
 Backend/
-├── alembic/                     # Database Migrations
 ├── app/
-│   ├── ai/                      # AI Modules (RAG, Prompts, Vectorstore)
-│   ├── api/
-│   │   └── v1/                  # API Endpoints (Auth, Dogs, Logs, Coaching)
-│   ├── core/                    # Core Configuration & Security
-│   ├── db/                      # Database base & session info
-│   ├── middleware/              # Middleware (CORS, Error Handling)
-│   ├── models/                  # SQLAlchemy ORM Models
-│   │   ├── coaching.py          # Coaching & Advice logic
-│   │   ├── dog.py               # Dog profiles & stats
-│   │   ├── log.py               # Behavior logs
-│   │   ├── payment.py           # Subscriptions & payments
-│   │   ├── summary.py           # AI Weekly Summaries (RAG)
-│   │   ├── user.py              # User authentication & profile
-│   │   └── README.md            # Models documentation
-│   ├── repositories/            # Database Access Layer (CRUD)
-│   ├── schemas/                 # Pydantic Data Schemas
-│   ├── services/                # Business Logic Services
-│   ├── tasks/                   # Background Tasks (Scheduler, Notifications)
-│   ├── utils/                   # Helpers (Logger, Validators)
-│   └── main.py                  # Application Entry Point
-├── tests/                       # Unit & Integration Tests
-└── ...
+│   ├── core/
+│   │   ├── config.py            # Environment Variables (Pydantic Settings)
+│   │   ├── database.py          # Async Database Session
+│   │   ├── security.py          # JWT & Supabase Auth Verification
+│   │   └── exceptions.py        # [NEW] Global Exception Handler
+│   ├── shared/
+│   │   ├── models.py            # Centralized Database Models
+│   │   └── utils/
+│   │       └── timezone.py      # [NEW] Timezone conversion utils
+│   ├── features/                # Domain Modules (Router → Service → Repo)
+│   │   ├── auth/                # Authentication & User Profile
+│   │   │   ├── router.py
+│   │   │   ├── service.py
+│   │   │   ├── repository.py
+│   │   │   └── schemas.py
+│   │   ├── onboarding/          # Survey & Dog Registration
+│   │   │   ├── router.py        # POST /survey
+│   │   │   ├── service.py
+│   │   │   ├── repository.py    # Atomic Transaction
+│   │   │   └── schemas.py       # Pydantic Validation
+│   │   ├── log/                 # [NEW] Behavior Logging
+│   │   │   ├── router.py        # POST /logs (X-Timezone support)
+│   │   │   ├── service.py
+│   │   │   ├── repository.py    # Composite Index Optimization
+│   │   │   └── schemas.py
+│   │   ├── dashboard/           # (Planned) Stats & Metrics
+│   │   └── coach/               # (Planned) RAG & AI Advice
+│   └── main.py                  # App Entry Point & Router Assembly
+├── tests/                       # Pytest
+├── .env                         # Environment Variables
+└── requirements.txt
+```

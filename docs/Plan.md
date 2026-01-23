@@ -13,7 +13,7 @@
     - App: Bottom Navigation / Sidebar (도구 사용)
     - Dashboard: PWA Style Header + Notification Badge
 
-[ ] anonymous_sid 쿠키 및 게스트 데이터 저장.
+[x] anonymous_sid 쿠키 및 게스트 데이터 저장 (Supabase Anonymous Auth).
 
 [ ] [필수] 로그인 시 데이터 소유권 이전(Migration) 트리거 구현: 게스트 데이터 -> 정회원 데이터 병합 로직.
 
@@ -22,7 +22,7 @@
 
 [ ] 상세 ABC 기록 UI.
 
-[ ] [필수] 타임존 보정 로직: 프론트엔드에서 유저의 로컬 시간대를 감지하여 users.timezone에 저장하고, 로그 조회 시 이를 반영.
+[x] [필수] 타임존 보정 로직: 프론트엔드에서 유저의 로컬 시간대(`X-Timezone`)를 감지하여 저장.
 
 [ ] 미디어 업로드 및 스토리지 연결.
 

@@ -16,8 +16,13 @@ import { SurveyControls } from "./SurveyControls";
 import { KakaoSyncModal } from "./KakaoSyncModal";
 import { SurveyLoading } from "./SurveyLoading";
 
+import { apiClient } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
+import { mapSurveyDataToSubmission } from "./survey-mapper";
+
 export function SurveyContainer() {
     const router = useRouter();
+    const { token } = useAuth(); // Get Auth Token
     const [step, setStep] = useState(1);
     const [data, setData] = useState<SurveyData>(INITIAL_DATA);
     const [showKakaoModal, setShowKakaoModal] = useState(false);
@@ -58,11 +63,22 @@ export function SurveyContainer() {
             console.log("Survey Completed:", data);
             setIsAnalyzing(true);
 
-            // Mock API/Analysis Delay
-            setTimeout(() => {
-                // alert("설문이 완료되었습니다! (결과 페이지로 이동 예정)");
-                router.push('/result');
-            }, 4000); // 4 seconds analysis
+            // API Submission
+            const submitData = async () => {
+                try {
+                    const payload = mapSurveyDataToSubmission(data);
+                    // Ensure token is ready (useAuth handles auto-login, but we might wait a bit if it's strictly async)
+                    // For now, we assume token is available or request handles it if we pass it
+                    await apiClient.post('/onboarding', payload, { token: token || undefined });
+                    router.push('/result');
+                } catch (error) {
+                    console.error("Survey submission failed:", error);
+                    setIsAnalyzing(false);
+                    alert("설문 제출에 실패했습니다. 다시 시도해주세요.");
+                }
+            };
+
+            submitData();
         }
     };
 
