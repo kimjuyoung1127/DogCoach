@@ -2,6 +2,7 @@
 
 import { ArrowRight, ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface Props {
     step: number;
@@ -26,19 +27,22 @@ export function SurveyControls({ step, totalSteps, onNext, onBack, canNext }: Pr
                     <ChevronLeft className="w-6 h-6" />
                 </button>
 
-                <button
+                <motion.button
                     onClick={onNext}
                     disabled={!canNext}
+                    whileTap={{ scale: 0.95 }}
+                    animate={!canNext ? { x: [0, -5, 5, -5, 5, 0] } : {}}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     className={cn(
                         "flex-1 h-12 rounded-full font-bold text-white flex items-center justify-center gap-2 transition-all shadow-lg",
                         canNext
-                            ? "bg-brand-lime hover:bg-green-500 hover:shadow-brand-lime/30 active:scale-95"
+                            ? "bg-brand-lime hover:bg-green-500 hover:shadow-brand-lime/30"
                             : "bg-gray-300 cursor-not-allowed text-gray-50"
                     )}
                 >
                     {step === totalSteps ? "진단 결과 보기" : "다음으로"}
                     {step !== totalSteps && <ArrowRight className="w-5 h-5" />}
-                </button>
+                </motion.button>
             </div>
         </div>
     );

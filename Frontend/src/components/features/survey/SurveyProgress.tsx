@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { AnimatedCounter } from "@/components/ui/animations/AnimatedCounter";
 
 interface Props {
     currentStep: number;
@@ -15,7 +16,7 @@ export function SurveyProgress({ currentStep, totalSteps }: Props) {
         <div className="w-full max-w-md mx-auto mb-8 px-4">
             <div className="flex justify-between text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">
                 <span>Step {currentStep}</span>
-                <span>{Math.round(progress)}% Completed</span>
+                <AnimatedCounter value={progress} suffix="% Completed" />
             </div>
             <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                 <motion.div

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { PageTransition } from "@/components/ui/animations/PageTransition";
 import { SurveyProgress } from "./SurveyProgress";
 import { SurveyData, INITIAL_DATA } from "./types";
 import { Step1Profile } from "./Step1Profile";
@@ -31,6 +31,9 @@ export function SurveyContainer() {
     const TOTAL_STEPS = 7;
     const IS_DEBUG = process.env.NODE_ENV === 'development';
 
+    // Direction State for Transitions
+    const [direction, setDirection] = useState<"forward" | "back">("forward");
+
     const updateData = (newData: Partial<SurveyData>) => {
         setData((prev) => ({ ...prev, ...newData }));
     };
@@ -42,6 +45,7 @@ export function SurveyContainer() {
             return;
         }
 
+        setDirection("forward");
         proceedNext();
     };
 
@@ -64,6 +68,7 @@ export function SurveyContainer() {
 
     const handleBack = () => {
         if (step > 1) {
+            setDirection("back");
             setStep(step - 1);
             window.scrollTo({ top: 0, behavior: "smooth" });
         }
@@ -76,6 +81,7 @@ export function SurveyContainer() {
 
         setShowKakaoModal(false);
         setHasSeenKakaoModal(true);
+        setDirection("forward");
         proceedNext();
     };
 
@@ -83,6 +89,7 @@ export function SurveyContainer() {
         // User chose to continue without saving
         setShowKakaoModal(false);
         setHasSeenKakaoModal(true);
+        setDirection("forward");
         proceedNext();
     };
 
@@ -106,24 +113,19 @@ export function SurveyContainer() {
             <SurveyProgress currentStep={step} totalSteps={TOTAL_STEPS} />
 
             <div className="flex-1 container max-w-xl mx-auto px-4 relative">
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={step}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        transition={{ duration: 0.3 }}
-                        className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 min-h-[400px]"
-                    >
-                        {step === 1 && <Step1Profile data={data} updateData={updateData} />}
-                        {step === 2 && <Step2Environment data={data} updateData={updateData} />}
-                        {step === 3 && <Step3Health data={data} updateData={updateData} />}
-                        {step === 4 && <Step4Problems data={data} updateData={updateData} />}
-                        {step === 5 && <Step5Triggers data={data} updateData={updateData} />}
-                        {step === 6 && <Step6PastAttempts data={data} updateData={updateData} />}
-                        {step === 7 && <Step7Temperament data={data} updateData={updateData} />}
-                    </motion.div>
-                </AnimatePresence>
+                <PageTransition
+                    direction={direction}
+                    stepKey={step}
+                    className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 min-h-[400px]"
+                >
+                    {step === 1 && <Step1Profile data={data} updateData={updateData} />}
+                    {step === 2 && <Step2Environment data={data} updateData={updateData} />}
+                    {step === 3 && <Step3Health data={data} updateData={updateData} />}
+                    {step === 4 && <Step4Problems data={data} updateData={updateData} />}
+                    {step === 5 && <Step5Triggers data={data} updateData={updateData} />}
+                    {step === 6 && <Step6PastAttempts data={data} updateData={updateData} />}
+                    {step === 7 && <Step7Temperament data={data} updateData={updateData} />}
+                </PageTransition>
             </div>
 
             <SurveyControls

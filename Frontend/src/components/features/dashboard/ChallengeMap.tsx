@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Lock, Flag, Gift, Check, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { StaggerContainer, StaggerItem } from "@/components/ui/animations/StaggerList";
 
 export function ChallengeMap() {
     const levels = [
@@ -34,9 +35,9 @@ export function ChallengeMap() {
         <section className="pb-8">
             <h2 className="text-sm font-bold text-gray-700 mb-3 px-1">교육 로드맵</h2>
 
-            <div className="space-y-6">
+            <StaggerContainer className="space-y-6">
                 {levels.map((level) => (
-                    <div key={level.id} className={cn(
+                    <StaggerItem key={level.id} className={cn(
                         "rounded-3xl p-5 border transition-colors",
                         level.status === "current" ? "bg-white border-green-100 shadow-sm" : "bg-gray-50 border-gray-100 opacity-60"
                     )}>
@@ -56,7 +57,11 @@ export function ChallengeMap() {
                                 <div className="absolute left-[19px] top-2 bottom-2 w-0.5 bg-gray-100 -z-10" />
 
                                 {level.days.map((dayItem: any) => (
-                                    <div key={dayItem.day} className="flex items-center gap-3">
+                                    <motion.div
+                                        key={dayItem.day}
+                                        className="flex items-center gap-3"
+                                        whileHover={{ scale: 1.02, x: 5 }}
+                                    >
                                         <div className={cn(
                                             "w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold ring-4 ring-white z-10",
                                             dayItem.status === "completed" ? "bg-green-500 text-white shadow-green-200 shadow-md" :
@@ -74,7 +79,7 @@ export function ChallengeMap() {
                                             <span>{dayItem.label || `Day ${dayItem.day}`}</span>
                                             {dayItem.status === "locked" && <Lock className="w-3 h-3 text-gray-300" />}
                                         </div>
-                                    </div>
+                                    </motion.div>
                                 ))}
                             </div>
                         )}
@@ -84,9 +89,9 @@ export function ChallengeMap() {
                                 <p>Level 1 완료 후 잠금 해제</p>
                             </div>
                         )}
-                    </div>
+                    </StaggerItem>
                 ))}
-            </div>
+            </StaggerContainer>
         </section>
     );
 }

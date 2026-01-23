@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { FadeIn } from "@/components/ui/animations/FadeIn";
 import { Check, Zap } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -48,12 +48,9 @@ export function PricingSection() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                     {plans.map((plan, index) => (
-                        <motion.div
+                        <FadeIn
                             key={plan.name}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            viewport={{ once: true }}
+                            delay={index * 0.1}
                             className={cn(
                                 "relative p-8 rounded-3xl border flex flex-col",
                                 plan.popular
@@ -97,7 +94,7 @@ export function PricingSection() {
                             >
                                 {plan.cta}
                             </Link>
-                        </motion.div>
+                        </FadeIn>
                     ))}
                 </div>
 

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Lightbulb } from "lucide-react";
+import { AnimatedCounter } from "@/components/ui/animations/AnimatedCounter";
 
 interface SurveyLoadingProps {
     dogName: string;
@@ -45,13 +46,15 @@ export function SurveyLoading({ dogName }: SurveyLoadingProps) {
             <div className="w-full max-w-md mb-12">
                 <div className="flex justify-between text-xs text-gray-400 mb-2 font-medium">
                     <span>행동 빈도 분석 중...</span>
-                    <span>78%</span>
+                    <span className="text-brand-lime font-bold">
+                        <AnimatedCounter value={78} suffix="%" duration={2} />
+                    </span>
                 </div>
                 <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
                     <motion.div
                         initial={{ width: "0%" }}
                         animate={{ width: "78%" }}
-                        transition={{ duration: 2, ease: "easeInOut" }}
+                        transition={{ duration: 2, ease: "easeOut" }}
                         className="h-full bg-green-400 rounded-full shadow-[0_0_10px_rgba(74,222,128,0.5)]"
                     />
                 </div>
