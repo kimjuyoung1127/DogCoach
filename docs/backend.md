@@ -46,12 +46,14 @@ Backend/
 - [x] **Auth** (`GET /me`)
     - [x] `features/auth` 모듈 구현 및 `UserResponse` 스키마 정의
     - [x] JWT 검증 미들웨어 연동
+    - [x] **익명 로그인(Anonymous Auth)**: Supabase Auth 연동 완료
 - [x] **Onboarding** (`POST /survey`)
     - [x] **Atomic Transaction**: `Dog` + `DogEnv` + `Seed Log` 동시 생성 보장
     - [x] **JSONB Typing**: `household_info`, `triggers` 등 Pydantic 모델로 타입 안정성 확보
+    - [x] **Frontend Integrated**: 설문-백엔드 API 연동 완료
 
 ### ⏳ Phase 3: 핵심 루프 (Log & Dashboard)
-- [ ] **Log**: 행동 로그 CRUD (`POST /logs`) - 복합 인덱스 활용
+- [x] **Log**: 행동 로그 CRUD (`POST /logs`) - 복합 인덱스 활용, Timezone 지원
 - [ ] **Dashboard**: 통계 집계 및 일일 미션 상태
 
 ### ⏳ Phase 4: 지능 (Coach & Settings)

@@ -23,9 +23,12 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_headers=["*"],
     )
 
+from app.features.log.router import router as log_router
+
 # Include Feature Routers
 app.include_router(auth_router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
 app.include_router(onboarding_router, prefix=f"{settings.API_V1_STR}/onboarding", tags=["onboarding"])
+app.include_router(log_router, prefix=f"{settings.API_V1_STR}/logs", tags=["log"])
 
 @app.get("/")
 def root():
