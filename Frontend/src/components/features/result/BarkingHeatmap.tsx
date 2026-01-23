@@ -36,14 +36,24 @@ export function BarkingHeatmap() {
                         return (
                             <div key={h} className="group relative flex-1 flex flex-col items-center gap-1">
                                 {isPeak && (
-                                    <div className="absolute -top-8 px-1.5 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        transition={{ delay: 1.5 + h * 0.05, type: "spring" }}
+                                        className="absolute -top-8 px-1.5 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded shadow-sm whitespace-nowrap z-10 after:content-[''] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:border-4 after:border-transparent after:border-t-red-500"
+                                    >
                                         {h}시 주의
-                                    </div>
+                                    </motion.div>
                                 )}
                                 <motion.div
                                     initial={{ height: 0 }}
                                     animate={{ height: `${intensity}%` }}
-                                    transition={{ duration: 1, delay: 0.5 + h * 0.02 }}
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 100,
+                                        damping: 15,
+                                        delay: 0.5 + h * 0.02
+                                    }}
                                     className={`w-full rounded-t-sm ${isPeak ? 'bg-red-400' : 'bg-green-100'}`}
                                 />
                                 <span className="text-[9px] text-gray-300 font-medium">

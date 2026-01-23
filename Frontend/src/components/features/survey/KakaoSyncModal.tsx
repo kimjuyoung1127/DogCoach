@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ShimmerButton } from "@/components/ui/animations/ShimmerButton";
 
 interface KakaoSyncModalProps {
     isOpen: boolean;
@@ -61,13 +62,14 @@ export function KakaoSyncModal({ isOpen, onClose, onConfirm }: KakaoSyncModalPro
                             </p>
 
                             {/* Primary Action - Kakao */}
-                            <button
+                            <ShimmerButton
                                 onClick={onConfirm}
-                                className="w-full bg-[#FEE500] hover:bg-[#FDD835] active:scale-[0.98] transition-all text-[#3C1E1E] font-semibold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 mb-3 shadow-sm"
+                                shimmerColor="rgba(255,255,255,0.6)"
+                                className="w-full bg-[#FEE500] hover:bg-[#FDD835] text-[#3C1E1E] font-semibold py-3.5 px-4 rounded-xl shadow-sm"
                             >
                                 <MessageCircle className="w-5 h-5 fill-[#3C1E1E]" />
                                 <span>카카오로 3초 만에 저장하기</span>
-                            </button>
+                            </ShimmerButton>
 
                             {/* Secondary Action */}
                             <button

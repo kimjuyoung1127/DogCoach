@@ -45,7 +45,8 @@ export function LogCard({ log }: Props) {
         <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-4"
+            whileTap={{ scale: 0.98 }}
+            className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-4 cursor-pointer transition-colors hover:border-brand-lime/50"
         >
             {/* Header: Time & Location & Intensity Badge */}
             <div className="flex items-center justify-between px-5 py-3 border-b border-gray-50">
@@ -70,11 +71,16 @@ export function LogCard({ log }: Props) {
             {/* Body: ABC Flow */}
             <div className="p-5 relative">
                 {/* Visual Connector Line */}
-                <div className="absolute left-[29px] top-8 bottom-8 w-0.5 bg-gray-100 -z-10" />
+                <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: "calc(100% - 64px)" }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
+                    className="absolute left-[29px] top-8 w-0.5 bg-gray-100 -z-10"
+                />
 
                 {/* A: Antecedent */}
                 <div className="flex items-start gap-4 mb-4">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                    <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 z-10 bg-white ring-4 ring-white">
                         A
                     </div>
                     <div>
@@ -85,7 +91,7 @@ export function LogCard({ log }: Props) {
 
                 {/* B: Behavior */}
                 <div className="flex items-start gap-4 mb-4">
-                    <div className={cn("w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5", getIntensityBg(log.intensity), getIntensityText(log.intensity))}>
+                    <div className={cn("w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 z-10 bg-white ring-4 ring-white", getIntensityBg(log.intensity), getIntensityText(log.intensity))}>
                         B
                     </div>
                     <div>
@@ -98,7 +104,7 @@ export function LogCard({ log }: Props) {
 
                 {/* C: Consequence */}
                 <div className="flex items-start gap-4">
-                    <div className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                    <div className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 z-10 bg-white ring-4 ring-white">
                         C
                     </div>
                     <div>
