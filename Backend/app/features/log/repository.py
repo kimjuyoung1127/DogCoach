@@ -1,6 +1,6 @@
 from uuid import UUID
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc, update
 from app.shared.models import BehaviorLog
@@ -38,7 +38,7 @@ async def get_log_by_id(db: AsyncSession, log_id: UUID) -> Optional[BehaviorLog]
 
 async def update_log(db: AsyncSession, log_id: UUID, updates: dict) -> Optional[BehaviorLog]:
     # Ensure updated_at is refreshed
-    updates["updated_at"] = datetime.utcnow()
+    updates["updated_at"] = datetime.now(timezone.utc)
     
     stmt = (
         update(BehaviorLog)

@@ -80,3 +80,7 @@ Node.js 백엔드 패턴 및 클린 아키텍처 원칙을 적용하여 코드�
     - [x] `app/core/exceptions.py`에 `DomainException` (NotFound, BadRequest 등) 정의.
     - [x] `Service` 계층에서 `HTTPException` 제거 및 `DomainException` 사용.
     - [x] `main.py`에 글로벌 예외 처리기(`domain_exception_handler`) 등록하여 비즈니스 로직과 HTTP 상태 코드 분리.
+- [x] **테스트 자동화 (Testing Automation)**:
+    - `Pytest` 기반 테스트 환경 구축 (`tests/conftest.py`).
+    - 핵심 로직(`AuthService`, `LogService`)에 대한 유닛 테스트 구현 완료.
+    - `datetime.utcnow()`의 Deprecation 이슈 해결 (`datetime.now(timezone.utc)` 적용).

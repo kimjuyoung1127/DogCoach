@@ -52,6 +52,9 @@ Backend/
 │   │   ├── auth/                # 인증 및 사용자 프로필
 │   │   │   ├── router.py        # GET /me
 │   │   │   └── ...
+│   │   ├── settings/          # 설정 (Frontend: /settings)
+│   │       ├── router.py
+│   │       └── service.py     # 알림 설정, 구독 관리
 │   │   ├── onboarding/          # 설문조사 & 강아지 등록
 │   │   │   ├── router.py        # POST /survey
 │   │   │   └── ...
