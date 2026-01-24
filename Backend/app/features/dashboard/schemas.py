@@ -1,0 +1,30 @@
+from datetime import date, datetime
+from typing import List, Optional
+from uuid import UUID
+from pydantic import BaseModel, ConfigDict
+from app.shared.models import DogSex
+
+class QuickLogStats(BaseModel):
+    total_logs: int
+    current_streak: int
+    last_logged_at: Optional[datetime]
+
+class RecentLogItem(BaseModel):
+    id: UUID
+    behavior: str
+    intensity: int
+    occurred_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+class DashboardDogProfile(BaseModel):
+    id: UUID
+    name: str
+    breed: Optional[str] = None
+    age_months: Optional[int] = None # Calculated field
+    profile_image_url: Optional[str] = None
+
+class DashboardResponse(BaseModel):
+    dog_profile: DashboardDogProfile
+    stats: QuickLogStats
+    recent_logs: List[RecentLogItem]
+    issues: List[str] = []

@@ -24,5 +24,7 @@ class UserResponse(UserBase):
     created_at: datetime
     updated_at: datetime
     last_login_at: Optional[datetime] = None
+    latest_dog_id: Optional[UUID] = None
+    latest_dog_name: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)

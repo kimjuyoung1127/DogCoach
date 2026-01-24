@@ -10,8 +10,8 @@
 
 [x] Web-to-App UX 전환 구현:
     - Public: Footer 포함 (정보 탐색)
-    - App: Bottom Navigation / Sidebar (도구 사용)
-    - Dashboard: PWA Style Header + Notification Badge
+    - App: Bottom Navigation / Sidebar (도구 사용, Dynamic User/Dog Info 연동 완료)
+    - Dashboard: PWA Style Header + Notification Badge (DB 연결 및 Auth 적용 완료)
 
 [x] anonymous_sid 쿠키 및 게스트 데이터 저장 (Supabase Anonymous Auth).
 

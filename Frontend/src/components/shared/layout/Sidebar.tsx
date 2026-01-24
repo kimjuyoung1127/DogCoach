@@ -1,12 +1,30 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, FileText, Plus, BrainCircuit, Settings, LogOut, BarChart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+import { apiClient } from "@/lib/api";
+
+interface UserProfile {
+    id: string;
+    latest_dog_name: string | null;
+}
 
 export function Sidebar() {
     const pathname = usePathname();
+    const { token, user: supabaseUser } = useAuth();
+    const [profile, setProfile] = useState<UserProfile | null>(null);
+
+    useEffect(() => {
+        if (token) {
+            apiClient.get<UserProfile>("/auth/me", { token })
+                .then(data => setProfile(data))
+                .catch(err => console.error("Failed to fetch profile:", err));
+        }
+    }, [token]);
 
     const navItems = [
         { href: "/dashboard", label: "대시보드", icon: Home },
@@ -14,6 +32,9 @@ export function Sidebar() {
         { href: "/coach", label: "AI 코칭", icon: BrainCircuit },
         { href: "/settings", label: "설정", icon: Settings },
     ];
+
+    const dogName = profile?.latest_dog_name || "반려견 없음";
+    const displayName = supabaseUser?.email?.split("@")[0] || "게스트";
 
     return (
         <aside className="hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 bg-white border-r border-gray-100 z-40">
@@ -26,15 +47,15 @@ export function Sidebar() {
                 </Link>
             </div>
 
-            {/* User Profile Summary (Optional) */}
+            {/* User Profile Summary */}
             <div className="p-6 border-b border-gray-50">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-lg">
                         🐶
                     </div>
                     <div>
-                        <div className="font-bold text-sm text-gray-900">머루</div>
-                        <div className="text-xs text-gray-500">지은님</div>
+                        <div className="font-bold text-sm text-gray-900">{dogName}</div>
+                        <div className="text-xs text-gray-500">{displayName}님</div>
                     </div>
                 </div>
             </div>

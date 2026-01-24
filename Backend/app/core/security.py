@@ -8,7 +8,7 @@ from app.core.config import settings
 # We use the anon key to verify the user's token against the Supabase Auth API
 supabase: Client = create_client(settings.SUPABASE_URL, settings.SUPABASE_ANON_KEY)
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 
 async def get_current_user_id(token: str = Depends(oauth2_scheme)) -> str:
     """

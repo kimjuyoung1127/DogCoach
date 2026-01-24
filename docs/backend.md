@@ -58,9 +58,12 @@ Backend/
 - **Database Connection**: Supabase IPv6 이슈 해결을 위해 Connection Pooler (IPv4) 사용 (`aws-1-ap-south-1.pooler.supabase.com`)
 - **Region**: India Mumbai (ap-south-1) for Pooler Endpoint reliability.
 
-### ⏳ Phase 3: 핵심 루프 (Log & Dashboard)
+### ✅ Phase 3: 핵심 루프 (Log & Dashboard)
 - [x] **Log**: 행동 로그 CRUD (`POST /logs`) - 복합 인덱스 활용, Timezone 지원
-- [ ] **Dashboard**: 통계 집계 및 일일 미션 상태
+- [x] **Dashboard**:
+    - [x] **Data Fetching**: `GET /dashboard/` 엔드포인트 구현 (Stats, Profile, Logs, Issues)
+    - [x] **UI/UX**: Glassmorphism 디자인, Quick Log 위젯 확장 (6개 카테고리), Recent Record UI 개선
+    - [x] **Sidebar**: User & Dog 동적 데이터 연동 (`GET /me` 활용)
 
 ### ⏳ Phase 4: 지능 (Coach & Settings)
 - [ ] **Coach**: RAG 기반 AI 조언 파이프라인

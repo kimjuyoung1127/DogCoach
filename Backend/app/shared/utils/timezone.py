@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 import pytz
 from zoneinfo import ZoneInfo
 from typing import Optional
@@ -12,7 +12,7 @@ def to_utc(dt: datetime, timezone_str: str = "Asia/Seoul") -> datetime:
         local_tz = ZoneInfo(timezone_str)
         dt = dt.replace(tzinfo=local_tz)
     
-    return dt.astimezone(ZoneInfo("UTC"))
+    return dt.astimezone(timezone.utc)
 
 def get_today_with_timezone(timezone_str: str = "Asia/Seoul") -> date:
     """
