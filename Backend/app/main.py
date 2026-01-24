@@ -13,11 +13,44 @@ app = FastAPI(
 # Register Global Exception Handlers
 app.add_exception_handler(DomainException, domain_exception_handler)
 
+from fastapi import Request
+from fastapi.responses import JSONResponse
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("uvicorn")
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info(f"Incoming Request: {request.method} {request.url}")
+    try:
+        response = await call_next(request)
+        logger.info(f"Request Handled: {response.status_code}")
+        return response
+    except Exception as e:
+        logger.error(f"Request Failed: {str(e)}")
+        raise e
+
 # Set all CORS enabled origins
 if settings.BACKEND_CORS_ORIGINS:
+    print(f"DEBUG: Loading CORS Origins: {settings.BACKEND_CORS_ORIGINS}")
+    
+    
+# @app.exception_handler(Exception)
+# async def global_exception_handler(request: Request, exc: Exception):
+#     logger.error(f"Global Exception: {str(exc)}", exc_info=True)
+#     return JSONResponse(
+#         status_code=500,
+#         content={"detail": f"Internal Server Error: {str(exc)}"},
+#         headers={"Access-Control-Allow-Origin": "*"}
+#     )
+
+# Set all CORS enabled origins
+if settings.BACKEND_CORS_ORIGINS:
+    print(f"DEBUG: Loading CORS Origins: {settings.BACKEND_CORS_ORIGINS}")
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
+        allow_origins=["*"], # Debugging: Allow all origins
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

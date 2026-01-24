@@ -46,11 +46,17 @@ Backend/
 - [x] **Auth** (`GET /me`)
     - [x] `features/auth` 모듈 구현 및 `UserResponse` 스키마 정의
     - [x] JWT 검증 미들웨어 연동
-    - [x] **익명 로그인(Anonymous Auth)**: Supabase Auth 연동 완료
+    - [x] **익명 로그인(Anonymous Auth)**: Guest User 로직(Cookie `anonymous_sid`) 구현 완료
 - [x] **Onboarding** (`POST /survey`)
     - [x] **Atomic Transaction**: `Dog` + `DogEnv` + `Seed Log` 동시 생성 보장
+    - [x] **Guest Support**: 로그인 유저(`user_id`)와 게스트(`anonymous_sid`) 모두 지원
     - [x] **JSONB Typing**: `household_info`, `triggers` 등 Pydantic 모델로 타입 안정성 확보
-    - [x] **Frontend Integrated**: 설문-백엔드 API 연동 완료
+    - [x] **Frontend Integrated**: 설문-백엔드 API 연동 완료 (Empty Strings Handling 포함)
+    - [x] **Google OAuth**: 클라이언트 설정 및 Supabase 연동
+
+### 🏗️ Infrastructure Update
+- **Database Connection**: Supabase IPv6 이슈 해결을 위해 Connection Pooler (IPv4) 사용 (`aws-1-ap-south-1.pooler.supabase.com`)
+- **Region**: India Mumbai (ap-south-1) for Pooler Endpoint reliability.
 
 ### ⏳ Phase 3: 핵심 루프 (Log & Dashboard)
 - [x] **Log**: 행동 로그 CRUD (`POST /logs`) - 복합 인덱스 활용, Timezone 지원

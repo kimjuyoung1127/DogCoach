@@ -60,6 +60,11 @@
 *   **대화형 프로그레스 바**: 목표 지점으로 이동하는 시각적 피드백.
 *   **중간 저장 및 카카오 싱크**: Step 4 이후 로그인 유도 고려.
 
+### Technical Note: Guest User Logic
+1.  **Identification**: `anonymous_sid` 쿠키를 사용하여 비로그인 유저를 식별합니다.
+2.  **Schema**: `dogs` 테이블의 `user_id`는 Nullable이며, `anonymous_sid` 컬럼에 UUID가 저장됩니다.
+3.  **Flow**: 설문 제출 시 토큰이 없으면 백엔드에서 `anonymous_sid`를 생성하고 응답 헤더(Set-Cookie)로 내려줍니다.
+
 ## 4. 결과 페이지 브릿지
 (기존 내용 유지)
 *   **로딩 애니메이션**: AI 분석 중 연출.
