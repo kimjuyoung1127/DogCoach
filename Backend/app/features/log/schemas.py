@@ -18,6 +18,11 @@ class LogCreate(BaseModel):
     
     occurred_at: datetime # Frontend sends this (ISO 8601)
 
+class LogUpdate(BaseModel):
+    intensity: Optional[int] = Field(None, ge=1, le=10)
+    behavior: Optional[str] = None
+    note: Optional[str] = None  # Using note/antecedent/consequence depending on needs, simplifying to general update
+
 class LogResponse(LogCreate):
     id: UUID
     created_at: datetime

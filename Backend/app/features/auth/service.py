@@ -15,4 +15,12 @@ async def get_my_profile(db: AsyncSession, user_id: str) -> schemas.UserResponse
         # If user exists in Auth but not in public.users, they might need onboarding
         raise NotFoundException("User profile not found. Please complete onboarding.")
         
-    return schemas.UserResponse.model_validate(user)
+    response = schemas.UserResponse.model_validate(user)
+    
+    # Fetch latest dog
+    latest_dog = await repository.get_latest_dog_by_user(db, uuid_obj)
+    if latest_dog:
+        response.latest_dog_id = latest_dog.id
+        response.latest_dog_name = latest_dog.name
+        
+    return response

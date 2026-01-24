@@ -3,8 +3,9 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Header, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
-from app.core.security import get_current_user_id
+from app.core.security import get_current_user_id, get_current_user_id_optional
 from app.features.log import service, schemas
+from typing import Optional
 
 router = APIRouter()
 
@@ -12,7 +13,7 @@ router = APIRouter()
 async def create_behavior_log(
     log_data: schemas.LogCreate,
     x_timezone: str = Header(default="Asia/Seoul", alias="X-Timezone"),
-    user_id: str = Depends(get_current_user_id),
+    user_id: Optional[str] = Depends(get_current_user_id_optional),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -33,3 +34,15 @@ async def read_logs(
     Get recent logs for a specific dog.
     """
     return await service.get_recent_logs(db, dog_id)
+
+@router.patch("/{log_id}", response_model=schemas.LogResponse)
+async def update_log(
+    log_id: UUID,
+    log_update: schemas.LogUpdate,
+    user_id: str = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Update a specific log entry (e.g. intensity adjustment).
+    """
+    return await service.update_existing_log(db, log_id, log_update)

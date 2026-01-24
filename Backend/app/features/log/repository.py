@@ -2,7 +2,7 @@ from uuid import UUID
 from typing import List, Optional
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, desc
+from sqlalchemy import select, desc, update
 from app.shared.models import BehaviorLog
 
 async def create_log(db: AsyncSession, log_data: dict) -> BehaviorLog:
@@ -31,3 +31,22 @@ async def get_logs_by_dog(
     )
     result = await db.execute(stmt)
     return result.scalars().all()
+
+async def get_log_by_id(db: AsyncSession, log_id: UUID) -> Optional[BehaviorLog]:
+    result = await db.execute(select(BehaviorLog).where(BehaviorLog.id == log_id))
+    return result.scalar_one_or_none()
+
+async def update_log(db: AsyncSession, log_id: UUID, updates: dict) -> Optional[BehaviorLog]:
+    # Ensure updated_at is refreshed
+    updates["updated_at"] = datetime.utcnow()
+    
+    stmt = (
+        update(BehaviorLog)
+        .where(BehaviorLog.id == log_id)
+        .values(**updates)
+        .execution_options(synchronize_session="fetch")
+    )
+    await db.execute(stmt)
+    await db.commit()
+    
+    return await get_log_by_id(db, log_id)
