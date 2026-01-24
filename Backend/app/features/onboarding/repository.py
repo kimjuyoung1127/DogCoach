@@ -3,14 +3,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.shared.models import Dog, DogEnv, BehaviorLog
 from app.features.onboarding import schemas
 
+from typing import Optional
+
 async def create_dog_with_env(
     db: AsyncSession, 
-    user_id: UUID, 
+    user_id: Optional[UUID],
+    guest_id: Optional[str],
     data: schemas.SurveySubmission
 ) -> Dog:
     # 1. Create Dog
     dog = Dog(
         user_id=user_id,
+        anonymous_sid=guest_id,
         name=data.name,
         breed=data.breed,
         birth_date=data.birth_date,

@@ -66,11 +66,21 @@ export function SurveyContainer() {
             // API Submission
             const submitData = async () => {
                 try {
+                    // Enforce Login if not logged in (or handle Anonymous if we support it)
+                    // For "Google Login" flow, we want them to be logged in effectively.
+                    if (!token) {
+                        alert("로그인이 필요합니다.");
+                        router.push("/login");
+                        return;
+                    }
+
                     const payload = mapSurveyDataToSubmission(data);
-                    // Ensure token is ready (useAuth handles auto-login, but we might wait a bit if it's strictly async)
-                    // For now, we assume token is available or request handles it if we pass it
-                    await apiClient.post('/onboarding', payload, { token: token || undefined });
-                    router.push('/result');
+                    console.log("DEBUG: Sending Payload:", JSON.stringify(payload, null, 2));
+
+                    await apiClient.post('/onboarding/survey', payload, { token });
+                    console.log("SURVEY SUBMISSION SUCCESS!");
+                    alert("설문이 성공적으로 저장되었습니다!");
+                    // router.push('/result'); // Debugging: Disable redirect
                 } catch (error) {
                     console.error("Survey submission failed:", error);
                     setIsAnalyzing(false);

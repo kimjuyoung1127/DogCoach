@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Optional, List, Any, Dict
 from uuid import UUID
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 from app.shared.models import DogSex
 
 # --- JSONB Field Models ---
@@ -69,3 +69,19 @@ class DogResponse(BaseModel):
     created_at: Any
     
     model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True)
+
+    @staticmethod
+    def sanitize_empty_strings(data: Any) -> Any:
+        if isinstance(data, dict):
+            return {k: SurveySubmission.sanitize_empty_strings(v) for k, v in data.items()}
+        if isinstance(data, list):
+            return [SurveySubmission.sanitize_empty_strings(v) for v in data]
+        if data == "":
+            return None
+        return data
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_empty_strings(cls, data: Any) -> Any:
+        return cls.sanitize_empty_strings(data)

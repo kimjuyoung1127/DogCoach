@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     
     # CORS
-    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
+    BACKEND_CORS_ORIGINS: Union[List[str], str] = []
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     
     # Supabase Admin (Optional, for admin tasks)
     SUPABASE_URL: str | None = None
-    SUPABASE_KEY: str | None = None
+    SUPABASE_ANON_KEY: str | None = None
 
     # Third Party
     OPENAI_API_KEY: str

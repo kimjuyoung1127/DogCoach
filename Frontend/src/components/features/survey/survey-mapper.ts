@@ -1,15 +1,20 @@
 import { SurveyData } from "./types";
 
+const sanitize = <T>(value: T | string | null | undefined): T | null => {
+    if (value === "" || value === undefined) return null;
+    return value as T;
+};
+
 export function mapSurveyDataToSubmission(data: SurveyData) {
     return {
         // Step 1: Basic Info
         name: data.dogName,
-        breed: data.breed || null,
-        birth_date: data.birthDate || null,
-        sex: data.sex,
+        breed: sanitize(data.breed),
+        birth_date: sanitize(data.birthDate),
+        sex: sanitize(data.sex),
         profile_meta: {
             weight: data.weight ? parseFloat(data.weight) : null,
-            adoption_date: data.adoptionDate || null,
+            adoption_date: sanitize(data.adoptionDate),
         },
 
         // Step 2: Environment
