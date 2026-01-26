@@ -8,8 +8,13 @@ import { DashboardHeader } from "@/components/features/dashboard/dashboard-heade
 import { QuickLogWidget } from "@/components/features/dashboard/quick-log-widget";
 import { RecentLogList } from "@/components/features/dashboard/recent-log-list";
 import { CoachingWidget } from "@/components/features/dashboard/coaching-widget";
+import { EditLogDialog } from "@/components/features/dashboard/edit-log-dialog";
 
 import { useAuth } from "@/hooks/useAuth";
+
+import { DashboardSkeleton } from "@/components/features/dashboard/dashboard-skeleton";
+import { FadeIn } from "@/components/ui/animations/FadeIn";
+import { AnimatePresence } from "framer-motion";
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -41,22 +46,21 @@ export default function DashboardPage() {
             if (token) {
                 fetchData();
             } else {
-                // Should we redirect to login? Or allow guest?
-                // For now, let's try fetching without token if guest mode is supported via cookies
-                // BUT, the error was 401, so cookie might be missing or backend requires explicit check.
-                // The router allows guest_id from cookie.
-                // Let's attempt fetch even if no token, just to leverage cookie.
-                // BUT `apiClient` doesn't send token if it's undefined.
                 fetchData();
             }
         }
     }, [token, authLoading]);
 
-    const handleLogCreated = () => {
+    const [editingLog, setEditingLog] = useState<any | null>(null);
+
+    const handleLogCreated = (newLog?: any) => {
         fetchData();
+        if (newLog) {
+            setEditingLog(newLog); // Open dialog immediately
+        }
     };
 
-    if (isLoading) return <div className="p-8 text-center text-gray-500">데이터 불러오는 중... ⏳</div>;
+    if (isLoading) return <DashboardSkeleton />;
 
     if (error) return (
         <div className="p-8 text-center pt-20">
@@ -84,9 +88,40 @@ export default function DashboardPage() {
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
             <DashboardHeader data={data} />
-            <CoachingWidget dogId={data.dog_profile.id} issues={data.issues} />
-            <QuickLogWidget dogId={data.dog_profile.id} onLogCreated={handleLogCreated} />
-            <RecentLogList logs={data.recent_logs} onLogUpdated={fetchData} />
+
+            <FadeIn delay={0.1}>
+                <CoachingWidget dogId={data.dog_profile.id} issues={data.issues} />
+            </FadeIn>
+
+            <FadeIn delay={0.2}>
+                <QuickLogWidget dogId={data.dog_profile.id} onLogCreated={handleLogCreated} />
+            </FadeIn>
+
+            <FadeIn delay={0.3}>
+                <RecentLogList
+                    logs={data.recent_logs}
+                    onLogUpdated={fetchData}
+                    onEditLog={(log) => setEditingLog(log)}
+                />
+            </FadeIn>
+
+            {/* Hoisted Edit Dialog */}
+            <AnimatePresence>
+                {editingLog && (
+                    <EditLogDialog
+                        key="edit-log-dialog"
+                        log={editingLog}
+                        open={!!editingLog}
+                        onClose={() => setEditingLog(null)}
+                        onUpdate={() => {
+                            setEditingLog(null);
+                            fetchData();
+                        }}
+                        envTriggers={data.env_triggers || []}
+                        envConsequences={data.env_consequences || []}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 }

@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { apiClient } from "@/lib/api";
 import { RecentLog } from "./types";
-import { Toast } from "@/components/ui/Toast";
 import { useAuth } from "@/hooks/useAuth";
 
 interface Props {
@@ -9,65 +9,147 @@ interface Props {
     open: boolean;
     onClose: () => void;
     onUpdate: () => void;
+    envTriggers: string[];
+    envConsequences: string[];
 }
 
-export const EditLogDialog = ({ log, open, onClose, onUpdate }: Props) => {
+// Simple Chip Component
+const TagChip = ({ label, selected, onClick }: { label: string, selected: boolean, onClick: () => void }) => (
+    <button
+        onClick={onClick}
+        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ring-1 ring-inset ${selected
+            ? "bg-brand-lime text-gray-900 ring-brand-lime shadow-sm"
+            : "bg-white text-gray-500 ring-gray-200 hover:bg-gray-50"
+            }`}
+    >
+        {label}
+    </button>
+);
+
+export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envConsequences }: Props) => {
     const { token } = useAuth();
-    const [intensity, setIntensity] = useState<number>(log?.intensity || 5);
+    const [intensity, setIntensity] = useState<number>(5);
+    const [antecedent, setAntecedent] = useState<string>("");
+    const [consequence, setConsequence] = useState<string>("");
     const [isSaving, setIsSaving] = useState(false);
 
-    // Reset state when log changes, but do it in useEffect or key update. 
-    // Here we use key={log.id} in parent to force re-render, 
-    // or simplified: just rely on initial state if component remounts.
+    // Initialize state when log changes
+    useEffect(() => {
+        if (log) {
+            setIntensity(log.intensity || 5);
+            setAntecedent(log.antecedent || "");
+            setConsequence(log.consequence || "");
+        }
+    }, [log]);
 
     if (!open || !log) return null;
 
     const handleSave = async () => {
-        if (!token) {
-            alert("로그인이 필요합니다.");
-            return;
-        }
+        if (!token) return;
 
         setIsSaving(true);
         try {
             await apiClient.patch(`/logs/${log.id}`, {
-                intensity: intensity
-            }, { token }); // Pass token here
+                intensity,
+                antecedent,
+                consequence
+            }, { token });
             onUpdate();
             onClose();
         } catch (e) {
             console.error("Failed to update log", e);
-            alert("수정 실패"); // Ideally use toast context
+            alert("수정 실패");
         } finally {
             setIsSaving(false);
         }
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white w-full max-w-sm rounded-[2rem] p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">기록 수정하기 ✏️</h3>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+        >
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
+                className="bg-white w-full max-w-sm rounded-[2rem] p-6 shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <h3 className="text-xl font-bold text-gray-900 mb-2">기록 상세 추가 📝</h3>
                 <p className="text-sm text-gray-500 mb-6">
-                    {new Date(log.occurred_at).toLocaleString()}에 기록된
-                    <br /><span className="text-brand-lime font-bold">{log.behavior}</span> 행동의 강도를 조절합니다.
+                    {new Date(log.occurred_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}에 기록된
+                    <span className="text-brand-lime font-bold mx-1">{log.behavior}</span>
+                    상황을 구체화합니다.
                 </p>
 
-                <div className="mb-8">
-                    <div className="flex justify-between items-center mb-4">
-                        <span className="text-sm font-medium text-gray-600">강도 (Intensity)</span>
-                        <span className="text-lg font-bold text-brand-lime bg-gray-900 px-3 py-1 rounded-full">{intensity}</span>
+                <div className="space-y-6 mb-8 overflow-y-auto max-h-[60vh] pr-1 scrollbar-hide">
+                    {/* Antecedent Section */}
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">원인 / 상황 (A)</label>
+                        <div className="flex flex-wrap gap-2 mb-2">
+                            {envTriggers.map((tag) => (
+                                <TagChip
+                                    key={tag}
+                                    label={tag}
+                                    selected={antecedent === tag}
+                                    onClick={() => setAntecedent(tag === antecedent ? "" : tag)}
+                                />
+                            ))}
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="직접 입력 (예: 초인종 소리)"
+                            value={antecedent}
+                            onChange={(e) => setAntecedent(e.target.value)}
+                            className="w-full text-sm px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-lime/50"
+                        />
                     </div>
-                    <input
-                        type="range"
-                        min="1"
-                        max="10"
-                        value={intensity}
-                        onChange={(e) => setIntensity(Number(e.target.value))}
-                        className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-brand-lime"
-                    />
-                    <div className="flex justify-between text-xs text-gray-300 mt-2 px-1">
-                        <span>1 (약함)</span>
-                        <span>10 (심함)</span>
+
+                    {/* Behavior Section (Read-only/Refinable) */}
+                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <label className="block text-sm font-bold text-gray-700 mb-2">행동 (B)</label>
+                        <div className="flex items-center justify-between">
+                            <span className="text-lg font-bold text-gray-900">{log.behavior}</span>
+                            <span className="text-xs text-brand-lime bg-gray-900 px-2 py-1 rounded-md font-bold">강도 {intensity}</span>
+                        </div>
+                        <input
+                            type="range"
+                            min="1"
+                            max="10"
+                            value={intensity}
+                            onChange={(e) => setIntensity(Number(e.target.value))}
+                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-lime mt-3"
+                        />
+                        <div className="flex justify-between text-[10px] text-gray-400 mt-1">
+                            <span>1 (미약함)</span>
+                            <span>10 (매우 심각)</span>
+                        </div>
+                    </div>
+
+                    {/* Consequence Section */}
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">나의 대처 (C)</label>
+                        <div className="flex flex-wrap gap-2 mb-2">
+                            {envConsequences.map((tag) => (
+                                <TagChip
+                                    key={tag}
+                                    label={tag}
+                                    selected={consequence === tag}
+                                    onClick={() => setConsequence(tag === consequence ? "" : tag)}
+                                />
+                            ))}
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="직접 입력 (예: 간식 주기)"
+                            value={consequence}
+                            onChange={(e) => setConsequence(e.target.value)}
+                            className="w-full text-sm px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-lime/50"
+                        />
                     </div>
                 </div>
 
@@ -76,17 +158,17 @@ export const EditLogDialog = ({ log, open, onClose, onUpdate }: Props) => {
                         onClick={onClose}
                         className="flex-1 py-3 text-gray-500 font-medium hover:bg-gray-50 rounded-xl transition-colors"
                     >
-                        취소
+                        다음에
                     </button>
                     <button
                         onClick={handleSave}
                         disabled={isSaving}
                         className="flex-1 py-3 bg-gray-900 text-white font-bold rounded-xl active:scale-95 transition-all shadow-lg shadow-gray-200 disabled:opacity-50"
                     >
-                        {isSaving ? "저장 중..." : "저장하기"}
+                        {isSaving ? "저장..." : "저장완료"}
                     </button>
                 </div>
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
     );
 };

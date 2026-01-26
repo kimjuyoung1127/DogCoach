@@ -2,11 +2,12 @@ import { useState } from "react";
 import { apiClient } from "@/lib/api";
 import { Toast } from "@/components/ui/Toast";
 import { FadeIn } from "@/components/ui/animations/FadeIn";
+import { ScaleButton } from "@/components/ui/animations/ScaleButton";
 import { useAuth } from "@/hooks/useAuth";
 
 interface Props {
     dogId: string;
-    onLogCreated: () => void;
+    onLogCreated: (log?: any) => void;
 }
 
 export const QuickLogWidget = ({ dogId, onLogCreated }: Props) => {
@@ -33,9 +34,9 @@ export const QuickLogWidget = ({ dogId, onLogCreated }: Props) => {
                 occurred_at: new Date().toISOString()
             };
 
-            await apiClient.post('/logs', payload, { token }); // Pass token
+            const newLog = await apiClient.post('/logs', payload, { token }); // Pass token
             showToast(`${label} 기록 완료!`, "success");
-            onLogCreated();
+            onLogCreated(newLog);
         } catch (e: any) {
             console.error("Quick Log Failed", e);
             showToast("기록 실패: " + (e.message || e), "error");
@@ -92,12 +93,13 @@ const QuickLogButton = ({ label, icon, onClick, color }: any) => {
     };
 
     return (
-        <button
+        <ScaleButton
             onClick={onClick}
-            className={`flex flex-col items-center justify-center p-4 rounded-2xl border ${colorMap[color]} active:scale-95 transition-all shadow-sm hover:shadow-md h-24`}
+            scale={0.9}
+            className={`flex flex-col items-center justify-center p-4 rounded-2xl border ${colorMap[color]} transition-colors shadow-sm hover:shadow-md h-24`}
         >
             <span className="text-2xl mb-1 filter drop-shadow-sm">{icon}</span>
             <span className="font-bold text-sm">{label}</span>
-        </button>
+        </ScaleButton>
     )
 }

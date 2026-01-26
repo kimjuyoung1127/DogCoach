@@ -1,15 +1,12 @@
-import { useState } from "react";
 import { RecentLog } from "./types";
-import { EditLogDialog } from "./edit-log-dialog";
 
 interface Props {
     logs: RecentLog[];
     onLogUpdated: () => void;
+    onEditLog: (log: RecentLog) => void;
 }
 
-export const RecentLogList = ({ logs, onLogUpdated }: Props) => {
-    const [selectedLog, setSelectedLog] = useState<RecentLog | null>(null);
-
+export const RecentLogList = ({ logs, onLogUpdated, onEditLog }: Props) => {
     // Simple icon mapper
     const getIcon = (behavior: string) => {
         if (behavior.includes("Barking") || behavior === "짖음") return "🔊";
@@ -40,7 +37,7 @@ export const RecentLogList = ({ logs, onLogUpdated }: Props) => {
                 {logs.map((log) => (
                     <button
                         key={log.id}
-                        onClick={() => setSelectedLog(log)}
+                        onClick={() => onEditLog(log)}
                         className="w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-all active:scale-98 text-left"
                     >
                         <div className="flex items-center gap-4">
@@ -67,16 +64,6 @@ export const RecentLogList = ({ logs, onLogUpdated }: Props) => {
                     </div>
                 )}
             </div>
-
-            <EditLogDialog
-                log={selectedLog}
-                open={!!selectedLog}
-                onClose={() => setSelectedLog(null)}
-                onUpdate={() => {
-                    setSelectedLog(null);
-                    onLogUpdated();
-                }}
-            />
         </div>
     );
 };

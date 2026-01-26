@@ -9,6 +9,8 @@ export interface RecentLog {
     behavior: string;
     intensity: number;
     occurred_at: string;
+    antecedent?: string;
+    consequence?: string;
 }
 
 export interface DogProfile {
@@ -24,4 +26,6 @@ export interface DashboardData {
     stats: QuickLogStats;
     recent_logs: RecentLog[];
     issues: string[];
+    env_triggers: string[];
+    env_consequences: string[];
 }

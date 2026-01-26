@@ -21,7 +21,9 @@ class LogCreate(BaseModel):
 class LogUpdate(BaseModel):
     intensity: Optional[int] = Field(None, ge=1, le=10)
     behavior: Optional[str] = None
-    note: Optional[str] = None  # Using note/antecedent/consequence depending on needs, simplifying to general update
+    note: Optional[str] = None 
+    antecedent: Optional[str] = None
+    consequence: Optional[str] = None
 
 class LogResponse(LogCreate):
     id: UUID
