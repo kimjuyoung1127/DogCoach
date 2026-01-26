@@ -17,7 +17,7 @@
 
 [ ] [필수] 로그인 시 데이터 소유권 이전(Migration) 트리거 구현: 게스트 데이터 -> 정회원 데이터 병합 로직.
 
-📝 Phase 3: 로그 수집 (Timezone Aware)
+📝 Phase 3: 로그 수집 및 최적화 (Persistence & Cache)
 [x] 퀵 기록(QuickLogGrid) 및 대시보드 UI 구현.
 
 [x] 상세 ABC 기록 UI (Progressive Logging).
@@ -25,6 +25,10 @@
 [x] [필수] 타임존 보정 로직: 프론트엔드에서 유저의 로컬 시간대(`X-Timezone`)를 감지하여 저장.
 
 [x] Interaction Design & UI Polish: Skeleton 로딩, Entry 애니메이션, ScaleButton 피드백 적용.
+
+[x] **Performance**: TanStack Query(React Query) 도입 및 쿼리 캐싱(Dashboard/Logs) 최적화로 페이지 간 이동 속도 극대화.
+
+[x] **Log Analysis**: 행동 기록 분석 탭 고도화 및 실제 DB 데이터 연동(Timeline) 완료.
 
 [ ] 미디어 업로드 및 스토리지 연결.
 
