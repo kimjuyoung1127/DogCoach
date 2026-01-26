@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { apiClient } from "@/lib/api";
+
 import { DashboardData } from "@/components/features/dashboard/types";
 import { DashboardHeader } from "@/components/features/dashboard/dashboard-header";
 import { QuickLogWidget } from "@/components/features/dashboard/quick-log-widget";
@@ -16,48 +16,31 @@ import { DashboardSkeleton } from "@/components/features/dashboard/dashboard-ske
 import { FadeIn } from "@/components/ui/animations/FadeIn";
 import { AnimatePresence } from "framer-motion";
 
+import { useDashboardData } from "@/hooks/useQueries";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/lib/query-keys";
+
 export default function DashboardPage() {
     const router = useRouter();
-    const { token, loading: authLoading } = useAuth(); // Get token
-    const [data, setData] = useState<DashboardData | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const { token, loading: authLoading } = useAuth();
+    const queryClient = useQueryClient();
 
-    const fetchData = async () => {
-        if (!token) return; // Wait for token
-
-        try {
-            setError(null);
-            const res = await apiClient.get<DashboardData>('/dashboard/', {
-                token: token, // Pass token
-                credentials: 'include'
-            });
-            setData(res);
-        } catch (e: any) {
-            console.error("Failed to load dashboard:", e);
-            setError(e.message || "데이터 로딩 실패");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        if (!authLoading) {
-            if (token) {
-                fetchData();
-            } else {
-                fetchData();
-            }
-        }
-    }, [token, authLoading]);
+    // Use React Query Hook
+    const { data, isLoading, error, refetch } = useDashboardData(!!token, token);
 
     const [editingLog, setEditingLog] = useState<any | null>(null);
 
     const handleLogCreated = (newLog?: any) => {
-        fetchData();
+        // Invalidate queries to refresh data
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dashboard('me') });
         if (newLog) {
             setEditingLog(newLog); // Open dialog immediately
         }
+    };
+
+    // Manual refetch handler for RecentLogs List
+    const handleLogUpdated = () => {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dashboard('me') });
     };
 
     if (isLoading) return <DashboardSkeleton />;
@@ -66,10 +49,10 @@ export default function DashboardPage() {
         <div className="p-8 text-center pt-20">
             <h2 className="text-xl font-bold text-red-500 mb-2">오류가 발생했습니다 😢</h2>
             <p className="text-gray-600 mb-6 bg-gray-100 p-4 rounded-lg text-sm font-mono inline-block">
-                {error}
+                {error ? (error as Error).message : "Loading error"}
             </p>
             <br />
-            <button onClick={fetchData} className="bg-gray-800 text-white px-6 py-2 rounded-full hover:bg-gray-700 transition">
+            <button onClick={() => refetch()} className="bg-gray-800 text-white px-6 py-2 rounded-full hover:bg-gray-700 transition">
                 다시 시도하기
             </button>
         </div>
@@ -100,7 +83,7 @@ export default function DashboardPage() {
             <FadeIn delay={0.3}>
                 <RecentLogList
                     logs={data.recent_logs}
-                    onLogUpdated={fetchData}
+                    onLogUpdated={handleLogUpdated}
                     onEditLog={(log) => setEditingLog(log)}
                 />
             </FadeIn>
@@ -115,7 +98,7 @@ export default function DashboardPage() {
                         onClose={() => setEditingLog(null)}
                         onUpdate={() => {
                             setEditingLog(null);
-                            fetchData();
+                            handleLogUpdated();
                         }}
                         envTriggers={data.env_triggers || []}
                         envConsequences={data.env_consequences || []}
