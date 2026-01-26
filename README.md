@@ -44,7 +44,7 @@ DogCoach/
 ## 🛠️ 기술 스택  
 
 - **백엔드**: Python 3.10+, FastAPI, SQLAlchemy(비동기), Pydantic v2  
-- **프론트엔드**: TypeScript, Next.js 14, Zustand, Tailwind CSS  
+- **프론트엔드**: TypeScript, Next.js 14, TanStack Query (React Query), Zustand, Tailwind CSS  
 - **데이터베이스**: PostgreSQL (Supabase), AsyncPG  
 - **인프라**: Supabase Auth, OpenAI API  
 

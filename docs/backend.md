@@ -5,86 +5,38 @@ DogCoach 백엔드는 Feature-based Architecture(기능 기반 아키텍처) 를
 Backend/
 ├── app/
 │   ├── core/                  # 프로젝트 전역 설정 (정적/인프라)
-│   │   ├── config.py          # 환경 변수 관리 (Pydantic Settings)
-│   │   ├── database.py        # 비동기 DB 세션 (SQLAlchemy + AsyncPG)
-│   │   ├── security.py        # Supabase 인증 / JWT 검증
-│   │   └── exceptions.py      # 글로벌 예외 처리기 (Custom Exception)
-│   │
 │   ├── shared/                # 기능 간 공통 리소스
-│   │   ├── models.py          # SQLAlchemy ORM 모델 (중앙 집중화)
-│   │   └── utils/             # 타임존, 로거 등 유틸
-│   │
 │   ├── features/              # 비즈니스 로직 (도메인 주도)
-│   │   ├── auth/              # 사용자 인증/접근
-│   │   ├── onboarding/        # 설문 및 프로필 관리
-│   │   ├── dashboard/         # 메인 뷰 집계
-│   │   ├── log/               # 행동 기록 관리
-│   │   ├── coach/             # AI 분석 (코치 기능)
-│   │   └── settings/          # 사용자 환경설정
-│   │
 │   └── main.py                # 앱 엔트리포인트
 ```
 
 ## 2. 기술 스택 (Tech Stack)
-- **프레임워크**: FastAPI (Python 3.10+)
-- **데이터베이스**: Supabase (PostgreSQL)
+- **Framework**: FastAPI (Python 3.10+)
+- **Database**: Supabase (PostgreSQL)
 - **ORM**: SQLAlchemy 2.0 (AsyncIO)
-- **드라이버**: asyncpg
-- **인증**: Supabase Auth (JWT)
-- **검증**: Pydantic v2
+- **Auth**: Supabase Auth (JWT)
+- **Frontend Caching**: TanStack Query (React Query) [NEW]
 - **AI**: OpenAI API (GPT-4o)
 
 ## 3. 구현 단계 (Implementation Status)
 
 ### ✅ Phase 1: 기반 (Core & Shared)
-- [x] **환경 변수 관리**: `pydantic-settings` 적용
-- [x] **DB 연결**: `async_sessionmaker` 풀링 설정
-- [x] **모델링**: `User`, `Dog`, `BehaviorLog` 등 전체 스키마 (Shared Model)
-- [x] **보안**: JWT 검증 의존성 (`get_current_user`)
+- [x] 환경 변수 관리, DB 연결, 공통 모델링, JWT 보안 설정 완료.
 
 ### ✅ Phase 2: 사용자 접근 (Auth & Onboarding)
-- [x] **Auth** (`GET /me`)
-    - [x] `features/auth` 모듈 구현 및 `UserResponse` 스키마 정의
-    - [x] JWT 검증 미들웨어 연동
-    - [x] **익명 로그인(Anonymous Auth)**: Guest User 로직(Cookie `anonymous_sid`) 구현 완료
-- [x] **Onboarding** (`POST /survey`)
-    - [x] **Atomic Transaction**: `Dog` + `DogEnv` + `Seed Log` 동시 생성 보장
-    - [x] **Guest Support**: 로그인 유저(`user_id`)와 게스트(`anonymous_sid`) 모두 지원
-    - [x] **JSONB Typing**: `household_info`, `triggers` 등 Pydantic 모델로 타입 안정성 확보
-    - [x] **Frontend Integrated**: 설문-백엔드 API 연동 완료 (Empty Strings Handling 포함)
-    - [x] **Google OAuth**: 클라이언트 설정 및 Supabase 연동
-
-### 🏗️ Infrastructure Update
-- **Database Connection**: Supabase IPv6 이슈 해결을 위해 Connection Pooler (IPv4) 사용 (`aws-1-ap-south-1.pooler.supabase.com`)
-- **Region**: India Mumbai (ap-south-1) for Pooler Endpoint reliability.
+- [x] 익명 로그인(Guest Support) 및 설문 API 연동 완료.
 
 ### ✅ Phase 3: 핵심 루프 (Log & Dashboard)
-- [x] **Log**: 
-    - [x] 행동 로그 CRUD (`POST /logs`, `PATCH /logs/{id}`) - ABC 기록 고도화, 복합 인덱스 활용, Timezone 지원
-    - [x] **Data Persistence**: 기록 수정 시 이전 데이터 보존 로직 완료
-- [x] **Dashboard**:
-    - [x] **Data Fetching**: `GET /dashboard/` 엔드포인트 구현 (Stats, Profile, Logs, Issues, ABC Env Tags)
-    - [x] **UI/UX**: 
-        - [x] Glassmorphism 디자인, Quick Log 위젯 확장 (6개 카테고리), Recent Record UI 개선
-        - [x] **Interaction Design**: Skeleton Loading, Framer Motion staggered animations, ScaleButton tactile feedback, Spring-loaded modal transitions.
-    - [x] **Sidebar**: User & Dog 동적 데이터 연동 (`GET /me` 활용)
+- [x] **Log & Dashboard API**: CRUD 및 통계 집계 연동 완료.
+- [x] **프론트엔드 최적화**: 
+    - [x] **TanStack Query**를 통한 서버 상태 캐싱 및 데이터 무결성 보장.
+    - [x] **Strict Query Keys** 설계를 통한 캐시 충돌 방지 및 자동 무효화(Invalidation) 적용.
+    - [x] **Timezone Awareness**: `X-Timezone` 헤더 기반 로컬 시간 처리.
 
 ### ⏳ Phase 4: 지능 (Coach & Settings)
-- [ ] **Coach**: RAG 기반 AI 조언 파이프라인
-- [ ] **Settings**: 사용자 환경설정 관리
+- [ ] AI 파이프라인 (RAG) 및 사용자 환경설정 구현 예정.
 
-## 4. 리팩토링 및 개선 사항 (Refactoring & Improvements)
-Node.js 백엔드 패턴 및 클린 아키텍처 원칙을 적용하여 코드를 개선했습니다.
-
-- [x] **Layered Architecture 준수**:
-    - `Router` (HTTP) → `Service` (Business Logic) → `Repository` (DB Access) 계층 분리 확실화.
-- [x] **Dependency Injection (DI) 적용**:
-    - `FastAPI Depends`를 사용하여 DB 세션 및 User ID 주입. (Testability 향상)
-- [x] **예외 처리 표준화 (Error Handling)**:
-    - [x] `app/core/exceptions.py`에 `DomainException` (NotFound, BadRequest 등) 정의.
-    - [x] `Service` 계층에서 `HTTPException` 제거 및 `DomainException` 사용.
-    - [x] `main.py`에 글로벌 예외 처리기(`domain_exception_handler`) 등록하여 비즈니스 로직과 HTTP 상태 코드 분리.
-- [x] **테스트 자동화 (Testing Automation)**:
-    - `Pytest` 기반 테스트 환경 구축 (`tests/conftest.py`).
-    - 핵심 로직(`AuthService`, `LogService`)에 대한 유닛 테스트 구현 완료.
-    - `datetime.utcnow()`의 Deprecation 이슈 해결 (`datetime.now(timezone.utc)` 적용).
+## 4. 리팩토링 및 개선 사항
+- [x] **Feature-based Isolation**: 각 기능 폴더 내에서 Router-Service-Repository 패턴 준수.
+- [x] **React Query Factory**: 도메인별 쿼리 키 중앙 관리 (`src/lib/query-keys.ts`).
+- [x] **Error Boundary & Error Handling**: 백엔드 DomainException 및 프론트엔드 API 클라이언트 에러 핸들링 고도화.
