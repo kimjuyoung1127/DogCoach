@@ -59,10 +59,14 @@ Backend/
 - **Region**: India Mumbai (ap-south-1) for Pooler Endpoint reliability.
 
 ### ✅ Phase 3: 핵심 루프 (Log & Dashboard)
-- [x] **Log**: 행동 로그 CRUD (`POST /logs`) - 복합 인덱스 활용, Timezone 지원
+- [x] **Log**: 
+    - [x] 행동 로그 CRUD (`POST /logs`, `PATCH /logs/{id}`) - ABC 기록 고도화, 복합 인덱스 활용, Timezone 지원
+    - [x] **Data Persistence**: 기록 수정 시 이전 데이터 보존 로직 완료
 - [x] **Dashboard**:
-    - [x] **Data Fetching**: `GET /dashboard/` 엔드포인트 구현 (Stats, Profile, Logs, Issues)
-    - [x] **UI/UX**: Glassmorphism 디자인, Quick Log 위젯 확장 (6개 카테고리), Recent Record UI 개선
+    - [x] **Data Fetching**: `GET /dashboard/` 엔드포인트 구현 (Stats, Profile, Logs, Issues, ABC Env Tags)
+    - [x] **UI/UX**: 
+        - [x] Glassmorphism 디자인, Quick Log 위젯 확장 (6개 카테고리), Recent Record UI 개선
+        - [x] **Interaction Design**: Skeleton Loading, Framer Motion staggered animations, ScaleButton tactile feedback, Spring-loaded modal transitions.
     - [x] **Sidebar**: User & Dog 동적 데이터 연동 (`GET /me` 활용)
 
 ### ⏳ Phase 4: 지능 (Coach & Settings)

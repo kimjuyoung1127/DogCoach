@@ -14,6 +14,8 @@ class RecentLogItem(BaseModel):
     behavior: str
     intensity: int
     occurred_at: datetime
+    antecedent: Optional[str] = None
+    consequence: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
 class DashboardDogProfile(BaseModel):
@@ -28,3 +30,5 @@ class DashboardResponse(BaseModel):
     stats: QuickLogStats
     recent_logs: List[RecentLogItem]
     issues: List[str] = []
+    env_triggers: List[str] = []
+    env_consequences: List[str] = []

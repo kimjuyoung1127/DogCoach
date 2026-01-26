@@ -20,9 +20,11 @@
 📝 Phase 3: 로그 수집 (Timezone Aware)
 [x] 퀵 기록(QuickLogGrid) 및 대시보드 UI 구현.
 
-[ ] 상세 ABC 기록 UI.
+[x] 상세 ABC 기록 UI (Progressive Logging).
 
 [x] [필수] 타임존 보정 로직: 프론트엔드에서 유저의 로컬 시간대(`X-Timezone`)를 감지하여 저장.
+
+[x] Interaction Design & UI Polish: Skeleton 로딩, Entry 애니메이션, ScaleButton 피드백 적용.
 
 [ ] 미디어 업로드 및 스토리지 연결.
 

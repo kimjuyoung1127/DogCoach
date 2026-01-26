@@ -36,9 +36,21 @@ async def get_dashboard_data(db: AsyncSession, dog_id: str) -> schemas.Dashboard
     dog_env = env_result.scalar_one_or_none()
     
     issues = []
-    if dog_env and dog_env.chronic_issues:
-        # Assuming chronic_issues is {"top_issues": ["Barking", ...]}
-        issues = dog_env.chronic_issues.get("top_issues", [])
+    env_triggers = []
+    env_consequences = []
+    
+    if dog_env:
+        if dog_env.chronic_issues:
+             # Assuming chronic_issues is {"top_issues": ["Barking", ...]}
+             issues = dog_env.chronic_issues.get("top_issues", [])
+        
+        if dog_env.triggers:
+            # triggers is List[str] in JSONB
+            env_triggers = dog_env.triggers
+            
+        if dog_env.past_attempts:
+            # past_attempts is List[str] in JSONB
+            env_consequences = dog_env.past_attempts
 
     # 2. Fetch Stats (Total Logs, Streak)
     # Total Logs
@@ -73,5 +85,7 @@ async def get_dashboard_data(db: AsyncSession, dog_id: str) -> schemas.Dashboard
         dog_profile=dog_profile,
         stats=stats,
         recent_logs=recent_logs,
-        issues=issues
+        issues=issues,
+        env_triggers=env_triggers,
+        env_consequences=env_consequences
     )
