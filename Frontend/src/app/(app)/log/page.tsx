@@ -5,48 +5,41 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar as CalendarIcon, BarChart2, List, ChevronLeft, ChevronRight, FileDown, Sparkles } from "lucide-react";
 import { LogCard, LogData } from "@/components/features/log/LogCard";
 import { cn } from "@/lib/utils";
-
-// Mock Data
-const MOCK_LOGS: LogData[] = [
-    {
-        id: "1",
-        time: "14:30",
-        location: "거실",
-        intensity: 8,
-        duration: "5분",
-        antecedent: "초인종 소리 (택배)",
-        behavior: "현관을 향해 달려가며 짖음",
-        consequence: "안아주며 '괜찮아'라고 말함",
-        tags: ["택배", "초인종", "외부소음"],
-        aiComment: "보호자님, 짖을 때 안아주는 행동은 강아지에게 '짖으면 안아준다(보상)'는 잘못된 신호를 줄 수 있어요. 다음엔 하우스로 보낸 뒤 보상해보세요!"
-    },
-    {
-        id: "2",
-        time: "08:15",
-        location: "안방",
-        intensity: 3,
-        duration: "1분 미만",
-        antecedent: "기상 후 관심 요구",
-        behavior: "침대 밑에서 낑낑거림",
-        consequence: "무시하고 화장실로 이동",
-        tags: ["기상", "요구성", "아침"],
-        aiComment: "무시하기 대처가 아주 훌륭했습니다! 요구성 행동이 줄어들 가능성이 높아요."
-    },
-    {
-        id: "3",
-        time: "19:00",
-        location: "산책로",
-        intensity: 6,
-        duration: "30초",
-        antecedent: "다른 강아지와 마주침",
-        behavior: "줄을 당기며 짖음",
-        consequence: "줄을 짧게 잡고 반대 방향으로 회전",
-        tags: ["산책", "타견반응"],
-    }
-];
+import { useDogLogs, useDogContext, useDashboardData } from "@/hooks/useQueries";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function LogPage() {
     const [activeTab, setActiveTab] = useState<"timeline" | "analytics">("timeline");
+    const { token } = useAuth();
+
+    // 1. Fetch Dog Context (to get Dog ID & Env info)
+    // NOTE: Ideally we should get the selected dog ID from a global store or URL.
+    // For now, we assume the user has one dog/primary dog and fetch context to find it.
+    // Optimization: In a real app, `dashboard` query might be better if it returns ID. 
+    // But since useDogContext relies on ID, we have a chicken-egg problem if we don't know ID.
+    // Let's assume we can get dashboard data to find the ID first.
+    // Actually, let's use `useDashboardData` here too to get the ID, then `useDogLogs`.
+    // Or better: DashboardData contains everything needed for now.
+
+    // Let's use `useDashboardData` to get the primary dog ID first.
+    // Then we can use specialized hooks if needed, but `dashboard` has `recent_logs` which is limited.
+    // IF we want ALL logs, we need `useDogLogs`.
+
+    // Step 1: Get Primary Dog ID
+    // We'll import useDashboardData just to get the ID.
+    // (In future: Global State `useStore` would hold `selectedDogId`)
+    const { data: dashboardData } = useDashboardData(!!token, token);
+    const dogId = dashboardData?.dog_profile?.id;
+
+    // Step 2: Fetch Logs using ID
+    const { data: logs, isLoading } = useDogLogs(dogId, token);
+
+    // Step 3: Fetch Context (Optional, for Analysis view)
+    const { data: context } = useDogContext(dogId, token);
+
+    // Filter Logic (Mock Date for now as we don't have a date picker state yet)
+    // In real app: filteredLogs = logs.filter(...)
+    const displayLogs = logs || [];
 
     return (
         <div className="min-h-screen bg-gray-50 pb-24">
@@ -59,7 +52,7 @@ export default function LogPage() {
                     </button>
                     <div className="flex items-center gap-2 font-bold text-gray-900">
                         <CalendarIcon className="w-4 h-4 text-brand-lime" />
-                        <span>2024년 5월 21일 (화)</span>
+                        <span>전체 기록 (최신순)</span>
                     </div>
                     <button className="p-2 -mr-2 text-gray-400 hover:text-gray-900">
                         <ChevronRight className="w-5 h-5" />
@@ -107,19 +100,43 @@ export default function LogPage() {
                             transition={{ duration: 0.2 }}
                         >
                             <div className="mb-4 text-sm text-gray-500 font-medium">
-                                총 <span className="text-brand-lime font-bold">{MOCK_LOGS.length}개</span>의 기록이 있어요.
+                                총 <span className="text-brand-lime font-bold">{displayLogs.length}개</span>의 기록이 있어요.
                             </div>
 
-                            {MOCK_LOGS.map((log) => (
-                                <LogCard key={log.id} log={log} />
-                            ))}
-
-                            {/* Empty State Placeholder */}
-                            {MOCK_LOGS.length === 0 && (
-                                <div className="text-center py-20 text-gray-400">
-                                    <p>아직 기록이 없어요.</p>
-                                    <p className="text-sm mt-2">오늘 하루 머루는 어땠나요?</p>
+                            {isLoading ? (
+                                <div className="space-y-4">
+                                    {[1, 2, 3].map(i => (
+                                        <div key={i} className="h-32 bg-gray-200 rounded-2xl animate-pulse" />
+                                    ))}
                                 </div>
+                            ) : (
+                                <>
+                                    {displayLogs.map((log: any) => (
+                                        <LogCard
+                                            key={log.id}
+                                            log={{
+                                                id: log.id,
+                                                time: new Date(log.occurred_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                                                location: "집 (추정)", // TODO: Add location to DB schema if needed
+                                                intensity: log.intensity,
+                                                duration: log.duration ? `${log.duration}초` : "-",
+                                                antecedent: log.antecedent || "-",
+                                                behavior: log.behavior,
+                                                consequence: log.consequence || "-",
+                                                tags: [], // Metadata is flattened in current schema, need to parse if JSONB
+                                                aiComment: "AI 코칭이 준비 중입니다." // Placeholder
+                                            }}
+                                        />
+                                    ))}
+
+                                    {/* Empty State Placeholder */}
+                                    {displayLogs.length === 0 && (
+                                        <div className="text-center py-20 text-gray-400">
+                                            <p>아직 기록이 없어요.</p>
+                                            <p className="text-sm mt-2">오늘 하루 강아지는 어땠나요?</p>
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </motion.div>
                     ) : (
@@ -131,6 +148,14 @@ export default function LogPage() {
                             transition={{ duration: 0.2 }}
                             className="space-y-6"
                         >
+                            {/* Context Info (Cached) */}
+                            {context && (
+                                <div className="bg-gray-100 p-4 rounded-xl text-xs text-gray-500 mb-4">
+                                    <span className="font-bold block mb-1">💡 환경 컨텍스트 (Cached):</span>
+                                    {JSON.stringify(context.env_triggers?.slice(0, 3))} 등...
+                                </div>
+                            )}
+
                             {/* Vet Report Button */}
                             <button className="w-full bg-gray-900 text-white p-4 rounded-2xl flex items-center justify-between shadow-lg shadow-gray-200 active:scale-[0.98] transition-transform">
                                 <div className="flex items-center gap-3">
@@ -152,9 +177,9 @@ export default function LogPage() {
                                     <h3 className="font-bold text-gray-900">주간 AI 코칭 리포트</h3>
                                 </div>
                                 <p className="text-sm text-gray-600 leading-relaxed">
-                                    이번 주 머루는 <span className="text-brand-lime font-bold">외부 소음</span>에 가장 민감하게 반응했어요.
-                                    특히 오후 2시에서 4시 사이의 짖음 빈도가 지난주 대비 20% 증가했습니다.
-                                    산책 시 <span className="underline decoration-brand-lime decoration-2 underline-offset-4">'방향 전환 훈련'</span>을 병행하면 도움이 될 거예요.
+                                    이번 주 주요 원인은 <span className="text-brand-lime font-bold">{context?.env_triggers?.[0] || "데이터 부족"}</span> 입니다.
+                                    <br />
+                                    (실제 데이터 기반 분석이 곧 제공됩니다.)
                                 </p>
                             </div>
 
