@@ -10,10 +10,14 @@ class ProfileMeta(BaseModel):
     weight: Optional[float] = None
     adoption_date: Optional[date] = None
 
+class PrimaryCarerMeta(BaseModel):
+    ids: List[str] = []
+    other_text: Optional[str] = None
+
 class HouseholdInfo(BaseModel):
     type: Optional[str] = None  # Apartment, House, etc.
     family_count: Optional[int] = None
-    primary_carer: Optional[str] = None
+    primary_carer: PrimaryCarerMeta = PrimaryCarerMeta()
 
 class HealthMeta(BaseModel):
     ids: List[str] = [] # Pre-existing conditions

@@ -12,7 +12,8 @@ export interface SurveyData {
     // Step 2: Environment
     householdType: string;
     familyMembers: string[];
-    primaryCarer: string; // New
+    primaryCarer: string[];
+    primaryCarerOther?: string;
 
     // Step 3: Health & Nutrition (New)
     healthIssues: string[]; // e.g., 'allergy', 'joint_pain'
@@ -47,7 +48,8 @@ export const INITIAL_DATA: SurveyData = {
     adoptionDate: '',
     householdType: '',
     familyMembers: [],
-    primaryCarer: '',
+    primaryCarer: [],
+    primaryCarerOther: '',
     healthIssues: [],
     healthIssuesOther: '',
     favoriteTreats: [],

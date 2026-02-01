@@ -64,7 +64,25 @@ async def generate_coaching(db: AsyncSession, request: schemas.CoachingRequest) 
             variables["trigger"] = dog_env.triggers[0]
 
     if dog_env.household_info and "primary_carer" in dog_env.household_info:
-        variables["primary_carer"] = dog_env.household_info["primary_carer"]
+        carer_data = dog_env.household_info["primary_carer"]
+        if isinstance(carer_data, dict):
+            # New structured format
+            ids = carer_data.get("ids", [])
+            other = carer_data.get("other_text")
+            
+            # Map "etc" to other_text and join all
+            carers = []
+            for c in ids:
+                if c == "etc" and other:
+                    carers.append(other)
+                else:
+                    carers.append(c)
+            
+            if carers:
+                variables["primary_carer"] = ", ".join(carers)
+        else:
+            # Old string format
+            variables["primary_carer"] = carer_data
 
     # 4. Fill Slots (String Replacement)
     # We do a simple replacement for now. Jinja2 could be used for more complex logic.
