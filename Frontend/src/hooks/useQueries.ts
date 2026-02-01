@@ -12,13 +12,13 @@ export function useDashboardData(enabled: boolean = true, token?: string | null)
     return useQuery({
         queryKey: QUERY_KEYS.dashboard('me'),
         queryFn: async () => {
-            if (!token) throw new Error("Authentication required");
+            // Token is optional now (Guest support via Cookie)
             return await apiClient.get<DashboardData>('/dashboard/', {
                 credentials: 'include',
-                token
+                token: token || undefined
             });
         },
-        enabled: enabled && !!token,
+        enabled: enabled, // Enabled even without token (for Guests)
         staleTime: 1000 * 60 * 2, // 2 minutes
     });
 }

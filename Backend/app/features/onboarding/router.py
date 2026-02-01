@@ -21,8 +21,7 @@ async def submit_onboarding_survey(
     Automatically generates DogEnv and initial BehaviorLog.
     """
 
-    import traceback
-    from fastapi import Request, Response
+
     
     try:
         # 1. Resolve User ID (Login User)

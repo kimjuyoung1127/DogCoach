@@ -4,6 +4,7 @@ import { FadeIn } from "@/components/ui/animations/FadeIn";
 import { ScaleButton } from "@/components/ui/animations/ScaleButton";
 import { useAuth } from "@/hooks/useAuth";
 import { useCreateLog } from "@/hooks/useQueries";
+import { Zap, Plus } from "lucide-react";
 
 interface Props {
     dogId: string;
@@ -40,7 +41,6 @@ export const QuickLogWidget = ({ dogId, onLogCreated }: Props) => {
                 onLogCreated(newLog);
             },
             onError: (error: any) => {
-                // Global error handler will also trigger, but we show local toast too for context
                 showToast("기록 실패: " + (error.message || "Unknown error"), "error");
             }
         });
@@ -56,14 +56,20 @@ export const QuickLogWidget = ({ dogId, onLogCreated }: Props) => {
     ];
 
     return (
-        <FadeIn delay={0.2} className="px-6 mb-8">
-            <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold text-gray-800">빠른 기록</h3>
-                <span className="text-xs text-gray-400">터치하여 즉시 기록</span>
+        <FadeIn delay={0.2} className="px-6 mb-10">
+            <div className="flex justify-between items-center mb-5 px-1">
+                <div className="flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-brand-lime fill-brand-lime" />
+                    <h3 className="text-xl font-black text-gray-900">빠른 기록</h3>
+                </div>
+                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-gray-100 rounded-full">
+                    <div className="w-1 h-1 bg-brand-lime rounded-full animate-pulse" />
+                    <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Live Tracking</span>
+                </div>
             </div>
 
             {/* Action Grid */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-4">
                 {actions.map((action) => (
                     <QuickLogButton
                         key={action.val}
@@ -87,22 +93,25 @@ export const QuickLogWidget = ({ dogId, onLogCreated }: Props) => {
 
 const QuickLogButton = ({ label, icon, onClick, color }: any) => {
     const colorMap: any = {
-        red: "bg-red-50 text-red-600 border-red-100 hover:bg-red-100",
-        orange: "bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100",
-        yellow: "bg-amber-50 text-amber-600 border-amber-100 hover:bg-amber-100",
-        purple: "bg-purple-50 text-purple-600 border-purple-100 hover:bg-purple-100",
-        blue: "bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-100",
-        gray: "bg-gray-50 text-gray-600 border-gray-100 hover:bg-gray-100",
+        red: "hover:border-red-200 hover:bg-red-50/30 text-red-500 bg-white shadow-sm ring-red-50",
+        orange: "hover:border-orange-200 hover:bg-orange-50/30 text-orange-500 bg-white shadow-sm ring-orange-50",
+        yellow: "hover:border-amber-200 hover:bg-amber-50/30 text-amber-500 bg-white shadow-sm ring-amber-50",
+        purple: "hover:border-purple-200 hover:bg-purple-50/30 text-purple-500 bg-white shadow-sm ring-purple-50",
+        blue: "hover:border-blue-200 hover:bg-blue-50/30 text-blue-500 bg-white shadow-sm ring-blue-50",
+        gray: "hover:border-gray-200 hover:bg-gray-50/30 text-gray-500 bg-white shadow-sm ring-gray-50",
     };
 
     return (
         <ScaleButton
             onClick={onClick}
-            scale={0.9}
-            className={`flex flex-col items-center justify-center p-4 rounded-2xl border ${colorMap[color]} transition-colors shadow-sm hover:shadow-md h-24`}
+            scale={0.95}
+            className={`group flex flex-col items-center justify-center p-5 rounded-[2rem] border border-gray-100 transition-all h-28 relative overflow-hidden ${colorMap[color]}`}
         >
-            <span className="text-2xl mb-1 filter drop-shadow-sm">{icon}</span>
-            <span className="font-bold text-sm">{label}</span>
+            <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-20 transition-opacity">
+                <Plus className="w-4 h-4" />
+            </div>
+            <span className="text-3xl mb-2 filter drop-shadow-sm group-hover:scale-110 transition-transform">{icon}</span>
+            <span className="font-black text-xs tracking-tight">{label}</span>
         </ScaleButton>
     )
 }

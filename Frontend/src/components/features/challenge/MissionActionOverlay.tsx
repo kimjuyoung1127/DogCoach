@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ArrowRight, ArrowLeft } from "lucide-react";
+import { Check, ArrowRight, ArrowLeft, Sparkles } from "lucide-react";
 import confetti from "canvas-confetti";
 import { TrainingStage } from "@/data/curriculum";
 import { Button } from "@/components/ui/Button";
@@ -27,7 +27,6 @@ export function MissionActionOverlay({ isOpen, mission, onClose, onComplete }: M
     if (!isOpen || !mission) return null;
 
     const totalSteps = mission.steps.length;
-    const progress = ((currentStep + 1) / totalSteps) * 100;
 
     const handleNext = () => {
         if (currentStep < totalSteps - 1) {
@@ -49,7 +48,7 @@ export function MissionActionOverlay({ isOpen, mission, onClose, onComplete }: M
             particleCount: 150,
             spread: 70,
             origin: { y: 0.6 },
-            colors: ['#22c55e', '#bef264', '#f7fee7']
+            colors: ['#4ADE80', '#D9F99D', '#f7fee7']
         });
     };
 
@@ -65,19 +64,19 @@ export function MissionActionOverlay({ isOpen, mission, onClose, onComplete }: M
                 key={mission.id}
                 initial={{ scale: 0.95, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
-                className="bg-white rounded-[2.5rem] w-full max-w-sm md:max-w-md overflow-hidden relative max-h-[90vh] flex flex-col shadow-2xl"
+                className="bg-white rounded-[2.5rem] w-full max-w-sm md:max-w-md overflow-hidden relative max-h-[90vh] flex flex-col shadow-2xl border border-gray-100"
             >
                 {/* Header Section */}
-                <div className="p-8 pb-4 bg-gradient-to-b from-green-50 to-white shrink-0">
+                <div className="p-8 pb-5 bg-gradient-to-b from-brand-lime/10 to-white shrink-0">
                     <div className="flex justify-between items-center mb-4">
-                        <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-black uppercase tracking-wider">
+                        <span className="px-3 py-1 bg-brand-lime text-white rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm shadow-brand-lime/20">
                             Day {mission.day} Mission
                         </span>
                         <div className="flex gap-1.5">
                             {mission.steps.map((_, idx) => (
                                 <div
                                     key={idx}
-                                    className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentStep ? "w-8 bg-green-500" : "w-1.5 bg-gray-200"
+                                    className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentStep ? "w-8 bg-brand-lime" : "w-1.5 bg-gray-200"
                                         }`}
                                 />
                             ))}
@@ -103,28 +102,32 @@ export function MissionActionOverlay({ isOpen, mission, onClose, onComplete }: M
                             >
                                 {/* Illustration / Step Number */}
                                 <div className="flex items-center gap-4 py-4">
-                                    <div className="w-14 h-14 bg-green-500 text-white rounded-2xl flex items-center justify-center text-2xl font-black shadow-lg shadow-green-100">
+                                    <div className="w-14 h-14 bg-brand-lime text-white rounded-2xl flex items-center justify-center text-2xl font-black shadow-lg shadow-brand-lime/30">
                                         {currentStep + 1}
                                     </div>
                                     <div className="flex-1">
                                         <h3 className="text-lg font-extrabold text-gray-800">{step.title}</h3>
-                                        <p className="text-xs text-green-600 font-bold">Step Guide</p>
+                                        <div className="flex items-center gap-1 text-[10px] text-brand-lime font-black uppercase">
+                                            <Sparkles className="w-3 h-3" />
+                                            Mission Step Guide
+                                        </div>
                                     </div>
                                 </div>
 
-                                {/* Step Description Card */}
-                                <div className="bg-gray-50 rounded-3xl p-6 border border-gray-100 italic text-gray-700 leading-relaxed text-sm">
+                                {/* Step Description Card - Matching LogCard AI Style */}
+                                <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100 italic text-gray-700 leading-relaxed text-sm shadow-inner relative overflow-hidden">
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-brand-lime opacity-30" />
                                     "{step.description}"
                                 </div>
 
                                 {/* Success Criteria */}
-                                <div className="bg-green-50/50 rounded-2xl p-4 flex gap-3 items-start border border-green-100">
-                                    <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                                        <Check className="w-3 h-3 text-green-600" />
+                                <div className="bg-brand-lime/10 rounded-2xl p-4 flex gap-3 items-start border border-brand-lime/20">
+                                    <div className="w-5 h-5 bg-brand-lime rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                                        <Check className="w-3 h-3 text-white" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-bold text-green-800 uppercase tracking-tighter mb-1">성공 기준</p>
-                                        <p className="text-sm text-green-900 font-semibold leading-snug">{step.success_criteria}</p>
+                                        <p className="text-[10px] font-black text-brand-lime uppercase tracking-tighter mb-1">성공 기준</p>
+                                        <p className="text-sm text-gray-900 font-bold leading-snug">{step.success_criteria}</p>
                                     </div>
                                 </div>
 
@@ -132,14 +135,14 @@ export function MissionActionOverlay({ isOpen, mission, onClose, onComplete }: M
                                 <div className="flex gap-3 pt-4">
                                     {currentStep > 0 && (
                                         <ScaleButton onClick={handleBack} className="flex-1">
-                                            <Button variant="secondary" className="w-full rounded-2xl py-6 gap-2">
+                                            <Button variant="secondary" className="w-full rounded-2xl py-6 gap-2 border-gray-200">
                                                 <ArrowLeft className="w-4 h-4" />
                                                 이전
                                             </Button>
                                         </ScaleButton>
                                     )}
                                     <ScaleButton onClick={handleNext} className={currentStep === 0 ? "w-full" : "flex-[2]"}>
-                                        <Button variant="brand" className="w-full rounded-2xl py-6 text-lg gap-2 shadow-xl shadow-green-100">
+                                        <Button variant="brand" className="w-full rounded-2xl py-6 text-lg font-black gap-2 shadow-xl shadow-brand-lime/20">
                                             {currentStep === totalSteps - 1 ? "미션 완료!" : "다음 단계로"}
                                             <ArrowRight className="w-5 h-5" />
                                         </Button>
@@ -155,7 +158,7 @@ export function MissionActionOverlay({ isOpen, mission, onClose, onComplete }: M
                                 <div className="text-center">
                                     <div className="text-6xl mb-6">🎉</div>
                                     <h3 className="text-2xl font-black text-gray-900 mb-3">훌륭합니다!</h3>
-                                    <p className="text-gray-500 font-medium break-keep">
+                                    <p className="text-gray-500 font-medium break-keep leading-relaxed">
                                         오늘의 훈련을 성공적으로 마쳤어요.<br />
                                         훈련 중 강아지의 반응은 어땠나요?
                                     </p>
@@ -163,18 +166,18 @@ export function MissionActionOverlay({ isOpen, mission, onClose, onComplete }: M
 
                                 <div className="grid grid-cols-1 gap-3">
                                     {[
-                                        { id: "comfortable", emoji: "🙂", label: "편안해해요", sub: "긍정적인 변화" },
-                                        { id: "neutral", emoji: "😐", label: "평소와 같아요", sub: "지속적인 관찰 필요" },
-                                        { id: "barking", emoji: "😠", label: "여전히 예민해요", sub: "도움이 필요해요" }
+                                        { id: "comfortable", emoji: "🙂", label: "편안해해요", sub: "긍정적인 변화", color: "text-brand-lime" },
+                                        { id: "neutral", emoji: "😐", label: "평소와 같아요", sub: "지속적인 관찰 필요", color: "text-amber-500" },
+                                        { id: "barking", emoji: "😠", label: "여전히 예민해요", sub: "도움이 필요해요", color: "text-red-500" }
                                     ].map((reaction) => (
                                         <ScaleButton key={reaction.id} onClick={() => handleReaction(reaction.id)}>
-                                            <div className="w-full flex items-center gap-4 p-5 bg-white border-2 border-gray-100 rounded-[1.5rem] hover:border-green-500 hover:bg-green-50 transition-all text-left group">
+                                            <div className="w-full flex items-center gap-4 p-5 bg-white border-2 border-gray-100 rounded-2xl hover:border-brand-lime hover:bg-brand-lime/5 transition-all text-left group shadow-sm">
                                                 <span className="text-3xl group-hover:scale-110 transition-transform">{reaction.emoji}</span>
                                                 <div className="flex-1">
                                                     <p className="font-bold text-gray-800">{reaction.label}</p>
-                                                    <p className="text-xs text-gray-400 font-medium">{reaction.sub}</p>
+                                                    <p className={`text-[10px] font-black uppercase ${reaction.color}`}>{reaction.sub}</p>
                                                 </div>
-                                                <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-green-500 group-hover:translate-x-1 transition-all" />
+                                                <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-brand-lime group-hover:translate-x-1 transition-all" />
                                             </div>
                                         </ScaleButton>
                                     ))}
@@ -186,7 +189,7 @@ export function MissionActionOverlay({ isOpen, mission, onClose, onComplete }: M
                     {/* Footer / Close */}
                     <button
                         onClick={onClose}
-                        className="mt-8 w-full py-2 text-gray-400 text-xs font-bold text-center hover:text-gray-600 transition-colors uppercase tracking-widest"
+                        className="mt-8 w-full py-2 text-gray-400 text-[10px] font-black text-center hover:text-gray-600 transition-colors uppercase tracking-widest"
                     >
                         다음에 할게요
                     </button>

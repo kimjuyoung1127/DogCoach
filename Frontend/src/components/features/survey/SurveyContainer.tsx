@@ -81,7 +81,7 @@ export function SurveyContainer() {
                     onSuccess: () => {
                         console.log("SURVEY SUBMISSION SUCCESS!");
                         alert("설문이 성공적으로 저장되었습니다!");
-                        // router.push('/result'); // Debugging: Disable redirect until backend is fully ready or use mocked
+                        router.push('/result');
                     },
                     onError: (error) => {
                         console.error("Survey submission failed:", error);
