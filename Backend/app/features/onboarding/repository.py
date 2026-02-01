@@ -1,6 +1,7 @@
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.shared.models import Dog, DogEnv, BehaviorLog
+from sqlalchemy import select
+from app.shared.models import Dog, DogEnv, BehaviorLog, User
 from app.features.onboarding import schemas
 
 from typing import Optional
@@ -11,6 +12,16 @@ async def create_dog_with_env(
     guest_id: Optional[str],
     data: schemas.SurveySubmission
 ) -> Dog:
+    # 0. Ensure User exists if logged in (JIT User Creation)
+    if user_id:
+        stmt = select(User).where(User.id == user_id)
+        result = await db.execute(stmt)
+        user_record = result.scalars().first()
+        if not user_record:
+            user_record = User(id=user_id, role="USER")
+            db.add(user_record)
+            await db.flush() # Ensure user is created before dog refers to it
+
     # 1. Create Dog
     dog = Dog(
         user_id=user_id,
@@ -25,17 +36,17 @@ async def create_dog_with_env(
     await db.flush() # Generate dog.id
 
     # 2. Create DogEnv
-    # Dump Pydantic models to dicts (JSON)
+    # Dump Pydantic models to JSON-safe dicts (converts date -> str)
     dog_env = DogEnv(
         dog_id=dog.id,
-        profile_meta=data.profile_meta.model_dump(),
-        household_info=data.household_info.model_dump(),
-        health_meta=data.health_meta.model_dump(),
-        rewards_meta=data.rewards_meta.model_dump(),
-        chronic_issues=data.chronic_issues.model_dump(),
-        triggers=data.triggers, # List maps directly to JSON array
-        past_attempts=data.past_attempts,
-        temperament=data.temperament.model_dump(),
+        profile_meta=data.profile_meta.model_dump(mode='json'),
+        household_info=data.household_info.model_dump(mode='json'),
+        health_meta=data.health_meta.model_dump(mode='json'),
+        rewards_meta=data.rewards_meta.model_dump(mode='json'),
+        chronic_issues=data.chronic_issues.model_dump(mode='json'),
+        triggers=data.triggers.model_dump(mode='json'),
+        past_attempts=data.past_attempts.model_dump(mode='json'),
+        temperament=data.temperament.model_dump(mode='json'),
         activity_meta=data.activity_meta
     )
     db.add(dog_env)

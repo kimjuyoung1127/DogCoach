@@ -16,14 +16,25 @@ class HouseholdInfo(BaseModel):
     primary_carer: Optional[str] = None
 
 class HealthMeta(BaseModel):
-    issues: List[str] = [] # Pre-existing conditions
+    ids: List[str] = [] # Pre-existing conditions
+    other_text: Optional[str] = None
 
 class RewardsMeta(BaseModel):
-    favorite_treats: List[str] = []
+    ids: List[str] = []
+    other_text: Optional[str] = None
     play_style: Optional[str] = None
 
 class ChronicIssues(BaseModel):
     top_issues: List[str] = [] # Top 3 issues
+    other_text: Optional[str] = None
+
+class TriggersInfo(BaseModel):
+    ids: List[str] = []
+    other_text: Optional[str] = None
+
+class PastAttemptsInfo(BaseModel):
+    ids: List[str] = []
+    other_text: Optional[str] = None
 
 class Temperament(BaseModel):
     sensitivity_score: Optional[int] = None # 1-5
@@ -50,10 +61,10 @@ class SurveySubmission(BaseModel):
     chronic_issues: ChronicIssues = ChronicIssues()
     
     # Step 5: Triggers
-    triggers: List[str] = [] # Stored as JSONB
+    triggers: TriggersInfo = TriggersInfo()
     
     # Step 6: Past Attempts
-    past_attempts: List[str] = [] # Stored as JSONB
+    past_attempts: PastAttemptsInfo = PastAttemptsInfo()
     
     # Step 7: Temperament
     temperament: Temperament = Temperament()
@@ -61,14 +72,6 @@ class SurveySubmission(BaseModel):
     # Extra
     profile_image_url: Optional[str] = None
     activity_meta: Dict[str, Any] = {} # Reserved for future use
-
-class DogResponse(BaseModel):
-    id: UUID
-    name: str
-    breed: Optional[str] = None
-    created_at: Any
-    
-    model_config = ConfigDict(from_attributes=True)
 
     @staticmethod
     def sanitize_empty_strings(data: Any) -> Any:
@@ -84,3 +87,11 @@ class DogResponse(BaseModel):
     @classmethod
     def check_empty_strings(cls, data: Any) -> Any:
         return cls.sanitize_empty_strings(data)
+
+class DogResponse(BaseModel):
+    id: UUID
+    name: str
+    breed: Optional[str] = None
+    created_at: Any
+    
+    model_config = ConfigDict(from_attributes=True)

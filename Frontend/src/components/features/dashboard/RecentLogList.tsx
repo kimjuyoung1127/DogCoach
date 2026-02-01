@@ -38,7 +38,7 @@ export const RecentLogList = ({ logs, onLogUpdated, onEditLog }: Props) => {
                 </div>
                 {logs.length > 0 && (
                     <span className="text-[10px] font-black text-brand-lime uppercase tracking-widest bg-brand-lime/10 px-2 py-0.5 rounded-full">
-                        {logs.length} entries
+                        {logs.length}개 기록됨
                     </span>
                 )}
             </div>
@@ -63,7 +63,7 @@ export const RecentLogList = ({ logs, onLogUpdated, onEditLog }: Props) => {
                                     </div>
                                     <div className="w-1 h-1 bg-gray-200 rounded-full" />
                                     <div className="text-[10px] font-black text-brand-lime uppercase tracking-widest bg-brand-lime/5 px-2 py-0.5 rounded-full ring-1 ring-brand-lime/10">
-                                        Intensity {log.intensity}
+                                        강도 {log.intensity}
                                     </div>
                                 </div>
                             </div>
@@ -76,7 +76,7 @@ export const RecentLogList = ({ logs, onLogUpdated, onEditLog }: Props) => {
                 {logs.length === 0 && (
                     <div className="text-center text-gray-400 py-12 bg-white rounded-[2rem] border-2 border-dashed border-gray-100 shadow-inner">
                         <p className="font-black text-gray-300">로그 데이터가 아직 없네요</p>
-                        <p className="text-[10px] mt-2 font-bold uppercase tracking-widest text-gray-400">First log will appear here</p>
+                        <p className="text-[10px] mt-2 font-bold uppercase tracking-widest text-gray-400">첫 기록을 남겨보세요!</p>
                     </div>
                 )}
             </div>

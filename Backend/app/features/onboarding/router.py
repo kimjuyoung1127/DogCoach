@@ -5,6 +5,7 @@ from app.core.database import get_db
 from app.core.security import get_current_user_id, get_current_user_id_optional
 from app.features.onboarding import service, schemas
 from typing import Optional
+import traceback
 
 router = APIRouter()
 

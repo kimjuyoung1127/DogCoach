@@ -21,10 +21,10 @@ Frontend/
 │   │   │   │   ├── QuickLogWidget.tsx   # 빠른 기록
 │   │   │   │   ├── RecentLogList.tsx    # 최근 기록 목록
 │   │   │   │   └── EditLogDialog.tsx    # 기록 상세 수정 모달
-│   │   │   ├── coaching/        # [NEW] AI 코칭 시스템
-│   │   │   │   ├── MissionTracker.tsx   # 오늘의 챌린지 미션
-│   │   │   │   ├── ChallengeMap.tsx     # 7일 챌린지 로드맵 시각화
-│   │   │   │   └── CoachingWidget.tsx   # AI 맞춤형 훈련 가이드
+│   │   │   ├── coach/           # [NEW] AI 코칭 & 7일 챌린지 시스템
+│   │   │   │   ├── ChallengeJourneyMap.tsx # 챌린지 여정 로드맵 시각화
+│   │   │   │   ├── ChallengeOnboardingModal.tsx # 챌린지 시작 안내 모달
+│   │   │   │   └── MissionActionOverlay.tsx # 단계별 미션 수행 오버레이
 │   │   └── shared/              # 재사용 UI 컴포넌트
 │   │       ├── animations/
 │   │       │   ├── FadeIn.tsx      # 페이드인 애니메이션

@@ -32,10 +32,14 @@ async def log_requests(request: Request, call_next):
 
 # Set all CORS enabled origins
 if settings.BACKEND_CORS_ORIGINS:
-    print(f"DEBUG: Loading CORS Origins: {settings.BACKEND_CORS_ORIGINS}")
+    origins = [str(origin) for origin in settings.BACKEND_CORS_ORIGINS]
+    # Ensure both localhost and 127.0.0.1 are covered for local development
+    if "http://localhost:3000" in origins and "http://127.0.0.1:3000" not in origins:
+        origins.append("http://127.0.0.1:3000")
+    
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:3000"],
+        allow_origins=origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

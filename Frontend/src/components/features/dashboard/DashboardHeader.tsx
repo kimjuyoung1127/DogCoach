@@ -16,7 +16,7 @@ export const DashboardHeader = ({ data }: Props) => {
                 <div>
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-lime/10 text-brand-lime rounded-full text-[10px] font-black uppercase tracking-widest mb-3 border border-brand-lime/20">
                         <Sparkles className="w-3 h-3" />
-                        Today's DogCoach
+                        오늘의 도그코치
                     </div>
                     <h1 className="text-3xl font-black text-gray-900 leading-tight">
                         반가워요, <br />
@@ -34,7 +34,7 @@ export const DashboardHeader = ({ data }: Props) => {
                             <div className="w-6 h-6 rounded-lg bg-orange-100 flex items-center justify-center">
                                 <Trophy className="w-3.5 h-3.5 text-orange-500" />
                             </div>
-                            <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">Current Streak</span>
+                            <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">연속 실천</span>
                         </div>
                         <div className="text-3xl font-black text-gray-900">{data.stats.current_streak} <span className="text-sm font-bold text-gray-400">일</span></div>
                     </div>
@@ -47,7 +47,7 @@ export const DashboardHeader = ({ data }: Props) => {
                             <div className="w-6 h-6 rounded-lg bg-brand-lime/20 flex items-center justify-center">
                                 <Calendar className="w-3.5 h-3.5 text-brand-lime" />
                             </div>
-                            <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">Total Logs</span>
+                            <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">누적 기록</span>
                         </div>
                         <div className="text-3xl font-black text-gray-900">{data.stats.total_logs} <span className="text-sm font-bold text-gray-400">개</span></div>
                     </div>
