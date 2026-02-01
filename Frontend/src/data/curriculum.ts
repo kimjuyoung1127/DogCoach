@@ -1065,3 +1065,18 @@ export const TRAINING_CURRICULUM: TrainingCourse[] = [
         ]
     }
 ];
+// Issue Mapping Utility
+export const mapIssueToCurriculum = (issues: string[]) => {
+    const map: Record<string, string> = {
+        'separation': 'separation_anxiety',
+        'barking': 'barking_noise',
+        'potty': 'toilet_training',
+        'destructive': 'pica_correction',
+        'aggression': 'leash_walking',
+        'etc': 'multi_dog',
+    };
+
+    if (!issues || issues.length === 0) return TRAINING_CURRICULUM[0];
+    const targetId = map[issues[0]] || 'separation_anxiety';
+    return TRAINING_CURRICULUM.find(c => c.id === targetId) || TRAINING_CURRICULUM[0];
+};

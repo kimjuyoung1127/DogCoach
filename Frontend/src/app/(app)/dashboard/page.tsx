@@ -4,15 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { DashboardData } from "@/components/features/dashboard/types";
-import { DashboardHeader } from "@/components/features/dashboard/dashboard-header";
-import { QuickLogWidget } from "@/components/features/dashboard/quick-log-widget";
-import { RecentLogList } from "@/components/features/dashboard/recent-log-list";
-import { CoachingWidget } from "@/components/features/dashboard/coaching-widget";
-import { EditLogDialog } from "@/components/features/dashboard/edit-log-dialog";
+import { DashboardHeader } from "@/components/features/dashboard/DashboardHeader";
+import { EditLogDialog } from "@/components/features/dashboard/EditLogDialog";
+import { MainDashboardTab } from "@/components/features/dashboard/MainDashboardTab";
 
 import { useAuth } from "@/hooks/useAuth";
-
-import { DashboardSkeleton } from "@/components/features/dashboard/dashboard-skeleton";
+import { DashboardSkeleton } from "@/components/features/dashboard/DashboardSkeleton";
 import { FadeIn } from "@/components/ui/animations/FadeIn";
 import { AnimatePresence } from "framer-motion";
 
@@ -22,23 +19,21 @@ import { QUERY_KEYS } from "@/lib/query-keys";
 
 export default function DashboardPage() {
     const router = useRouter();
-    const { token, loading: authLoading } = useAuth();
+    const { token } = useAuth();
     const queryClient = useQueryClient();
+
+    const [editingLog, setEditingLog] = useState<any | null>(null);
 
     // Use React Query Hook
     const { data, isLoading, error, refetch } = useDashboardData(!!token, token);
 
-    const [editingLog, setEditingLog] = useState<any | null>(null);
-
     const handleLogCreated = (newLog?: any) => {
-        // Invalidate queries to refresh data
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dashboard('me') });
         if (newLog) {
-            setEditingLog(newLog); // Open dialog immediately
+            setEditingLog(newLog);
         }
     };
 
-    // Manual refetch handler for RecentLogs List
     const handleLogUpdated = () => {
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dashboard('me') });
     };
@@ -63,30 +58,26 @@ export default function DashboardPage() {
             <h2 className="text-xl font-bold mb-4">반려견 정보가 없습니다.</h2>
             <p className="text-gray-500 mb-6">설문을 완료하고 맞춤형 코칭을 받아보세요.</p>
             <button onClick={() => router.push('/Survey')} className="bg-primary text-white px-6 py-3 rounded-full font-bold shadow-lg">
-                TailLog 시작하기
+                DogCoach 시작하기
             </button>
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-gray-50 pb-28">
             <DashboardHeader data={data} />
 
-            <FadeIn delay={0.1}>
-                <CoachingWidget dogId={data.dog_profile.id} issues={data.issues} />
-            </FadeIn>
-
-            <FadeIn delay={0.2}>
-                <QuickLogWidget dogId={data.dog_profile.id} onLogCreated={handleLogCreated} />
-            </FadeIn>
-
-            <FadeIn delay={0.3}>
-                <RecentLogList
-                    logs={data.recent_logs}
-                    onLogUpdated={handleLogUpdated}
-                    onEditLog={(log) => setEditingLog(log)}
-                />
-            </FadeIn>
+            <div className="px-1">
+                <FadeIn delay={0.1}>
+                    <MainDashboardTab
+                        dogId={data.dog_profile.id}
+                        recentLogs={data.recent_logs}
+                        onLogCreated={handleLogCreated}
+                        onLogUpdated={handleLogUpdated}
+                        onEditLog={setEditingLog}
+                    />
+                </FadeIn>
+            </div>
 
             {/* Hoisted Edit Dialog */}
             <AnimatePresence>

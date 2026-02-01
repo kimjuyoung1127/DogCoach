@@ -32,10 +32,12 @@
 [x] **Data Visualization**: Recharts 기반 레이더 차트, 바 차트, 커스텀 히트맵 고도화.
 [x] **Expert PDF Report**: `@react-pdf/renderer` 및 `html-to-image`를 활용한 전문가용 문진표 PDF 생성 기능.
 
-🧠 Phase 4: AI 파이프라인 (Cost Control)
-- [ ] 벡터 DB 구축.
-- [ ] [필수] AI 비용 최적화(Summary) 로직: 로그가 50개 이상 쌓이면 '중간 요약'을 생성하여 별도 저장, RAG는 요약본을 우선 참조.
-- [ ] 코칭 리포트 생성 및 피드백 루프.
+### ✅ Phase 4: 지능 (Coach & Curriculum)
+- [x] **AI 코칭 API**: 기본적인 슬롯 필링 기반 코칭 로직 (`coach/service.py`) 구현 완료.
+- [x] **맞춤형 커리큘럼**: 사용자 이슈에 따른 7일 챌린지 자동 생성 및 데이터 매핑 (`curriculum.ts`, `CoachPage`).
+- [x] **UX 최적화**: 결과 분석 -> 훈련 추천 -> 챌린지 시작으로 이어지는 전환률 최적화 flow 구축.
+- [ ] **RAG 고도화**: 벡터 DB(Supabase Vector) 연동 및 실제 로그 데이터 컨텍스트 주입 예정.
+- [ ] [필수] AI 비용 최적화(Summary) 로직.
 
 📊 Phase 5: 습관 & 알림
 - [ ] [필수] 대용량 알림 전송 큐(Queue) 설계: 수천 명에게 동시에 알림톡을 보낼 때 타임아웃이 나지 않도록 Supabase Edge Functions 또는 메시지 큐(Qstash 등) 도입.

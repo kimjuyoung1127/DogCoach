@@ -69,7 +69,6 @@ class DogResponse(BaseModel):
     created_at: Any
     
     model_config = ConfigDict(from_attributes=True)
-    model_config = ConfigDict(from_attributes=True)
 
     @staticmethod
     def sanitize_empty_strings(data: Any) -> Any:
