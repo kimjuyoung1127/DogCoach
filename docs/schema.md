@@ -74,7 +74,7 @@
 | :--- | :--- | :--- | :--- |
 | **`id`** | `UUID` | **PK**, Default: `uuid_generate_v4()` | 환경 정보 ID |
 | `dog_id` | `UUID` | **FK** (`dogs.id`), Unique, On Delete: Cascade | 해당 반려견 |
-| `household_info` | `JSONB` | | 주거 형태, 가족 구성, 주 양육자 |
+| `household_info` | `JSONB` | | 주거 형태, 가족 구성, 주 양육자 (ids, other_text) |
 | `health_meta` | `JSONB` | | 기저 질환, 알레르기 |
 | `profile_meta` | `JSONB` | | 몸무게, 입양일 |
 | `rewards_meta` | `JSONB` | | 좋아하는 간식, 보상 유형 |
