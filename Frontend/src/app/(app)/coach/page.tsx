@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ChallengeJourneyMap } from "@/components/features/challenge/ChallengeJourneyMap";
-import { MissionActionOverlay } from "@/components/features/challenge/MissionActionOverlay";
+import { ChallengeJourneyMap } from "@/components/features/coach/ChallengeJourneyMap";
+import { MissionActionOverlay } from "@/components/features/coach/MissionActionOverlay";
 import { Lock, Trophy, Zap, ChevronRight, BookOpen, ChevronDown, ChevronUp, Sparkles, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TRAINING_CURRICULUM, TrainingStage, mapIssueToCurriculum } from "@/data/curriculum";

@@ -40,13 +40,27 @@ async def generate_coaching(db: AsyncSession, request: schemas.CoachingRequest) 
     }
 
     # Extract from JSONB fields
-    if dog_env.rewards_meta and "favorite_treats" in dog_env.rewards_meta:
-        treats = dog_env.rewards_meta["favorite_treats"]
-        if isinstance(treats, list) and len(treats) > 0:
-            variables["treat"] = treats[0] # Pick first favorite treat
+    if dog_env.rewards_meta:
+        # Support new structure: {"ids": [...], "other_text": "..."}
+        # and old structure: {"favorite_treats": [...]}
+        ids = dog_env.rewards_meta.get("ids") or dog_env.rewards_meta.get("favorite_treats") or []
+        other = dog_env.rewards_meta.get("other_text")
+        
+        if other and "etc" in ids:
+            variables["treat"] = other
+        elif ids and len(ids) > 0:
+            variables["treat"] = ids[0]
 
     if dog_env.triggers:
-        if isinstance(dog_env.triggers, list) and len(dog_env.triggers) > 0:
+        # Support new structure and fallback to old list
+        if isinstance(dog_env.triggers, dict):
+            ids = dog_env.triggers.get("ids", [])
+            other = dog_env.triggers.get("other_text")
+            if other and "etc" in ids:
+                variables["trigger"] = other
+            elif ids and len(ids) > 0:
+                variables["trigger"] = ids[0]
+        elif isinstance(dog_env.triggers, list) and len(dog_env.triggers) > 0:
             variables["trigger"] = dog_env.triggers[0]
 
     if dog_env.household_info and "primary_carer" in dog_env.household_info:

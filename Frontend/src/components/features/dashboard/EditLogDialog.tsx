@@ -101,14 +101,14 @@ export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envCo
 
                 <p className="text-[10px] uppercase font-black tracking-[0.2em] text-gray-400 mb-8 flex items-center gap-2">
                     <Info className="w-3 h-3" />
-                    B-Behavior Refinement Loop
+                    상세 기록 및 피드백 루프
                 </p>
 
                 <div className="space-y-8 mb-10 overflow-y-auto max-h-[55vh] pr-2 scrollbar-hide py-1">
                     {/* Antecedent Section */}
                     <div>
                         <div className="flex justify-between items-end mb-3">
-                            <label className="text-xs font-black text-gray-900 uppercase tracking-widest bg-gray-100 px-2 py-0.5 rounded">Antecedent (A)</label>
+                            <label className="text-s font-black text-gray-900 uppercase tracking-widest bg-gray-100 px-2 py-0.5 rounded">상황</label>
                             <span className="text-[10px] font-bold text-brand-lime">원인 / 상황</span>
                         </div>
                         <div className="flex flex-wrap gap-2 mb-4">
@@ -135,9 +135,9 @@ export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envCo
                         <div className="absolute -right-4 -top-4 w-20 h-20 bg-white/40 rounded-full blur-xl" />
 
                         <div className="flex justify-between items-center mb-4 relative z-10">
-                            <label className="text-[10px] font-black text-gray-900 uppercase tracking-widest bg-white/50 px-2 py-0.5 rounded">Behavior (B)</label>
+                            <label className="text-[10px] font-black text-gray-900 uppercase tracking-widest bg-white/50 px-2 py-0.5 rounded">행동 (Behavior)</label>
                             <div className="text-[10px] font-black text-brand-lime uppercase tracking-widest px-2 py-1 bg-gray-900 rounded-lg shadow-sm">
-                                Intensity {intensity}
+                                강도 {intensity}
                             </div>
                         </div>
 
@@ -152,15 +152,15 @@ export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envCo
                             className="w-full h-1.5 bg-white/50 rounded-lg appearance-none cursor-pointer accent-brand-lime mb-2"
                         />
                         <div className="flex justify-between text-[10px] font-black text-gray-400 uppercase tracking-tighter">
-                            <span>Mild</span>
-                            <span>Critical</span>
+                            <span>약함</span>
+                            <span>심함</span>
                         </div>
                     </div>
 
                     {/* Consequence Section */}
                     <div>
                         <div className="flex justify-between items-end mb-3">
-                            <label className="text-xs font-black text-gray-900 uppercase tracking-widest bg-gray-100 px-2 py-0.5 rounded">Consequence (C)</label>
+                            <label className="text-s font-black text-gray-900 uppercase tracking-widest bg-gray-100 px-2 py-0.5 rounded">대처</label>
                             <span className="text-[10px] font-bold text-brand-lime">나의 대처</span>
                         </div>
                         <div className="flex flex-wrap gap-2 mb-4">

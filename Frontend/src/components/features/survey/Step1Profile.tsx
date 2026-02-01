@@ -3,6 +3,16 @@
 import { DogSex, SurveyData } from "./types";
 import { cn } from "@/lib/utils";
 import { Calendar, Dog } from "lucide-react";
+import { useState, useMemo } from "react";
+import breedsData from "@/data/breeds.json";
+import { matchSearch } from "@/lib/hangulUtils";
+
+// Extended interface for JSON data
+interface BreedEntry {
+    id: string;
+    ko: string;
+    en: string;
+}
 
 interface Props {
     data: SurveyData;
@@ -10,6 +20,15 @@ interface Props {
 }
 
 export function Step1Profile({ data, updateData }: Props) {
+    const [showBreeds, setShowBreeds] = useState(false);
+
+    const filteredBreeds = useMemo(() => {
+        if (!data.breed) return (breedsData as BreedEntry[]).slice(0, 50); // Show first 50 if empty
+        return (breedsData as BreedEntry[])
+            .filter(b => matchSearch(b.ko, data.breed) || matchSearch(b.en, data.breed))
+            .slice(0, 50); // Limit results for performance
+    }, [data.breed]);
+
     return (
         <div className="space-y-6">
             <div className="text-center mb-8">
@@ -31,18 +50,57 @@ export function Step1Profile({ data, updateData }: Props) {
                 </div>
 
                 {/* Breed Input */}
-                <div className="space-y-2">
+                <div className="space-y-2 relative">
                     <label className="text-sm font-bold text-gray-700">견종을 알려주세요</label>
                     <div className="relative">
                         <Dog className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                         <input
                             type="text"
                             value={data.breed}
-                            onChange={(e) => updateData({ breed: e.target.value })}
+                            onChange={(e) => {
+                                updateData({ breed: e.target.value });
+                                setShowBreeds(true);
+                            }}
+                            onFocus={() => setShowBreeds(true)}
                             className="w-full h-12 pl-12 pr-4 rounded-xl border border-gray-200 focus:border-brand-lime focus:ring-2 focus:ring-brand-lime/20 outline-none transition-all"
                             placeholder="견종 검색 또는 입력..."
                         />
                     </div>
+
+                    {showBreeds && (
+                        <>
+                            <div
+                                className="fixed inset-0 z-10"
+                                onClick={() => setShowBreeds(false)}
+                            />
+                            <div className="absolute z-20 w-full mt-2 max-h-60 overflow-y-auto bg-white border border-gray-100 rounded-xl shadow-xl py-2 animate-in fade-in zoom-in duration-200">
+                                {filteredBreeds.length > 0 ? (
+                                    filteredBreeds.map((b) => (
+                                        <button
+                                            key={b.id}
+                                            onClick={() => {
+                                                // Default to Korean, toggleable in the future
+                                                const showEnglish = false;
+                                                updateData({ breed: showEnglish ? b.en : b.ko });
+                                                setShowBreeds(false);
+                                            }}
+                                            className="w-full px-4 py-3 text-left hover:bg-brand-lime/5 transition-colors flex items-center justify-between group"
+                                        >
+                                            <span className="text-gray-900 group-hover:text-brand-lime font-medium">
+                                                {/* English/Korean toggle placeholder */}
+                                                {(false as boolean) ? b.en : b.ko}
+                                            </span>
+                                        </button>
+                                    ))
+                                ) : (
+                                    <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                                        검색 결과가 없습니다. <br />
+                                        <span className="text-xs text-gray-400">직접 입력하셔도 됩니다.</span>
+                                    </div>
+                                )}
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
 

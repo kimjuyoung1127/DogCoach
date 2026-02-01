@@ -16,17 +16,23 @@ export interface SurveyData {
 
     // Step 3: Health & Nutrition (New)
     healthIssues: string[]; // e.g., 'allergy', 'joint_pain'
+    healthIssuesOther?: string;
     favoriteTreats: string[]; // e.g., 'meat', 'vegetable'
+    favoriteTreatsOther?: string;
 
     // Step 4: Problem Behaviors (Revised)
     chronicIssues: string[]; // Top 3 problems
+    chronicIssuesOther?: string; // Custom input for 'etc'
+
     antecedents: string[]; // ABC - Antecedent
 
     // Step 5: Triggers (Revised A)
     triggers: string[]; // e.g., 'doorbell'
+    triggersOther?: string; // Custom input for 'etc'
 
     // Step 6: Past Attempts (Revised C) (New)
     pastAttempts: string[]; // e.g., 'scolding', 'ignoring'
+    pastAttemptsOther?: string; // Custom input for 'etc'
 
     // Step 7: Temperament (New)
     sensitivityScore: number; // 1-5 scale
@@ -43,10 +49,15 @@ export const INITIAL_DATA: SurveyData = {
     familyMembers: [],
     primaryCarer: '',
     healthIssues: [],
+    healthIssuesOther: '',
     favoriteTreats: [],
+    favoriteTreatsOther: '',
     chronicIssues: [],
+    chronicIssuesOther: '',
     antecedents: [],
     triggers: [],
+    triggersOther: '',
     pastAttempts: [],
+    pastAttemptsOther: '',
     sensitivityScore: 3,
 };

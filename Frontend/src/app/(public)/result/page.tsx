@@ -8,8 +8,8 @@ import { ActionPlanCard } from "@/components/features/result/ActionPlanCard";
 import { ConversionCTA } from "@/components/features/result/ConversionCTA";
 import { DebugLoginToggle } from "@/components/shared/layout/materials/DebugLoginToggle";
 import { LockedAnalysisSection } from "@/components/features/result/LockedAnalysisSection";
-import { ChallengeOnboardingModal } from "@/components/features/challenge/ChallengeOnboardingModal";
-import { MissionActionOverlay } from "@/components/features/challenge/MissionActionOverlay";
+import { ChallengeOnboardingModal } from "@/components/features/coach/ChallengeOnboardingModal";
+import { MissionActionOverlay } from "@/components/features/coach/MissionActionOverlay";
 import { Check, ArrowRight } from "lucide-react";
 import { SurveyLoading } from "@/components/features/survey/SurveyLoading";
 

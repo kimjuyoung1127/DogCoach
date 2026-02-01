@@ -41,16 +41,40 @@ async def get_dashboard_data(db: AsyncSession, dog_id: str) -> schemas.Dashboard
     
     if dog_env:
         if dog_env.chronic_issues:
-             # Assuming chronic_issues is {"top_issues": ["Barking", ...]}
-             issues = dog_env.chronic_issues.get("top_issues", [])
+             # Handle new structure: {"top_issues": [...], "other_text": "..."}
+             issues_data = dog_env.chronic_issues
+             top_issues = issues_data.get("top_issues", [])
+             other = issues_data.get("other_text")
+             if other and "etc" in top_issues:
+                 issues = [i if i != "etc" else other for i in top_issues]
+             else:
+                 issues = top_issues
         
         if dog_env.triggers:
-            # triggers is List[str] in JSONB
-            env_triggers = dog_env.triggers
+            # Handle new structure: {"ids": [...], "other_text": "..."}
+            triggers_data = dog_env.triggers
+            if isinstance(triggers_data, dict):
+                ids = triggers_data.get("ids", [])
+                other = triggers_data.get("other_text")
+                if other and "etc" in ids:
+                    env_triggers = [i if i != "etc" else other for i in ids]
+                else:
+                    env_triggers = ids
+            else:
+                env_triggers = triggers_data
             
         if dog_env.past_attempts:
-            # past_attempts is List[str] in JSONB
-            env_consequences = dog_env.past_attempts
+            # Handle new structure: {"ids": [...], "other_text": "..."}
+            attempts_data = dog_env.past_attempts
+            if isinstance(attempts_data, dict):
+                ids = attempts_data.get("ids", [])
+                other = attempts_data.get("other_text")
+                if other and "etc" in ids:
+                    env_consequences = [i if i != "etc" else other for i in ids]
+                else:
+                    env_consequences = ids
+            else:
+                env_consequences = attempts_data
 
     # 2. Fetch Stats (Total Logs, Streak)
     # Total Logs

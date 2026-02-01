@@ -52,7 +52,7 @@ export const QuickLogWidget = ({ dogId, onLogCreated }: Props) => {
         { label: "배변실수", val: "Toileting", icon: "💧", color: "yellow" },
         { label: "분리불안", val: "Anxiety", icon: "🏠", color: "purple" },
         { label: "흥분", val: "Excitement", icon: "⚡", color: "blue" },
-        { label: "기타", val: "Other", icon: "📝", color: "gray" },
+        { label: "기타", val: "기타", icon: "📝", color: "gray" },
     ];
 
     return (
@@ -64,7 +64,7 @@ export const QuickLogWidget = ({ dogId, onLogCreated }: Props) => {
                 </div>
                 <div className="flex items-center gap-1.5 px-2 py-0.5 bg-gray-100 rounded-full">
                     <div className="w-1 h-1 bg-brand-lime rounded-full animate-pulse" />
-                    <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Live Tracking</span>
+                    <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">실시간 트래킹</span>
                 </div>
             </div>
 

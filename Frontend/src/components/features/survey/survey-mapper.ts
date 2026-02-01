@@ -26,22 +26,31 @@ export function mapSurveyDataToSubmission(data: SurveyData) {
 
         // Step 3: Health & Nutrition
         health_meta: {
-            issues: data.healthIssues,
+            ids: data.healthIssues,
+            other_text: data.healthIssuesOther,
         },
         rewards_meta: {
-            favorite_treats: data.favoriteTreats,
+            ids: data.favoriteTreats,
+            other_text: data.favoriteTreatsOther,
         },
 
         // Step 4: Behavior
         chronic_issues: {
             top_issues: data.chronicIssues,
+            other_text: data.chronicIssuesOther,
         },
 
         // Step 5: Triggers
-        triggers: data.triggers,
+        triggers: {
+            ids: data.triggers,
+            other_text: data.triggersOther,
+        },
 
         // Step 6: Past Attempts
-        past_attempts: data.pastAttempts,
+        past_attempts: {
+            ids: data.pastAttempts,
+            other_text: data.pastAttemptsOther,
+        },
 
         // Step 7: Temperament
         temperament: {
