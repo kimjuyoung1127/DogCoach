@@ -21,7 +21,10 @@ export function mapSurveyDataToSubmission(data: SurveyData) {
         household_info: {
             type: data.householdType,
             family_count: data.familyMembers.length,
-            primary_carer: data.primaryCarer,
+            primary_carer: {
+                ids: data.primaryCarer,
+                other_text: data.primaryCarerOther,
+            },
         },
 
         // Step 3: Health & Nutrition
