@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronUp, Check } from "lucide-react";
+import { Check, ArrowRight, ArrowLeft } from "lucide-react";
 import confetti from "canvas-confetti";
 import { TrainingStage } from "@/data/curriculum";
+import { Button } from "@/components/ui/Button";
+import { ScaleButton } from "@/components/ui/animations/ScaleButton";
 
 interface MissionActionOverlayProps {
     isOpen: boolean;
@@ -12,26 +14,42 @@ interface MissionActionOverlayProps {
 }
 
 export function MissionActionOverlay({ isOpen, mission, onClose, onComplete }: MissionActionOverlayProps) {
-    const [isGuideOpen, setIsGuideOpen] = useState(false);
+    const [currentStep, setCurrentStep] = useState(0);
     const [isCompleted, setIsCompleted] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
             setIsCompleted(false);
-            setIsGuideOpen(false);
+            setCurrentStep(0);
         }
     }, [isOpen, mission]);
 
     if (!isOpen || !mission) return null;
 
+    const totalSteps = mission.steps.length;
+    const progress = ((currentStep + 1) / totalSteps) * 100;
+
+    const handleNext = () => {
+        if (currentStep < totalSteps - 1) {
+            setCurrentStep(prev => prev + 1);
+        } else {
+            handleComplete();
+        }
+    };
+
+    const handleBack = () => {
+        if (currentStep > 0) {
+            setCurrentStep(prev => prev - 1);
+        }
+    };
+
     const handleComplete = () => {
         setIsCompleted(true);
-        // Trigger Confetti
         confetti({
-            particleCount: 100,
+            particleCount: 150,
             spread: 70,
             origin: { y: 0.6 },
-            colors: ['#22c55e', '#86efac', '#f0fdf4']
+            colors: ['#22c55e', '#bef264', '#f7fee7']
         });
     };
 
@@ -39,114 +57,142 @@ export function MissionActionOverlay({ isOpen, mission, onClose, onComplete }: M
         onComplete(reaction);
     };
 
-    return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <motion.div
-                key={mission.id} // Re-render animation on mission change
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="bg-white rounded-3xl w-full max-w-sm md:max-w-md overflow-hidden relative max-h-[90vh] flex flex-col"
-            >
-                {/* Header */}
-                <div className="p-6 pt-8 bg-green-50 shrink-0">
-                    <span className="inline-block px-3 py-1 bg-green-200 text-green-800 rounded-full text-xs font-bold mb-3">Day {mission.day}</span>
-                    <h1 className="text-xl font-bold text-gray-900 leading-tight break-keep">
-                        {mission.title}
-                    </h1>
-                    <p className="text-sm text-gray-600 mt-2 break-keep">{mission.goal}</p>
-                </div>
+    const step = mission.steps[currentStep];
 
-                {/* Content & Actions (Scrollable) */}
-                <div className="flex-1 overflow-y-auto">
-                    {/* Illustration Area (Simplified for now - could be dynamic or generic) */}
-                    <div className="bg-gray-50 flex items-center justify-center p-6 h-[150px] shrink-0">
-                        <div className="w-full max-w-[140px] bg-white rounded-2xl shadow-sm border border-gray-100 p-4 text-center aspect-square flex items-center justify-center text-5xl">
-                            🐕
+    return (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+            <motion.div
+                key={mission.id}
+                initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                className="bg-white rounded-[2.5rem] w-full max-w-sm md:max-w-md overflow-hidden relative max-h-[90vh] flex flex-col shadow-2xl"
+            >
+                {/* Header Section */}
+                <div className="p-8 pb-4 bg-gradient-to-b from-green-50 to-white shrink-0">
+                    <div className="flex justify-between items-center mb-4">
+                        <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-black uppercase tracking-wider">
+                            Day {mission.day} Mission
+                        </span>
+                        <div className="flex gap-1.5">
+                            {mission.steps.map((_, idx) => (
+                                <div
+                                    key={idx}
+                                    className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentStep ? "w-8 bg-green-500" : "w-1.5 bg-gray-200"
+                                        }`}
+                                />
+                            ))}
                         </div>
                     </div>
+                    <h1 className="text-2xl font-black text-gray-900 leading-tight break-keep mb-2">
+                        {mission.title}
+                    </h1>
+                    <p className="text-sm text-gray-500 leading-relaxed break-keep font-medium">{mission.goal}</p>
+                </div>
 
-                    <div className="p-6 bg-white rounded-t-3xl -mt-6 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] relative z-10">
-                        {/* Accordion Guide */}
-                        <div className="mb-6 border border-gray-200 rounded-xl overflow-hidden">
-                            <button
-                                onClick={() => setIsGuideOpen(!isGuideOpen)}
-                                className="w-full flex items-center justify-between p-4 bg-white text-left font-bold text-gray-700 hover:bg-gray-50 transition-colors"
-                            >
-                                <span className="text-sm">어떻게 하나요? (가이드 보기)</span>
-                                {isGuideOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                            </button>
-                            <AnimatePresence>
-                                {isGuideOpen && (
-                                    <motion.div
-                                        initial={{ height: 0 }}
-                                        animate={{ height: "auto" }}
-                                        exit={{ height: 0 }}
-                                        className="overflow-hidden bg-gray-50 border-t border-gray-100"
-                                    >
-                                        <div className="p-4 text-xs text-gray-600 space-y-3">
-                                            {mission.steps.map((step) => (
-                                                <div key={step.step_number} className="flex gap-2">
-                                                    <span className="font-bold text-green-600 shrink-0">{step.step_number}.</span>
-                                                    <div>
-                                                        <p className="font-bold text-gray-800 mb-0.5">{step.title}</p>
-                                                        <p className="leading-relaxed">{step.description}</p>
-                                                        <p className="text-green-700 mt-1 bg-green-100/50 p-1.5 rounded text-[10px] font-medium">🎯 성공: {step.success_criteria}</p>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
-
-                        {/* Main Action or Feedback Loop */}
+                {/* Main Content Area */}
+                <div className="flex-1 overflow-y-auto px-8 pb-8">
+                    <AnimatePresence mode="wait">
                         {!isCompleted ? (
-                            <button
-                                onClick={handleComplete}
-                                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-green-200 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                            >
-                                <Check className="w-5 h-5" />
-                                완료했어요!
-                            </button>
-                        ) : (
                             <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="space-y-4"
+                                key={`step-${currentStep}`}
+                                initial={{ x: 20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                exit={{ x: -20, opacity: 0 }}
+                                transition={{ duration: 0.3, ease: "easeOut" }}
+                                className="space-y-6"
                             >
-                                <div className="text-center mb-4">
-                                    <h3 className="text-lg font-bold text-gray-900 mb-1">축하합니다! 🎉</h3>
-                                    <p className="text-gray-500 text-xs">Bella가 한결 편안해질 거예요.</p>
+                                {/* Illustration / Step Number */}
+                                <div className="flex items-center gap-4 py-4">
+                                    <div className="w-14 h-14 bg-green-500 text-white rounded-2xl flex items-center justify-center text-2xl font-black shadow-lg shadow-green-100">
+                                        {currentStep + 1}
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-lg font-extrabold text-gray-800">{step.title}</h3>
+                                        <p className="text-xs text-green-600 font-bold">Step Guide</p>
+                                    </div>
                                 </div>
 
-                                <div className="bg-gray-50 p-4 rounded-xl">
-                                    <h4 className="text-xs font-bold text-gray-700 mb-3 text-center">설치 후 Bella의 반응은?</h4>
-                                    <div className="grid grid-cols-3 gap-2">
-                                        <button onClick={() => handleReaction("neutral")} className="flex flex-col items-center gap-1 p-2 bg-white border border-gray-200 rounded-lg hover:border-green-500 transition-colors">
-                                            <span className="text-xl">😐</span>
-                                            <span className="text-[10px] font-medium text-gray-500">무관심</span>
-                                        </button>
-                                        <button onClick={() => handleReaction("comfortable")} className="flex flex-col items-center gap-1 p-2 bg-white border border-gray-200 rounded-lg hover:border-green-500 transition-colors">
-                                            <span className="text-xl">🙂</span>
-                                            <span className="text-[10px] font-medium text-gray-500">편안함</span>
-                                        </button>
-                                        <button onClick={() => handleReaction("barking")} className="flex flex-col items-center gap-1 p-2 bg-white border border-gray-200 rounded-lg hover:border-green-500 transition-colors">
-                                            <span className="text-xl">😠</span>
-                                            <span className="text-[10px] font-medium text-gray-500">여전함</span>
-                                        </button>
+                                {/* Step Description Card */}
+                                <div className="bg-gray-50 rounded-3xl p-6 border border-gray-100 italic text-gray-700 leading-relaxed text-sm">
+                                    "{step.description}"
+                                </div>
+
+                                {/* Success Criteria */}
+                                <div className="bg-green-50/50 rounded-2xl p-4 flex gap-3 items-start border border-green-100">
+                                    <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                                        <Check className="w-3 h-3 text-green-600" />
                                     </div>
+                                    <div>
+                                        <p className="text-[10px] font-bold text-green-800 uppercase tracking-tighter mb-1">성공 기준</p>
+                                        <p className="text-sm text-green-900 font-semibold leading-snug">{step.success_criteria}</p>
+                                    </div>
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div className="flex gap-3 pt-4">
+                                    {currentStep > 0 && (
+                                        <ScaleButton onClick={handleBack} className="flex-1">
+                                            <Button variant="secondary" className="w-full rounded-2xl py-6 gap-2">
+                                                <ArrowLeft className="w-4 h-4" />
+                                                이전
+                                            </Button>
+                                        </ScaleButton>
+                                    )}
+                                    <ScaleButton onClick={handleNext} className={currentStep === 0 ? "w-full" : "flex-[2]"}>
+                                        <Button variant="brand" className="w-full rounded-2xl py-6 text-lg gap-2 shadow-xl shadow-green-100">
+                                            {currentStep === totalSteps - 1 ? "미션 완료!" : "다음 단계로"}
+                                            <ArrowRight className="w-5 h-5" />
+                                        </Button>
+                                    </ScaleButton>
+                                </div>
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                className="py-8 space-y-8"
+                            >
+                                <div className="text-center">
+                                    <div className="text-6xl mb-6">🎉</div>
+                                    <h3 className="text-2xl font-black text-gray-900 mb-3">훌륭합니다!</h3>
+                                    <p className="text-gray-500 font-medium break-keep">
+                                        오늘의 훈련을 성공적으로 마쳤어요.<br />
+                                        훈련 중 강아지의 반응은 어땠나요?
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-3">
+                                    {[
+                                        { id: "comfortable", emoji: "🙂", label: "편안해해요", sub: "긍정적인 변화" },
+                                        { id: "neutral", emoji: "😐", label: "평소와 같아요", sub: "지속적인 관찰 필요" },
+                                        { id: "barking", emoji: "😠", label: "여전히 예민해요", sub: "도움이 필요해요" }
+                                    ].map((reaction) => (
+                                        <ScaleButton key={reaction.id} onClick={() => handleReaction(reaction.id)}>
+                                            <div className="w-full flex items-center gap-4 p-5 bg-white border-2 border-gray-100 rounded-[1.5rem] hover:border-green-500 hover:bg-green-50 transition-all text-left group">
+                                                <span className="text-3xl group-hover:scale-110 transition-transform">{reaction.emoji}</span>
+                                                <div className="flex-1">
+                                                    <p className="font-bold text-gray-800">{reaction.label}</p>
+                                                    <p className="text-xs text-gray-400 font-medium">{reaction.sub}</p>
+                                                </div>
+                                                <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-green-500 group-hover:translate-x-1 transition-all" />
+                                            </div>
+                                        </ScaleButton>
+                                    ))}
                                 </div>
                             </motion.div>
                         )}
+                    </AnimatePresence>
 
-                        {/* Close Button if not completed or just to dismiss */}
-                        <button onClick={onClose} className="mt-4 w-full py-2 text-gray-400 text-xs text-center hover:text-gray-600">
-                            닫기
-                        </button>
-                    </div>
+                    {/* Footer / Close */}
+                    <button
+                        onClick={onClose}
+                        className="mt-8 w-full py-2 text-gray-400 text-xs font-bold text-center hover:text-gray-600 transition-colors uppercase tracking-widest"
+                    >
+                        다음에 할게요
+                    </button>
                 </div>
             </motion.div>
         </div>
     );
 }
+

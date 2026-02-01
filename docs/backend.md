@@ -33,8 +33,10 @@ Backend/
     - [x] **Strict Query Keys** 설계를 통한 캐시 충돌 방지 및 자동 무효화(Invalidation) 적용.
     - [x] **Timezone Awareness**: `X-Timezone` 헤더 기반 로컬 시간 처리.
 
-### ⏳ Phase 4: 지능 (Coach & Settings)
-- [ ] AI 파이프라인 (RAG) 및 사용자 환경설정 구현 예정.
+### [/] Phase 4: 지능 (Coach & Settings)
+- [x] **AI 코칭 API**: 기본적인 슬롯 필링 기반 코칭 로직 (`coach/service.py`) 구현 완료.
+- [ ] **RAG 고도화**: 벡터 DB(Supabase Vector) 연동 및 실제 로그 데이터 컨텍스트 주입 예정.
+- [ ] **사용자 설정**: 알림 채널 및 AI 페르소나 설정 API 구현 예정.
 
 ## 4. 리팩토링 및 개선 사항
 - [x] **Feature-based Isolation**: 각 기능 폴더 내에서 Router-Service-Repository 패턴 준수.

@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, FileText, Plus, BrainCircuit, Settings, LogOut, BarChart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { apiClient } from "@/lib/api";
+import { useUserProfile } from "@/hooks/useQueries";
 
 interface UserProfile {
     id: string;
@@ -16,15 +16,9 @@ interface UserProfile {
 export function Sidebar() {
     const pathname = usePathname();
     const { token, user: supabaseUser } = useAuth();
-    const [profile, setProfile] = useState<UserProfile | null>(null);
 
-    useEffect(() => {
-        if (token) {
-            apiClient.get<UserProfile>("/auth/me", { token })
-                .then(data => setProfile(data))
-                .catch(err => console.error("Failed to fetch profile:", err));
-        }
-    }, [token]);
+    // Use Query Hook instead of useEffect
+    const { data: profile } = useUserProfile(token);
 
     const navItems = [
         { href: "/dashboard", label: "대시보드", icon: Home },

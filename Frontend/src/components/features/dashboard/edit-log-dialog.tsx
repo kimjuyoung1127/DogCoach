@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { apiClient } from "@/lib/api";
 import { RecentLog } from "./types";
 import { useAuth } from "@/hooks/useAuth";
+import { useUpdateLog } from "@/hooks/useQueries";
 
 interface Props {
     log: RecentLog | null;
@@ -28,10 +29,11 @@ const TagChip = ({ label, selected, onClick }: { label: string, selected: boolea
 
 export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envConsequences }: Props) => {
     const { token } = useAuth();
+    const { mutate: updateLog, isPending } = useUpdateLog(token);
+
     const [intensity, setIntensity] = useState<number>(5);
     const [antecedent, setAntecedent] = useState<string>("");
     const [consequence, setConsequence] = useState<string>("");
-    const [isSaving, setIsSaving] = useState(false);
 
     // Initialize state when log changes
     useEffect(() => {
@@ -44,25 +46,29 @@ export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envCo
 
     if (!open || !log) return null;
 
-    const handleSave = async () => {
+    const handleSave = () => {
         if (!token) return;
 
-        setIsSaving(true);
-        try {
-            await apiClient.patch(`/logs/${log.id}`, {
+        updateLog({
+            logId: log.id,
+            data: {
                 intensity,
                 antecedent,
                 consequence
-            }, { token });
-            onUpdate();
-            onClose();
-        } catch (e) {
-            console.error("Failed to update log", e);
-            alert("수정 실패");
-        } finally {
-            setIsSaving(false);
-        }
+            }
+        }, {
+            onSuccess: () => {
+                onUpdate();
+                onClose();
+            },
+            onError: (error) => {
+                alert("수정 실패: " + error.message);
+            }
+        });
     };
+
+    // Mapping isPending to isSaving for UI compatibility
+    const isSaving = isPending;
 
     return (
         <motion.div

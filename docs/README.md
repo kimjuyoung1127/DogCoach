@@ -14,7 +14,7 @@
 이 프로젝트는 **주관적인 훈련 방식의 한계**를 해결하기 위해 만들어졌습니다:  
 - **객관적 기록**: 선행(Antecedent), 행동(Behavior), 결과(Consequence)를 빠르고 상세하게 기록  
 - **상황 인식**: 사용자의 생활 패턴에 맞춘 **시간대(Timezone) 기반 데이터 처리**  
-- **AI 코칭(예정)**: 반려견의 환경과 과거 기록을 반영한 **맞춤형 RAG 기반 조언** 제공  
+- **AI 코칭**: 반려견의 환경과 ABC 기록을 분석하여 **맞춤형 훈련 솔루션** 및 **전문가용 PDF 리포트** 제공
 
 ---
 
@@ -44,7 +44,7 @@ DogCoach/
 ## 🛠️ 기술 스택  
 
 - **백엔드**: Python 3.10+, FastAPI, SQLAlchemy(비동기), Pydantic v2  
-- **프론트엔드**: TypeScript, Next.js 14, Zustand, Tailwind CSS  
+- **프론트엔드**: TypeScript, Next.js 14, TanStack Query v5, Tailwind CSS  
 - **데이터베이스**: PostgreSQL (Supabase), AsyncPG  
 - **인프라**: Supabase Auth, OpenAI API  
 
@@ -117,9 +117,10 @@ python -m pytest tests
 - [x] **1단계: 기반 구축** (DB, 보안, 모델)  
 - [x] **2단계: 온보딩** (설문, 게스트/유저 인증, OAuth)  
 - [x] **3단계: 핵심 루프** (로그 기록, 대시보드, 시간대 지원)  
-- [ ] **4단계: AI 지능** (RAG, 코칭 리포트)  
-- [ ] **5단계: 시각화** (히트맵, 미션 추적)  
-- [ ] **6단계: 최적화** (PWA, 오프라인 동기화)  
+- [x] **4단계: AI 지능** (AI 추천 엔지, 전문가 PDF 리포트 생성)  
+- [x] **5단계: 시각화 & 환경** (히트맵, 대화형 코칭 고도화)  
+- [x] **6단계: 최적화** (TanStack Query 도입, 낙관적 업데이트, 전역 에러 핸들링)  
+- [ ] **7단계: 고도화** (PWA, 오프라인 동기화)  
 
 ---
 

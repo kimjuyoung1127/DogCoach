@@ -29,20 +29,16 @@
 [x] **Performance**: TanStack Query(React Query) 도입 및 쿼리 캐싱(Dashboard/Logs) 최적화로 페이지 간 이동 속도 극대화.
 
 [x] **Log Analysis**: 행동 기록 분석 탭 고도화 및 실제 DB 데이터 연동(Timeline) 완료.
-
-[ ] 미디어 업로드 및 스토리지 연결.
+[x] **Data Visualization**: Recharts 기반 레이더 차트, 바 차트, 커스텀 히트맵 고도화.
+[x] **Expert PDF Report**: `@react-pdf/renderer` 및 `html-to-image`를 활용한 전문가용 문진표 PDF 생성 기능.
 
 🧠 Phase 4: AI 파이프라인 (Cost Control)
-[ ] 벡터 DB 구축.
+- [ ] 벡터 DB 구축.
+- [ ] [필수] AI 비용 최적화(Summary) 로직: 로그가 50개 이상 쌓이면 '중간 요약'을 생성하여 별도 저장, RAG는 요약본을 우선 참조.
+- [ ] 코칭 리포트 생성 및 피드백 루프.
 
-[ ] [필수] AI 비용 최적화(Summary) 로직: 로그가 50개 이상 쌓이면 '중간 요약'을 생성하여 별도 저장, RAG는 요약본을 우선 참조.
-
-[ ] 코칭 리포트 생성 및 피드백 루프.
-
-📊 Phase 5: 시각화 & 습관 (Async Jobs)
-[ ] 히트맵 및 미션 추적기.
-
-[ ] [필수] 대용량 알림 전송 큐(Queue) 설계: 수천 명에게 동시에 알림톡을 보낼 때 타임아웃이 나지 않도록 Supabase Edge Functions 또는 메시지 큐(Qstash 등) 도입.
+📊 Phase 5: 습관 & 알림
+- [ ] [필수] 대용량 알림 전송 큐(Queue) 설계: 수천 명에게 동시에 알림톡을 보낼 때 타임아웃이 나지 않도록 Supabase Edge Functions 또는 메시지 큐(Qstash 등) 도입.
 
 ⚡ Phase 6: 최적화 (Offline Sync)
 [ ] PWA 설정 및 에셋 최적화.

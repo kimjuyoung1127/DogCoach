@@ -9,7 +9,7 @@ Frontend/
 │   │   ├── (public)/            # 공개 페이지
 │   │   ├── (app)/               # 로그인 후 접근 가능한 앱 페이지
 │   │   │   ├── dashboard/       # 메인 대시보드 (Quick Log, 통계)
-│   │   │   └── log/             # [UPDATED] 행동 기록 분석 & 타임라인 (Real-data 연동)
+│   │   │   └── log/             # [UPDATED] 행동 기록 분석 & 고화질 PDF 리포트 (Recharts, React-PDF)
 │   │   ├── providers.tsx        # [NEW] 전역 Provider (QueryClientProvider 등)
 │   │   └── api/                 # Next.js API Routes (Proxy/Edge)
 │   ├── components/
@@ -28,7 +28,7 @@ Frontend/
 │   │       └── Toast.tsx           # 알림 토스트
 │   ├── hooks/
 │   │   ├── useAuth.ts           # Supabase Auth & 게스트 로그인 핸들링
-│   │   └── useQueries.ts        # [NEW] TanStack Query 커스텀 훅 (Dashboard, Logs, Context)
+│   │   └── useQueries.ts        # [UPDATED] TanStack Query 훅 (Queries & Mutations, 낙관적 업데이트)
 │   ├── lib/
 │   │   ├── api.ts               # Backend API 클라이언트 (Fetch Wrapper, Token Interceptor)
 │   │   ├── query-client.ts      # [NEW] QueryClient 설정 (Cache StaleTime 등)

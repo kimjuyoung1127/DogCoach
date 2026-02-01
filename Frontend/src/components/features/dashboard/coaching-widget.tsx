@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { apiClient } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
+import { useGetCoachingAdvice } from "@/hooks/useQueries";
 
 interface Props {
     dogId: string;
@@ -14,26 +15,24 @@ interface CoachingResponse {
 }
 
 export const CoachingWidget = ({ dogId, issues }: Props) => {
+    const { token } = useAuth();
+    const { mutate: getAdvice, isPending } = useGetCoachingAdvice(token);
+
     const [selectedIssue, setSelectedIssue] = useState<string | null>(null);
     const [advice, setAdvice] = useState<CoachingResponse | null>(null);
-    const [loading, setLoading] = useState(false);
 
-    const handleGetAdvice = async (issue: string) => {
+    const handleGetAdvice = (issue: string) => {
         setSelectedIssue(issue);
-        setLoading(true);
         setAdvice(null);
-        try {
-            const res = await apiClient.post<CoachingResponse>('/coach/generate', {
-                dog_id: dogId,
-                issue: issue
-            });
-            setAdvice(res);
-        } catch (error) {
-            console.error(error);
-            alert("코칭 생성 실패");
-        } finally {
-            setLoading(false);
-        }
+
+        getAdvice({ dogId, issue }, {
+            onSuccess: (data: any) => {
+                setAdvice(data);
+            },
+            onError: () => {
+                alert("코칭 생성 실패");
+            }
+        });
     };
 
     if (issues.length === 0) return null;
@@ -57,14 +56,14 @@ export const CoachingWidget = ({ dogId, issues }: Props) => {
                 ))}
             </div>
 
-            {loading && (
+            {isPending && (
                 <div className="mt-4 p-6 bg-white rounded-xl shadow-sm border border-gray-100 animate-pulse">
                     <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                     <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                 </div>
             )}
 
-            {advice && !loading && (
+            {advice && !isPending && (
                 <div className="mt-4 p-6 bg-indigo-50 rounded-xl border border-indigo-100 relative">
                     <button
                         onClick={() => setAdvice(null)}
