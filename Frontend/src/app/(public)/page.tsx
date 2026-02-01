@@ -11,7 +11,7 @@ import { PricingSection } from "@/components/features/landing/PricingSection";
 
 export const metadata: Metadata = {
     title: "TailLog | 데이터로 이해하는 반려견 행동 분석",
-    description: "머루의 짖음, 이제 감이 아닌 데이터로 해결하세요. AI 행동 분석, 맞춤 솔루션, 수의사 리포트까지. 오늘 시작하면 내일의 10년 평화가 찾아옵니다.",
+    description: "머루의 짖음, 이제 감이 아닌 데이터로 해결하세요. AI 행동 분석, 맞춤 솔루션, 동물병원 용 리포트까지. 오늘 시작하면 내일의 10년 평화가 찾아옵니다.",
     keywords: ["반려견 훈련", "강아지 행동 교정", "AI Dog Training", "TailLog", "테일로그", "분리불안", "강아지 히트맵"],
     openGraph: {
         title: "TailLog - 데이터 기반 반려견 행동 교정",
