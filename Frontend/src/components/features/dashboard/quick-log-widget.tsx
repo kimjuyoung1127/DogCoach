@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { apiClient } from "@/lib/api";
 import { Toast } from "@/components/ui/Toast";
 import { FadeIn } from "@/components/ui/animations/FadeIn";
 import { ScaleButton } from "@/components/ui/animations/ScaleButton";
 import { useAuth } from "@/hooks/useAuth";
+import { useCreateLog } from "@/hooks/useQueries";
 
 interface Props {
     dogId: string;
@@ -14,33 +14,36 @@ export const QuickLogWidget = ({ dogId, onLogCreated }: Props) => {
     const { token } = useAuth();
     const [toast, setToast] = useState({ visible: false, message: "", type: "success" as any });
 
+    // Use Mutation Hook
+    const { mutate: createLog } = useCreateLog(dogId, token);
+
     const showToast = (message: string, type: "success" | "error" = "success") => {
         setToast({ visible: true, message, type });
-        // Auto-hide handled by Toast component, but we can reset state here if needed
     };
 
-    const handleQuickLog = async (behavior: string, label: string) => {
+    const handleQuickLog = (behavior: string, label: string) => {
         if (!token) {
             showToast("로그인이 필요합니다.", "error");
             return;
         }
 
-        try {
-            const payload = {
-                dog_id: dogId,
-                behavior: behavior,
-                intensity: 3, // Default intensity
-                is_quick_log: true,
-                occurred_at: new Date().toISOString()
-            };
+        const payload = {
+            behavior: behavior,
+            intensity: 3, // Default intensity
+            is_quick_log: true,
+            occurred_at: new Date().toISOString()
+        };
 
-            const newLog = await apiClient.post('/logs', payload, { token }); // Pass token
-            showToast(`${label} 기록 완료!`, "success");
-            onLogCreated(newLog);
-        } catch (e: any) {
-            console.error("Quick Log Failed", e);
-            showToast("기록 실패: " + (e.message || e), "error");
-        }
+        createLog(payload as any, {
+            onSuccess: (newLog) => {
+                showToast(`${label} 기록 완료!`, "success");
+                onLogCreated(newLog);
+            },
+            onError: (error: any) => {
+                // Global error handler will also trigger, but we show local toast too for context
+                showToast("기록 실패: " + (error.message || "Unknown error"), "error");
+            }
+        });
     };
 
     const actions = [

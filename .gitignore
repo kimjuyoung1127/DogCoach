@@ -1,6 +1,8 @@
 # General
 .DS_Store
 Thumbs.db
+.agent/
+.agents/
 
 # Python
 __pycache__/

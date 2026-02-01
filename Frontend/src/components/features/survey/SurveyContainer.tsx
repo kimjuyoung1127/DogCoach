@@ -16,8 +16,9 @@ import { SurveyControls } from "./SurveyControls";
 import { KakaoSyncModal } from "./KakaoSyncModal";
 import { SurveyLoading } from "./SurveyLoading";
 
-import { apiClient } from "@/lib/api";
+
 import { useAuth } from "@/hooks/useAuth";
+import { useSubmitSurvey } from "@/hooks/useQueries";
 import { mapSurveyDataToSubmission } from "./survey-mapper";
 
 export function SurveyContainer() {
@@ -54,6 +55,8 @@ export function SurveyContainer() {
         proceedNext();
     };
 
+    const { mutate: submitSurvey } = useSubmitSurvey(token);
+
     const proceedNext = () => {
         if (step < TOTAL_STEPS) {
             setStep(step + 1);
@@ -64,31 +67,31 @@ export function SurveyContainer() {
             setIsAnalyzing(true);
 
             // API Submission
-            const submitData = async () => {
-                try {
-                    // Enforce Login if not logged in (or handle Anonymous if we support it)
-                    // For "Google Login" flow, we want them to be logged in effectively.
-                    if (!token) {
-                        alert("로그인이 필요합니다.");
-                        router.push("/login");
-                        return;
-                    }
-
-                    const payload = mapSurveyDataToSubmission(data);
-                    console.log("DEBUG: Sending Payload:", JSON.stringify(payload, null, 2));
-
-                    await apiClient.post('/onboarding/survey', payload, { token });
-                    console.log("SURVEY SUBMISSION SUCCESS!");
-                    alert("설문이 성공적으로 저장되었습니다!");
-                    // router.push('/result'); // Debugging: Disable redirect
-                } catch (error) {
-                    console.error("Survey submission failed:", error);
-                    setIsAnalyzing(false);
-                    alert("설문 제출에 실패했습니다. 다시 시도해주세요.");
+            const doSubmit = () => {
+                if (!token) {
+                    alert("로그인이 필요합니다.");
+                    router.push("/login");
+                    return;
                 }
+
+                const payload = mapSurveyDataToSubmission(data);
+                console.log("DEBUG: Sending Payload:", JSON.stringify(payload, null, 2));
+
+                submitSurvey(payload, {
+                    onSuccess: () => {
+                        console.log("SURVEY SUBMISSION SUCCESS!");
+                        alert("설문이 성공적으로 저장되었습니다!");
+                        // router.push('/result'); // Debugging: Disable redirect until backend is fully ready or use mocked
+                    },
+                    onError: (error) => {
+                        console.error("Survey submission failed:", error);
+                        setIsAnalyzing(false);
+                        alert("설문 제출에 실패했습니다. 다시 시도해주세요.");
+                    }
+                });
             };
 
-            submitData();
+            doSubmit();
         }
     };
 
