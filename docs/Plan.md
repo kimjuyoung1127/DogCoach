@@ -14,6 +14,7 @@
     - Dashboard: PWA Style Header + Notification Badge (DB 연결 및 Auth 적용 완료)
 
 [x] anonymous_sid 쿠키 및 게스트 데이터 저장 (Supabase Anonymous Auth).
+[x] 설문 고도화: Step 2 주 양육자 다중 선택 및 프리미엄 커스텀 입력 모달 구현.
 
 [ ] [필수] 로그인 시 데이터 소유권 이전(Migration) 트리거 구현: 게스트 데이터 -> 정회원 데이터 병합 로직.
 

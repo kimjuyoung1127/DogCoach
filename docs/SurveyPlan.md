@@ -14,8 +14,8 @@
 ### Step 2: 환경 설정 (Environment)
 반려견이 생활하는 물리적/사회적 환경을 파악합니다.
 *   **수집 항목**: 주거 형태(아파트/주택), 가족 구성원 수, **주 양육자**
-*   **Schema**: `dog_env.household_info` (type, family_count, primary_carer)
-*   **Why**: 주 양육자가 누구냐(어머니, 자녀, 본인)에 따라 AI 코칭의 어조(Tone)를 설정합니다. (예: 어머니라면 더 부드럽게)
+*   **Schema**: `dog_env.household_info` (type, family_count, primary_carer: {ids, other_text})
+*   **Why**: 주 양육자가 누구냐(어머니, 자녀, 본인)에 따라 AI 코칭의 어조(Tone)를 설정합니다. 다중 선택 및 직접 입력을 지원하여 개인화된 코칭을 제공합니다.
 
 ### Step 3: 건강/영양 (Health & Nutrition)
 신체적 불편함이 행동 문제의 원인이 아닌지 확인하고, 보상 시스템을 설계합니다.
