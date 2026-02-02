@@ -24,6 +24,7 @@ class LogUpdate(BaseModel):
     note: Optional[str] = None 
     antecedent: Optional[str] = None
     consequence: Optional[str] = None
+    occurred_at: Optional[datetime] = None
 
 class LogResponse(LogCreate):
     id: UUID

@@ -778,7 +778,7 @@ export const TRAINING_CURRICULUM: TrainingCourse[] = [
     },
     {
         id: "multi_dog",
-        title: "[우리는 깐부] 평화로운 다견 생활",
+        title: "[우리는 친구] 평화로운 다견 생활",
         description: "경쟁이 아닌 공존! 다견 가정을 위한 명확한 규칙과 배려 시스템",
         total_days: 5,
         difficulty: "Hard",

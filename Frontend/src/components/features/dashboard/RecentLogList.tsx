@@ -1,5 +1,6 @@
 import { RecentLog } from "./types";
-import { Clock, ChevronRight, History } from "lucide-react";
+import { Clock, ChevronRight, History, Calendar } from "lucide-react";
+import { translate } from "@/lib/localization";
 
 interface Props {
     logs: RecentLog[];
@@ -18,16 +19,16 @@ export const RecentLogList = ({ logs, onLogUpdated, onEditLog }: Props) => {
         return "📝";
     };
 
-    const getLabel = (behavior: string) => {
-        const map: any = {
-            "Barking": "짖음",
-            "Biting": "입질",
-            "Toileting": "배변실수",
-            "Anxiety": "분리불안",
-            "Excitement": "흥분"
-        };
-        return map[behavior] || behavior;
-    }
+    const formatDate = (dateStr: string) => {
+        const date = new Date(dateStr);
+        const today = new Date();
+        const isToday = date.toDateString() === today.toDateString();
+
+        if (isToday) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        return `${date.getMonth() + 1}/${date.getDate()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    };
 
     return (
         <div className="px-6 pb-24">
@@ -55,11 +56,11 @@ export const RecentLogList = ({ logs, onLogUpdated, onEditLog }: Props) => {
                                 {getIcon(log.behavior)}
                             </div>
                             <div>
-                                <div className="font-black text-gray-900 text-base mb-0.5">{getLabel(log.behavior)}</div>
+                                <div className="font-black text-gray-900 text-base mb-0.5">{translate(log.behavior)}</div>
                                 <div className="flex items-center gap-3">
                                     <div className="flex items-center gap-1 text-[10px] font-black text-gray-400 uppercase tracking-tighter">
                                         <Clock className="w-3 h-3" />
-                                        {new Date(log.occurred_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        {formatDate(log.occurred_at)}
                                     </div>
                                     <div className="w-1 h-1 bg-gray-200 rounded-full" />
                                     <div className="text-[10px] font-black text-brand-lime uppercase tracking-widest bg-brand-lime/5 px-2 py-0.5 rounded-full ring-1 ring-brand-lime/10">

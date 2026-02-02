@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { apiClient } from "@/lib/api";
+import { translate } from "@/lib/localization";
 import { RecentLog } from "./types";
 import { useAuth } from "@/hooks/useAuth";
 import { useUpdateLog } from "@/hooks/useQueries";
-import { Check, X, Info, Sparkles } from "lucide-react";
+import { Check, X, Info, Sparkles, Calendar, Clock, RotateCcw } from "lucide-react";
 
 interface Props {
     log: RecentLog | null;
@@ -35,6 +36,8 @@ export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envCo
     const [intensity, setIntensity] = useState<number>(5);
     const [antecedent, setAntecedent] = useState<string>("");
     const [consequence, setConsequence] = useState<string>("");
+    const [occurredAtDate, setOccurredAtDate] = useState<string>("");
+    const [occurredAtTime, setOccurredAtTime] = useState<string>("");
 
     // Initialize state when log changes
     useEffect(() => {
@@ -42,6 +45,14 @@ export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envCo
             setIntensity(log.intensity || 5);
             setAntecedent(log.antecedent || "");
             setConsequence(log.consequence || "");
+
+            // Handle ISO string to split date and time for inputs
+            const dt = new Date(log.occurred_at);
+            const dateStr = dt.toISOString().split('T')[0];
+            const timeStr = dt.toTimeString().split(' ')[0].substring(0, 5); // HH:mm
+
+            setOccurredAtDate(dateStr);
+            setOccurredAtTime(timeStr);
         }
     }, [log]);
 
@@ -50,12 +61,16 @@ export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envCo
     const handleSave = () => {
         if (!token) return;
 
+        // Combine date and time
+        const combinedDateTime = new Date(`${occurredAtDate}T${occurredAtTime}`).toISOString();
+
         updateLog({
             logId: log.id,
             data: {
                 intensity,
                 antecedent,
-                consequence
+                consequence,
+                occurred_at: combinedDateTime
             }
         }, {
             onSuccess: () => {
@@ -105,19 +120,60 @@ export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envCo
                 </p>
 
                 <div className="space-y-8 mb-10 overflow-y-auto max-h-[55vh] pr-2 scrollbar-hide py-1">
+                    {/* Time Section */}
+                    <div>
+                        <div className="flex justify-between items-end mb-3">
+                            <label className="text-s font-black text-gray-900 uppercase tracking-widest bg-gray-100 px-2 py-0.5 rounded">시간</label>
+                            <button
+                                onClick={() => {
+                                    const now = new Date();
+                                    setOccurredAtDate(now.toISOString().split('T')[0]);
+                                    setOccurredAtTime(now.toTimeString().split(' ')[0].substring(0, 5));
+                                }}
+                                className="text-[10px] font-bold text-brand-lime flex items-center gap-1 hover:bg-brand-lime/5 px-2 py-1 rounded-lg transition-colors"
+                            >
+                                <RotateCcw className="w-3 h-3" />
+                                지금 시간으로
+                            </button>
+                        </div>
+                        <div className="flex gap-2">
+                            <div className="flex-[2] relative">
+                                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                                <input
+                                    type="date"
+                                    value={occurredAtDate}
+                                    onChange={(e) => setOccurredAtDate(e.target.value)}
+                                    className="w-full text-xs font-bold pl-9 pr-3 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-lime/50 transition-all font-mono"
+                                />
+                            </div>
+                            <div className="flex-1 relative">
+                                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                                <input
+                                    type="time"
+                                    value={occurredAtTime}
+                                    onChange={(e) => setOccurredAtTime(e.target.value)}
+                                    className="w-full text-xs font-bold pl-9 pr-3 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-lime/50 transition-all font-mono"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Antecedent Section */}
                     <div>
                         <div className="flex justify-between items-end mb-3">
-                            <label className="text-s font-black text-gray-900 uppercase tracking-widest bg-gray-100 px-2 py-0.5 rounded">상황</label>
+                            <div className="flex flex-col gap-1">
+                                <label className="w-fit text-s font-black text-gray-900 uppercase tracking-widest bg-gray-100 px-2 py-0.5 rounded">상황</label>
+                                <span className="text-[10px] font-bold text-gray-400 ml-1">예: 다른 강아지를 만났어요, 택배 소리 등</span>
+                            </div>
                             <span className="text-[10px] font-bold text-brand-lime">원인 / 상황</span>
                         </div>
                         <div className="flex flex-wrap gap-2 mb-4">
                             {envTriggers.map((tag) => (
                                 <TagChip
                                     key={tag}
-                                    label={tag}
-                                    selected={antecedent === tag}
-                                    onClick={() => setAntecedent(tag === antecedent ? "" : tag)}
+                                    label={translate(tag)}
+                                    selected={antecedent === translate(tag) || antecedent === tag}
+                                    onClick={() => setAntecedent(antecedent === translate(tag) || antecedent === tag ? "" : translate(tag))}
                                 />
                             ))}
                         </div>
@@ -160,16 +216,19 @@ export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envCo
                     {/* Consequence Section */}
                     <div>
                         <div className="flex justify-between items-end mb-3">
-                            <label className="text-s font-black text-gray-900 uppercase tracking-widest bg-gray-100 px-2 py-0.5 rounded">대처</label>
+                            <div className="flex flex-col gap-1">
+                                <label className="w-fit text-s font-black text-gray-900 uppercase tracking-widest bg-gray-100 px-2 py-0.5 rounded">대처</label>
+                                <span className="text-[10px] font-bold text-gray-400 ml-1">예: 이름을 불렀어요, 간식을 줬어요 등</span>
+                            </div>
                             <span className="text-[10px] font-bold text-brand-lime">나의 대처</span>
                         </div>
                         <div className="flex flex-wrap gap-2 mb-4">
                             {envConsequences.map((tag) => (
                                 <TagChip
                                     key={tag}
-                                    label={tag}
-                                    selected={consequence === tag}
-                                    onClick={() => setConsequence(tag === consequence ? "" : tag)}
+                                    label={translate(tag)}
+                                    selected={consequence === translate(tag) || consequence === tag}
+                                    onClick={() => setConsequence(consequence === translate(tag) || consequence === tag ? "" : translate(tag))}
                                 />
                             ))}
                         </div>
