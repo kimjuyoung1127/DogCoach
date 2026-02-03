@@ -6,6 +6,10 @@
 - **슬로건**: "오늘의 기록 1분이 내일의 10년 평화를 만듭니다."
 - **스택**: Next.js 14+, Tailwind CSS v4, Framer Motion, PWA, Kakao Sync/알림톡, RAG 기반 AI 행동 분석.
 - **BM**: Freemium (히트맵 & 기본 기록) + Pro (AI ABC 분석, 알림톡 리마인더, 전문가용 PDF 리포트).
+- **디자인 아이덴티티**:
+    - **컨셉**: 'Alive' (생동감 있는 유기적 UI)
+    - **폰트**: 나눔스퀘어라운드 (Brand Main), Outfit (Typography accents)
+    - **핵심 요소**: Organic Background Blobs, Glassmorphism 3.0, Cinematic Staggered Animations.
 
 ---
 

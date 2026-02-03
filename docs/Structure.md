@@ -4,6 +4,7 @@
 ```
 Frontend/
 ├── public/                      # 정적 자원 (이미지, 아이콘)
+│   ├── fonts/                   # [NEW] 로컬 폰트 (NanumSquareRound TTF)
 ├── src/
 │   ├── app/
 │   │   ├── (public)/            # 공개 페이지

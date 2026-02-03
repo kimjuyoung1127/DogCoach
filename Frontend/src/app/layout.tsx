@@ -1,9 +1,35 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Outfit } from "next/font/google";
+import { Outfit } from "next/font/google";
+import localFont from "next/font/local";
 import "../styles/globals.css";
 import { Providers } from "./providers";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const nanumSquareRound = localFont({
+  src: [
+    {
+      path: "../../public/fonts/NanumSquareRoundL.ttf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/NanumSquareRoundR.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/NanumSquareRoundB.ttf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/NanumSquareRoundEB.ttf",
+      weight: "800",
+      style: "normal",
+    },
+  ],
+  variable: "--font-nanum",
+});
+
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
@@ -26,7 +52,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${inter.variable} ${outfit.variable} font-sans bg-gray-50 text-gray-900 antialiased`}>
+      <body className={`${nanumSquareRound.variable} ${outfit.variable} font-nanum bg-gray-50 text-gray-900 antialiased`}>
         <Providers>
           {children}
         </Providers>
