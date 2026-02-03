@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { PageTransition } from "@/components/ui/animations/PageTransition";
 import { SurveyProgress } from "./SurveyProgress";
@@ -104,8 +105,6 @@ export function SurveyContainer() {
     };
 
     const handleKakaoConfirm = () => {
-        // Mock Kakao Login / Save action
-        // In reality, this would likely be a redirect or an API call
         alert("카카오 계정으로 저장되었습니다! (Mock Action)");
 
         setShowKakaoModal(false);
@@ -115,7 +114,6 @@ export function SurveyContainer() {
     };
 
     const handleKakaoClose = () => {
-        // User chose to continue without saving
         setShowKakaoModal(false);
         setHasSeenKakaoModal(true);
         setDirection("forward");
@@ -127,43 +125,65 @@ export function SurveyContainer() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col py-12 pb-24 relative">
-            <KakaoSyncModal
-                isOpen={showKakaoModal}
-                onClose={handleKakaoClose}
-                onConfirm={handleKakaoConfirm}
+        <div className="min-h-screen bg-white relative overflow-hidden flex flex-col">
+            {/* Premium Background Depth */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 2, ease: "easeOut" }}
+                className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-brand-lime/5 rounded-full blur-[120px] -z-0"
+            />
+            <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 2, ease: "easeOut", delay: 0.5 }}
+                className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-brand-orange/5 rounded-full blur-[100px] -z-0"
             />
 
-            {IS_DEBUG && (
-                <div className="absolute top-4 left-4 bg-red-100 text-red-600 px-2 py-1 rounded text-xs font-bold z-50 opacity-50 hover:opacity-100 transition-opacity cursor-pointer" onClick={() => setStep((s) => (s < TOTAL_STEPS ? s + 1 : 1))}>
-                    🚧 DEBUG MODE ON (Click to Skip)
+            <div className="flex-1 flex flex-col py-12 relative z-10 animate-in fade-in duration-1000">
+                <KakaoSyncModal
+                    isOpen={showKakaoModal}
+                    onClose={handleKakaoClose}
+                    onConfirm={handleKakaoConfirm}
+                />
+
+                {IS_DEBUG && (
+                    <div className="absolute top-4 left-4 bg-red-100 text-red-600 px-2 py-1 rounded text-xs font-bold z-50 opacity-50 hover:opacity-100 transition-opacity cursor-pointer" onClick={() => setStep((s) => (s < TOTAL_STEPS ? s + 1 : 1))}>
+                        🚧 DEBUG MODE ON (Click to Skip)
+                    </div>
+                )}
+                <SurveyProgress currentStep={step} totalSteps={TOTAL_STEPS} />
+
+                <div className="flex-1 container max-w-xl mx-auto px-4 relative flex flex-col items-center">
+                    <div className="w-full h-[720px] bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-2xl shadow-gray-200/50 border border-white/50 overflow-hidden flex flex-col">
+                        <div className="flex-1 overflow-y-auto no-scrollbar p-6 md:p-10 relative">
+                            <PageTransition
+                                direction={direction}
+                                stepKey={step}
+                                className="min-h-full"
+                            >
+                                {step === 1 && <Step1Profile data={data} updateData={updateData} />}
+                                {step === 2 && <Step2Environment data={data} updateData={updateData} />}
+                                {step === 3 && <Step3Health data={data} updateData={updateData} />}
+                                {step === 4 && <Step4Problems data={data} updateData={updateData} />}
+                                {step === 5 && <Step5Triggers data={data} updateData={updateData} />}
+                                {step === 6 && <Step6PastAttempts data={data} updateData={updateData} />}
+                                {step === 7 && <Step7Temperament data={data} updateData={updateData} />}
+                            </PageTransition>
+                        </div>
+
+                        <div className="p-6 md:p-10 pt-0">
+                            <SurveyControls
+                                step={step}
+                                totalSteps={TOTAL_STEPS}
+                                onNext={handleNext}
+                                onBack={handleBack}
+                                canNext={validateStep(step, data, IS_DEBUG)}
+                            />
+                        </div>
+                    </div>
                 </div>
-            )}
-            <SurveyProgress currentStep={step} totalSteps={TOTAL_STEPS} />
-
-            <div className="flex-1 container max-w-xl mx-auto px-4 relative">
-                <PageTransition
-                    direction={direction}
-                    stepKey={step}
-                    className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 min-h-[400px]"
-                >
-                    {step === 1 && <Step1Profile data={data} updateData={updateData} />}
-                    {step === 2 && <Step2Environment data={data} updateData={updateData} />}
-                    {step === 3 && <Step3Health data={data} updateData={updateData} />}
-                    {step === 4 && <Step4Problems data={data} updateData={updateData} />}
-                    {step === 5 && <Step5Triggers data={data} updateData={updateData} />}
-                    {step === 6 && <Step6PastAttempts data={data} updateData={updateData} />}
-                    {step === 7 && <Step7Temperament data={data} updateData={updateData} />}
-                </PageTransition>
             </div>
-
-            <SurveyControls
-                step={step}
-                totalSteps={TOTAL_STEPS}
-                onNext={handleNext}
-                onBack={handleBack}
-                canNext={validateStep(step, data, IS_DEBUG)}
-            />
         </div>
     );
 }
@@ -173,20 +193,16 @@ function validateStep(step: number, data: SurveyData, isDebug: boolean): boolean
 
     switch (step) {
         case 1:
-            // Name, Breed, Sex, Weight, AdoptionDate required
             return !!data.dogName && !!data.breed && !!data.sex && !!data.weight && !!data.adoptionDate;
         case 2:
-            // Household, Primary Carer required
             return !!data.householdType && !!data.primaryCarer;
         case 3:
-            // Optional, but good to check if they clicked something? No, optional is fine.
             return true;
         case 4:
             return data.chronicIssues.length > 0;
         case 5:
             return data.triggers.length > 0;
         case 6:
-            // Optional or required? Let's make it optional or "none" selected
             return data.pastAttempts.length > 0;
         case 7:
             return !!data.sensitivityScore;

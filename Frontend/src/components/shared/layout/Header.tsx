@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Menu, User as UserIcon, LogOut, LayoutDashboard, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
@@ -39,11 +40,16 @@ export function Header() {
         <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-100 pt-[env(safe-area-inset-top)] transition-all">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                 {/* Logo */}
-                <Link href="/" className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-brand-lime flex items-center justify-center">
-                        <span className="text-white text-lg">🐾</span>
-                    </div>
-                    <span className="text-xl font-bold text-gray-900 tracking-tight">TailLog</span>
+                <Link href="/" className="flex items-center gap-2 group">
+                    <motion.div
+                        whileHover={{ rotate: 15, scale: 1.1 }}
+                        className="w-10 h-10 rounded-2xl bg-brand-lime flex items-center justify-center shadow-lg shadow-brand-lime/20"
+                    >
+                        <span className="text-white text-xl">🐾</span>
+                    </motion.div>
+                    <span className="text-2xl font-black text-gray-900 tracking-tight font-outfit group-hover:text-brand-lime transition-colors">
+                        TailLog
+                    </span>
                 </Link>
 
                 {/* Desktop Nav */}

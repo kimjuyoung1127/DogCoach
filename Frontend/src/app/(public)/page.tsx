@@ -8,6 +8,9 @@ import { SeamlessSection } from "@/components/features/landing/SeamlessSection";
 import { ProcessSection } from "@/components/features/landing/ProcessSection";
 import { ExpertSynergySection } from "@/components/features/landing/ExpertSynergySection";
 import { PricingSection } from "@/components/features/landing/PricingSection";
+import { TestimonialsSection } from "@/components/features/landing/TestimonialsSection";
+import { FAQSection } from "@/components/features/landing/FAQSection";
+import { FinalCTASection } from "@/components/features/landing/FinalCTASection";
 
 export const metadata: Metadata = {
     title: "TailLog | 데이터로 이해하는 반려견 행동 분석",
@@ -47,8 +50,17 @@ export default function LandingPage() {
             {/* 8. Expert Synergy: Vet Report */}
             <ExpertSynergySection />
 
-            {/* 9. Pricing: Emotional Closing */}
+            {/* 9. Testimonials: Real Stories */}
+            <TestimonialsSection />
+
+            {/* 10. Pricing: Emotional Closing */}
             <PricingSection />
+
+            {/* 11. FAQ: Resolving Doubts */}
+            <FAQSection />
+
+            {/* 12. Final CTA: Last Chance */}
+            <FinalCTASection />
         </div>
     );
 }

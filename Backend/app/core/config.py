@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     # Third Party
     OPENAI_API_KEY: str
     KAKAO_API_KEY: str | None = None
+    AI_API_URL: str = "http://localhost:11434" # Default for local Ollama
 
     class Config:
         case_sensitive = True
