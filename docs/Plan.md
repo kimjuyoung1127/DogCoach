@@ -64,3 +64,9 @@
 [ ] 전문가 대시보드.
 
 [ ] 최종 보안 점검 (Double Check).
+
+### 💎 Phase 8: Premium Experience (Branding & Identity)
+- [x] **Branding Refresh**: 국문 가독성을 극대화한 **나눔스퀘어라운드(NanumSquareRound)** 폰트 도입 및 적용.
+- [x] **Alive Aesthetic**: 유기적 배경 블롭(Organic Blobs), 고도화된 글래스모피즘 컨테이너, 스테이지별 시네마틱 애니메이션 적용.
+- [x] **UX Geometry**: 설문 조사 컨테이너 720px 고정 및 내부 스크롤 최적화를 통해 일관된 시각 프레임 확보.
+- [x] **Dev Productivity**: Home/Survey/Result/Dash를 자유롭게 이동할 수 있는 **글로벌 디버그 네비게이션** 구축.

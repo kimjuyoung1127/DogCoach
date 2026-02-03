@@ -21,6 +21,9 @@
             transform: translateY(0);
         }
     }
+
+    --font-outfit: var(--font-outfit);
+    --font-nanum: var(--font-nanum);
 }
 
 @theme inline {
@@ -141,6 +144,7 @@
     @apply bg-background text-foreground;
     }
 }
+
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
     display: none;
@@ -149,4 +153,9 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+}
+
+:root {
+  --font-outfit: var(--font-outfit);
+  --font-nanum: var(--font-nanum);
 }

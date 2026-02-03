@@ -1,28 +1,42 @@
 import { motion } from "framer-motion";
-import { MessageCircle, Download } from "lucide-react";
+import { MessageCircle, Download, Sparkles } from "lucide-react";
 
 export function ConversionCTA() {
     return (
         <motion.section
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="fixed bottom-0 left-0 right-0 p-4 pb-8 bg-gradient-to-t from-white via-white to-transparent z-50 flex flex-col items-center"
+            transition={{ type: "spring", damping: 25, stiffness: 200, delay: 0.8 }}
+            className="fixed bottom-0 left-0 right-0 p-6 pb-12 bg-gradient-to-t from-white via-white/95 to-transparent z-50 flex flex-col items-center font-outfit"
         >
-            <div className="w-full max-w-xl mx-auto space-y-3">
-                <button className="w-full bg-[#FEE500] hover:bg-[#FDD835] active:scale-[0.98] text-[#3C1E1E] font-bold py-4 px-6 rounded-2xl shadow-lg shadow-yellow-200/50 flex items-center justify-center gap-2 transition-all">
-                    <MessageCircle className="w-6 h-6 fill-[#3C1E1E]" />
-                    <span>Bella의 리포트 저장하고 매일 코칭받기</span>
+            <div className="w-full max-w-xl mx-auto space-y-4">
+                {/* Visual Hint */}
+                <div className="flex justify-center mb-2">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-lime/10 text-brand-lime rounded-full text-[10px] font-black uppercase tracking-widest border border-brand-lime/20">
+                        <Sparkles className="w-3.5 h-3.5" />
+                        Next Level Coaching
+                    </div>
+                </div>
+
+                {/* Primary Button - Kakao Premium */}
+                <button className="w-full bg-[#FEE500] hover:bg-[#FDD835] active:scale-[0.98] text-[#3C1E1E] font-black py-5 px-8 rounded-[1.5rem] shadow-2xl shadow-yellow-200/60 flex items-center justify-center gap-3 transition-all group overflow-hidden relative">
+                    <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                    <MessageCircle className="w-6 h-6 fill-[#3C1E1E] relative z-10" />
+                    <span className="text-md relative z-10">리포트 저장하고 매일 코칭받기</span>
                 </button>
 
-                <div className="text-center">
-                    <p className="text-xs text-gray-400 mb-2">
-                        카카오로 1초 만에 시작하면, 내일부터 Bella가 직접 보내는 알림톡을 받을 수 있어요.
+                <div className="text-center px-4">
+                    <p className="text-[11px] text-gray-400 mb-4 font-medium leading-relaxed opacity-80 break-keep">
+                        카카오로 1초 만에 시작하면, 내일부터 우리 아이가<br /> 직접 보내는 <strong>데일리 알림톡</strong>을 받을 수 있어요.
                     </p>
-                    <button className="inline-flex items-center gap-1.5 text-xs text-gray-500 font-medium bg-gray-100 px-3 py-1.5 rounded-full hover:bg-gray-200 transition-colors">
-                        <Download className="w-3 h-3" />
-                        <span>홈 화면에 추가하여 1초 만에 기록하기</span>
-                    </button>
+
+                    {/* Secondary Actions */}
+                    <div className="flex items-center justify-center gap-2">
+                        <button className="inline-flex items-center gap-1.5 text-[10px] text-gray-500 font-black uppercase tracking-widest bg-gray-50/50 backdrop-blur-sm px-4 py-2 rounded-full border border-gray-100 hover:bg-gray-100 transition-all active:scale-95 shadow-sm">
+                            <Download className="w-3.5 h-3.5" />
+                            <span>Install PWA</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </motion.section>

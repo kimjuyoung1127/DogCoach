@@ -58,8 +58,8 @@ export function AnalysisRadarChart({ data = [8, 4, 3, 9, 6] }: RadarChartProps) 
                                 const p = getPoint(level, i);
                                 return `${p.x},${p.y}`;
                             }).join(" ")}
-                            fill={level === 10 ? "#f9fafb" : "none"} // Fill outer only
-                            stroke="#e5e7eb"
+                            fill={level === 10 ? "rgba(74, 222, 128, 0.02)" : "none"}
+                            stroke="rgba(0,0,0,0.05)"
                             strokeWidth="1"
                         />
                     ))}
@@ -72,23 +72,40 @@ export function AnalysisRadarChart({ data = [8, 4, 3, 9, 6] }: RadarChartProps) 
                             y1={center}
                             x2={axis.endPoint.x}
                             y2={axis.endPoint.y}
-                            stroke="#e5e7eb"
+                            stroke="rgba(0,0,0,0.05)"
                             strokeWidth="1"
                         />
                     ))}
 
-                    {/* Data Polygon */}
+                    {/* Data Polygon with Glow */}
+                    <defs>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                            <feMerge>
+                                <feMergeNode in="coloredBlur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
+
                     <motion.polygon
                         initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: 0.6, scale: 1 }}
-                        transition={{ duration: 1, type: "spring" }}
+                        animate={{ opacity: 0.7, scale: 1 }}
+                        transition={{ duration: 1.5, type: "spring", bounce: 0.4 }}
                         points={points}
-                        fill="#4ade80" // Green-400
-                        stroke="#16a34a" // Green-600
-                        strokeWidth="2"
+                        fill="url(#radarGradient)"
+                        stroke="#4ade80"
+                        strokeWidth="3"
+                        strokeLinejoin="round"
+                        filter="url(#glow)"
                     />
 
-                    {/* Labels */}
+                    <linearGradient id="radarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#4ade80" stopOpacity="0.8" />
+                        <stop offset="100%" stopColor="#22c55e" stopOpacity="0.6" />
+                    </linearGradient>
+
+                    {/* Labels - Premium Outfit */}
                     {axes.map((axis, i) => (
                         <text
                             key={i}
@@ -96,7 +113,7 @@ export function AnalysisRadarChart({ data = [8, 4, 3, 9, 6] }: RadarChartProps) 
                             y={axis.labelPoint.y}
                             textAnchor="middle"
                             dy="0.3em"
-                            className="text-[10px] fill-gray-500 font-medium"
+                            className="text-[11px] fill-gray-900 font-black uppercase tracking-tighter font-outfit"
                         >
                             {axis.label}
                         </text>
