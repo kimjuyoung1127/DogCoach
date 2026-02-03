@@ -12,9 +12,11 @@
 ## 📋 프로젝트 배경  
 
 이 프로젝트는 **주관적인 훈련 방식의 한계**를 해결하기 위해 만들어졌습니다:  
-- **객관적 기록**: 선행(Antecedent), 행동(Behavior), 결과(Consequence)를 빠르고 상세하게 기록  
-- **상황 인식**: 사용자의 생활 패턴에 맞춘 **시간대(Timezone) 기반 데이터 처리**  
-- **AI 코칭**: 반려견의 환경과 ABC 기록을 분석하여 **맞춤형 훈련 솔루션** 및 **전문가용 PDF 리포트** 제공
+- **객관적 기록**: 선행(Antecedent), 행동(Behavior), 결과(Consequence)를 빠르고 상세하게 기록 (한국어 로컬라이징 지원)
+- **상황 인식**: 사용자의 생활 패턴에 맞춘 **시간대(Timezone) 기반 데이터 처리** 및 발생 시간 자유 편집
+- **AI 리포트 (Deep Insight)**: 로컬 LLM(**Qwen2.5**)을 활용하여 로그 데이터를 분석, 강아지의 심리를 대변하는 **'속마음 편지'**와 전문가용 PDF 제공
+- **보안 & 가성비**: **Cloudflare Tunnel**로 연결된 로컬 AI 서버를 활용하여 **API 비용 $0** 및 데이터 프라이버시 확보
+- **보안 & 경험**: **RLS(Row Level Security)** 기반의 데이터 격리 및 **Lottie 애니메이션**을 통한 생동감 넘치는 UX
 
 ---
 
@@ -46,7 +48,8 @@ DogCoach/
 - **백엔드**: Python 3.10+, FastAPI, SQLAlchemy(비동기), Pydantic v2  
 - **프론트엔드**: TypeScript, Next.js 14, TanStack Query v5, Tailwind CSS  
 - **데이터베이스**: PostgreSQL (Supabase), AsyncPG  
-- **인프라**: Supabase Auth, OpenAI API  
+- **AI 엔진**: **Ollama (Qwen2.5)**, **Cloudflare Tunnel** (로컬 리소스 공유 방식)  
+- **인프라**: Supabase Auth (JWT), @react-pdf/renderer
 
 ---
 
@@ -84,6 +87,12 @@ DogCoach/
    ```bash
    python -m uvicorn app.main:app --reload
    ```
+   
+  6. AI 터널 실행 (필요 시)
+   ```bash
+   # 로컬 Ollama를 외부 백엔드와 연결
+   ./cloudflared.exe tunnel --url http://localhost:11434
+   ```
   
 ### 프론트엔드 실행  
 1. Frontend 디렉토리 이동  
@@ -117,10 +126,12 @@ python -m pytest tests
 - [x] **1단계: 기반 구축** (DB, 보안, 모델)  
 - [x] **2단계: 온보딩** (설문, 게스트/유저 인증, OAuth)  
 - [x] **3단계: 핵심 루프** (로그 기록, 대시보드, 시간대 지원)  
-- [x] **4단계: AI 지능** (AI 추천 엔지, 전문가 PDF 리포트 생성)  
+- [x] **4단계: AI 지능** (로컬 LLM 연동, 심층 분석 리포트 생성, 강아지 편지 기능)  
 - [x] **5단계: 시각화 & 챌린지** (히트맵, 7일 챌린지 로드맵, 맞춤 커리큘럼 매핑)  
-- [x] **6단계: 구조화 & 최적화** (기능별 폴더 리팩토링, TanStack Query 고도화, UI 하이라이트 시스템)  
-- [ ] **7단계: 고도화** (PWA, 오프라인 동기화, RAG 성능 향상)  
+- [x] **6단계: 구조화 & 최적화** (기능별 폴더 리팩토링, TanStack Query 고도화, UI 하이라이트 시스템, **Lottie 로딩 애니메이션**)
+- [x] **7단계: 보안 & 데이터 유연성** (**RLS(Row Level Security)** 강화, **로컬라이징 매핑**, 로그 시간 수정 지원)
+- [x] **8단계: 인프라 고도화** (**Cloudflare Tunnel** 구축, 오라클 클라우드 이전 준비 완료)
+- [ ] **9단계: 고도화** (PWA Offline Sync, RAG 성능 향상, 알림 서비스 연동)
 
 ---
 

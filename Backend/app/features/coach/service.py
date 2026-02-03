@@ -1,7 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from app.shared.models import Dog, DogEnv
-from app.features.coach import schemas, templates
+from app.shared.models import Dog, DogEnv, BehaviorLog
+from app.features.coach import schemas, templates, prompts
+from app.shared.clients.ai_client import ai_client
 from fastapi import HTTPException
 
 async def generate_coaching(db: AsyncSession, request: schemas.CoachingRequest) -> schemas.CoachingResponse:
@@ -112,4 +113,71 @@ async def generate_coaching(db: AsyncSession, request: schemas.CoachingRequest) 
         description=filled_desc,
         steps=filled_steps,
         advice=advice
+    )
+
+async def analyze_behavior_with_ai(db: AsyncSession, dog_id: str) -> schemas.AIAnalysisResponse:
+    # 1. Fetch Data
+    # Dog Profile
+    dog = await db.scalar(select(Dog).where(Dog.id == dog_id))
+    if not dog:
+        raise HTTPException(status_code=404, detail="Dog not found")
+        
+    # Dog Environment
+    env = await db.scalar(select(DogEnv).where(DogEnv.dog_id == dog_id))
+    env_data = env.__dict__ if env else {}
+
+    # Recent Logs (Latest 10)
+    logs_result = await db.execute(
+        select(BehaviorLog)
+        .where(BehaviorLog.dog_id == dog_id)
+        .order_by(BehaviorLog.occurred_at.desc())
+        .limit(10)
+    )
+    logs = logs_result.scalars().all()
+    logs_list = [
+        {
+            "occurred_at": log.occurred_at.strftime("%Y-%m-%d %H:%M"),
+            "antecedent": log.antecedent,
+            "behavior": log.behavior,
+            "consequence": log.consequence,
+            "intensity": log.intensity
+        }
+        for log in logs
+    ]
+
+    # 2. Build Prompt
+    dog_info = {
+        "name": dog.name,
+        "breed": dog.breed,
+        "age": dog.age,
+        "sex": dog.sex
+    }
+    
+    prompt = prompts.create_analysis_prompt(dog_info, env_data, logs_list)
+    system_prompt = prompts.SYSTEM_PROMPT
+
+    # 3. Call AI
+    ai_response_text = await ai_client.generate_response(prompt, system_prompt)
+
+    # 4. Parse Response (Simple heuristic for now, assuming LLM follows structure)
+    # Ideally, use structured output from LLM, but for Qwen-1.5B, we parse manually or just return
+    sections = ai_response_text.split("\n\n")
+    
+    insight = "진단 결과 데이터를 생성 중입니다."
+    action_plan = "솔루션을 생성 중입니다."
+    dog_voice = "강아지의 마음을 읽고 있습니다."
+
+    for i, section in enumerate(sections):
+        if "종합 진단" in section or "1." in section:
+            insight = section.strip()
+        elif "맞춤 솔루션" in section or "3." in section:
+            action_plan = section.strip()
+        elif "강아지의 속마음" in section or "4." in section:
+            dog_voice = section.strip()
+
+    return schemas.AIAnalysisResponse(
+        insight=insight,
+        action_plan=action_plan,
+        dog_voice=dog_voice,
+        raw_analysis=ai_response_text
     )

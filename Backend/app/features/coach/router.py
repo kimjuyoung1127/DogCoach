@@ -16,3 +16,12 @@ async def generate_coaching_advice(
     # Security: Verify dog belongs to user/guest?
     # For MVP, we trust the ID or could add check logic in service.
     return await service.generate_coaching(db, request)
+
+@router.post("/analyze/{dog_id}", response_model=schemas.AIAnalysisResponse)
+async def analyze_dog_behavior(
+    dog_id: str,
+    user_id: Optional[str] = Depends(get_current_user_id_optional),
+    db: AsyncSession = Depends(get_db)
+):
+    # This endpoint uses LLM to analyze the dog's behavior based on logs and env.
+    return await service.analyze_behavior_with_ai(db, dog_id)

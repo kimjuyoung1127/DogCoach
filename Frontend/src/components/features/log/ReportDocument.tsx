@@ -106,10 +106,14 @@ interface ReportDocumentProps {
     logs: any[];
     chartImage?: string; // DataURL captured from html2canvas
     recommendedCourse: TrainingCourse;
-    insight: string;
+    aiAnalysis?: {
+        insight: string;
+        action_plan: string;
+        dog_voice: string;
+    };
 }
 
-export function ReportDocument({ dogName, logs, chartImage, recommendedCourse, insight }: ReportDocumentProps) {
+export function ReportDocument({ dogName, logs, chartImage, recommendedCourse, aiAnalysis }: ReportDocumentProps) {
     const totalLogs = logs.length;
     const lastLog = logs[0]?.occurred_at ? new Date(logs[0].occurred_at).toLocaleDateString() : "-";
 
@@ -139,7 +143,14 @@ export function ReportDocument({ dogName, logs, chartImage, recommendedCourse, i
                             <Text style={styles.statValue}>{recommendedCourse.title.split("]")[0].replace("[", "")}</Text>
                         </View>
                     </View>
-                    <Text style={styles.text}>{insight}</Text>
+                    {aiAnalysis ? (
+                        <View style={{ marginTop: 10 }}>
+                            <Text style={{ ...styles.text, fontWeight: "bold" }}>[AI 전문가 총평]</Text>
+                            <Text style={styles.text}>{aiAnalysis.insight}</Text>
+                        </View>
+                    ) : (
+                        <Text style={styles.text}>데이터 분석 중입니다...</Text>
+                    )}
                 </View>
 
                 {/* Charts (Image) */}
@@ -163,6 +174,13 @@ export function ReportDocument({ dogName, logs, chartImage, recommendedCourse, i
                             {idx + 1}. {stage.title}: {stage.goal}
                         </Text>
                     ))}
+
+                    {aiAnalysis && (
+                        <View style={{ marginTop: 15, padding: 15, backgroundColor: "#fff7ed", borderRadius: 8, borderStyle: "dashed", borderWidth: 1, borderColor: "#fdba74" }}>
+                            <Text style={{ ...styles.text, fontSize: 11, fontWeight: "bold", color: "#c2410c", marginBottom: 8 }}>🐾 {dogName}가 보내는 마음의 편지</Text>
+                            <Text style={{ ...styles.text, fontStyle: "italic", color: "#9a3412" }}>{aiAnalysis.dog_voice}</Text>
+                        </View>
+                    )}
                 </View>
 
                 {/* Footer */}

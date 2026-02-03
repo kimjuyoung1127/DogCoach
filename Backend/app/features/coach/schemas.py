@@ -14,3 +14,9 @@ class CoachingResponse(BaseModel):
     description: str
     steps: List[str]
     advice: Optional[str] = None
+
+class AIAnalysisResponse(BaseModel):
+    insight: str
+    action_plan: str
+    dog_voice: str
+    raw_analysis: Optional[str] = None

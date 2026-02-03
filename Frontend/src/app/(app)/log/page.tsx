@@ -12,11 +12,14 @@ import { useDogLogs, useDashboardData } from "@/hooks/useQueries";
 import { useAuth } from "@/hooks/useAuth";
 import { pdf } from "@react-pdf/renderer";
 import { toPng } from "html-to-image";
+import { apiClient } from "@/lib/api";
+import { LottieLoading } from "@/components/shared/ui/LottieLoading";
 
 export default function LogPage() {
     const [activeTab, setActiveTab] = useState<"timeline" | "analytics">("timeline");
     const { token } = useAuth();
     const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+    const [aiAnalysis, setAiAnalysis] = useState<any>(null);
 
     // Fetch Data
     const { data: dashboardData } = useDashboardData(!!token, token);
@@ -44,26 +47,41 @@ export default function LogPage() {
                 });
             }
 
-            // 2. Determine Recommendation (Reusing client-side logic for simplicity)
-            // Ideally this should be shared logic or from backend
-            // Quick mock matching for PDF purpose:
+            // 2. AI Analysis Fetch (NEW)
+            let analysisResult = aiAnalysis;
+            if (!analysisResult && dogId) {
+                try {
+                    const response = await apiClient.coach.analyze(dogId, { token });
+                    analysisResult = response;
+                    setAiAnalysis(response);
+                } catch (aiErr) {
+                    console.error("AI Analysis failed, falling back to static", aiErr);
+                    // Fallback insight if AI fails
+                    analysisResult = {
+                        insight: "데이터 패턴 기반 정밀 진단 준비 중...",
+                        dog_voice: "다음 기록을 더 정밀하게 분석해 드릴게요!"
+                    };
+                }
+            }
+
+            // 3. Determine Recommendation Course (Static or Dynamic)
             const triggerCounts: Record<string, number> = {};
             displayLogs.forEach((log: any) => {
                 if (log.antecedent) triggerCounts[log.antecedent] = (triggerCounts[log.antecedent] || 0) + 1;
             });
             const topTrigger = Object.keys(triggerCounts).sort((a, b) => triggerCounts[b] - triggerCounts[a])[0] || "정보 없음";
 
-            // 3. Generate PDF Blob
+            // 4. Generate PDF Blob
             const blob = await pdf(
                 <ReportDocument
                     dogName={dogName}
                     logs={displayLogs}
                     chartImage={chartImage}
-                    insight={`주요 원인인 '${topTrigger}'에 대한 집중 관리가 필요합니다.`}
+                    aiAnalysis={analysisResult}
                     recommendedCourse={{
                         id: "custom",
                         title: `[${topTrigger} 케어] 맞춤 솔루션`,
-                        description: "데이터 분석을 통해 도출된 가장 시급한 문제 행동 교정 코스입니다.",
+                        description: analysisResult?.action_plan || "데이터 분석을 통해 도출된 가장 시급한 문제 행동 교정 코스입니다.",
                         total_days: 5,
                         difficulty: "Medium",
                         stages: [
@@ -151,8 +169,8 @@ export default function LogPage() {
                             </div>
 
                             {isLoading ? (
-                                <div className="space-y-4">
-                                    {[1, 2, 3].map(i => <div key={i} className="h-32 bg-gray-200 rounded-2xl animate-pulse" />)}
+                                <div className="flex flex-col items-center justify-center py-20">
+                                    <LottieLoading type="cute" message="기록을 불러오고 있어요..." size={250} />
                                 </div>
                             ) : (
                                 <>
