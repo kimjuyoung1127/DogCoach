@@ -17,6 +17,8 @@ import { useDashboardData } from "@/hooks/useQueries";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/lib/query-keys";
 
+import { PremiumBackground } from "@/components/shared/ui/PremiumBackground";
+
 export default function DashboardPage() {
     const router = useRouter();
     const { token } = useAuth();
@@ -64,20 +66,26 @@ export default function DashboardPage() {
     );
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-28">
-            <DashboardHeader data={data} />
+        <div className="min-h-screen pb-28">
+            <PremiumBackground />
 
-            <div className="px-1">
-                <FadeIn delay={0.1}>
-                    <MainDashboardTab
-                        dogId={data.dog_profile.id}
-                        recentLogs={data.recent_logs}
-                        onLogCreated={handleLogCreated}
-                        onLogUpdated={handleLogUpdated}
-                        onEditLog={setEditingLog}
-                    />
-                </FadeIn>
+            <div className="relative z-10">
+                <DashboardHeader data={data} />
+
+                <div className="px-1">
+                    <FadeIn delay={0.1}>
+                        <MainDashboardTab
+                            dogId={data.dog_profile.id}
+                            recentLogs={data.recent_logs}
+                            onLogCreated={handleLogCreated}
+                            onLogUpdated={handleLogUpdated}
+                            onEditLog={setEditingLog}
+                        />
+                    </FadeIn>
+                </div>
             </div>
+
+            {/* Hoisted Edit Dialog */}
 
             {/* Hoisted Edit Dialog */}
             <AnimatePresence>

@@ -1,5 +1,6 @@
+import { motion } from "framer-motion";
 import { RecentLog } from "./types";
-import { Clock, ChevronRight, History, Calendar } from "lucide-react";
+import { Clock, ChevronRight, History, Calendar, Plus } from "lucide-react";
 import { translate } from "@/lib/localization";
 
 interface Props {
@@ -31,56 +32,89 @@ export const RecentLogList = ({ logs, onLogUpdated, onEditLog }: Props) => {
     };
 
     return (
-        <div className="px-6 pb-24">
-            <div className="flex items-center justify-between mb-5 px-1">
-                <div className="flex items-center gap-2">
-                    <History className="w-5 h-5 text-gray-400" />
-                    <h3 className="text-xl font-black text-gray-900">최근 기록</h3>
+        <section className="pb-24">
+            <div className="flex items-center justify-between mb-6 px-1">
+                <div className="flex flex-col">
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Timeline</span>
+                    <div className="flex items-center gap-2">
+                        <History className="w-5 h-5 text-gray-400" />
+                        <h3 className="text-xl font-black text-gray-900 tracking-tight">최근 기록</h3>
+                    </div>
                 </div>
                 {logs.length > 0 && (
-                    <span className="text-[10px] font-black text-brand-lime uppercase tracking-widest bg-brand-lime/10 px-2 py-0.5 rounded-full">
+                    <motion.span
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="text-[10px] font-black text-brand-lime uppercase tracking-widest bg-brand-lime/10 px-3 py-1 rounded-full ring-1 ring-brand-lime/10 shadow-sm"
+                    >
                         {logs.length}개 기록됨
-                    </span>
+                    </motion.span>
                 )}
             </div>
 
-            <div className="space-y-4">
+            <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={{
+                    hidden: { opacity: 0 },
+                    visible: {
+                        opacity: 1,
+                        transition: { staggerChildren: 0.1 }
+                    }
+                }}
+                className="space-y-4"
+            >
                 {logs.map((log) => (
-                    <button
+                    <motion.div
                         key={log.id}
-                        onClick={() => onEditLog(log)}
-                        className="w-full bg-white p-5 rounded-[2rem] shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md hover:border-brand-lime/30 transition-all active:scale-[0.98] text-left group"
+                        variants={{
+                            hidden: { opacity: 0, x: -20 },
+                            visible: { opacity: 1, x: 0, transition: { type: "spring", damping: 20, stiffness: 100 } }
+                        }}
                     >
-                        <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-2xl shadow-inner group-hover:bg-brand-lime/10 transition-colors">
-                                {getIcon(log.behavior)}
-                            </div>
-                            <div>
-                                <div className="font-black text-gray-900 text-base mb-0.5">{translate(log.behavior)}</div>
-                                <div className="flex items-center gap-3">
-                                    <div className="flex items-center gap-1 text-[10px] font-black text-gray-400 uppercase tracking-tighter">
-                                        <Clock className="w-3 h-3" />
-                                        {formatDate(log.occurred_at)}
-                                    </div>
-                                    <div className="w-1 h-1 bg-gray-200 rounded-full" />
-                                    <div className="text-[10px] font-black text-brand-lime uppercase tracking-widest bg-brand-lime/5 px-2 py-0.5 rounded-full ring-1 ring-brand-lime/10">
-                                        강도 {log.intensity}
+                        <button
+                            onClick={() => onEditLog(log)}
+                            className="w-full glass p-5 rounded-[2.5rem] shadow-[0_4px_15px_rgba(0,0,0,0.02)] border border-white/40 flex items-center justify-between hover:shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:border-brand-lime/30 transition-all active:scale-[0.98] text-left group ring-1 ring-black/5"
+                        >
+                            <div className="flex items-center gap-5">
+                                <div className="w-16 h-16 bg-white/40 backdrop-blur-sm rounded-[1.5rem] flex items-center justify-center text-3xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] border border-white/60 group-hover:bg-brand-lime/10 group-hover:scale-110 transition-all duration-500">
+                                    {getIcon(log.behavior)}
+                                </div>
+                                <div>
+                                    <div className="font-black text-gray-900 text-lg mb-1 tracking-tight">{translate(log.behavior)}</div>
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex items-center gap-1.5 text-[10px] font-black text-gray-400 uppercase tracking-tight">
+                                            <Clock className="w-3.5 h-3.5 opacity-60" />
+                                            {formatDate(log.occurred_at)}
+                                        </div>
+                                        <div className="w-1.5 h-1.5 bg-gray-200 rounded-full" />
+                                        <div className="text-[10px] font-black text-brand-lime uppercase tracking-widest px-2.5 py-1 bg-brand-lime/5 rounded-full ring-1 ring-brand-lime/20">
+                                            강도 {log.intensity}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-brand-lime transition-all">
-                            <ChevronRight className="w-5 h-5" />
-                        </div>
-                    </button>
+                            <div className="w-11 h-11 rounded-full bg-white/40 border border-white/60 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-brand-lime group-hover:scale-110 shadow-sm transition-all duration-300">
+                                <ChevronRight className="w-5 h-5" />
+                            </div>
+                        </button>
+                    </motion.div>
                 ))}
+
                 {logs.length === 0 && (
-                    <div className="text-center text-gray-400 py-12 bg-white rounded-[2rem] border-2 border-dashed border-gray-100 shadow-inner">
-                        <p className="font-black text-gray-300">로그 데이터가 아직 없네요</p>
-                        <p className="text-[10px] mt-2 font-bold uppercase tracking-widest text-gray-400">첫 기록을 남겨보세요!</p>
-                    </div>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="text-center py-16 glass rounded-[3rem] border-2 border-dashed border-gray-100 shadow-inner group transition-colors hover:border-brand-lime/20"
+                    >
+                        <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                            <Plus className="w-8 h-8 text-gray-300" />
+                        </div>
+                        <p className="font-black text-gray-400 text-lg tracking-tight">로그 데이터가 아직 없네요</p>
+                        <p className="text-xs mt-2 font-bold uppercase tracking-widest text-gray-400 opacity-60">첫 기록을 남겨보세요!</p>
+                    </motion.div>
                 )}
-            </div>
-        </div>
+            </motion.div>
+        </section>
     );
 };

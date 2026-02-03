@@ -1,23 +1,19 @@
 "use client";
 
 import { useMemo } from "react";
-import { TRAINING_CURRICULUM, TrainingCourse } from "@/data/curriculum";
-import { Play, ClipboardList, TrendingUp } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { TRAINING_CURRICULUM } from "@/data/curriculum";
+import { Play, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface RecommendationSectionProps {
-    logs: any[]; // Replace with implicit Log type
+    logs: any[];
     dogName: string;
 }
 
 export function RecommendationSection({ logs, dogName }: RecommendationSectionProps) {
-    // Simple logic to recommend based on log triggers
-    // In real app, this would be a more complex algorithm or backend response
     const recommendedCourse = useMemo(() => {
-        if (!logs || logs.length === 0) return TRAINING_CURRICULUM[0]; // Default to Sep Anxiety
+        if (!logs || logs.length === 0) return TRAINING_CURRICULUM[0];
 
-        // Count triggers
         const triggerCounts: Record<string, number> = {};
         logs.forEach(log => {
             if (log.antecedent) {
@@ -25,7 +21,6 @@ export function RecommendationSection({ logs, dogName }: RecommendationSectionPr
             }
         });
 
-        // Determine top trigger (very naive matching)
         const topTrigger = Object.entries(triggerCounts).sort((a, b) => b[1] - a[1])[0]?.[0];
 
         if (topTrigger?.includes("소리") || topTrigger?.includes("짖")) {
@@ -42,62 +37,64 @@ export function RecommendationSection({ logs, dogName }: RecommendationSectionPr
     }, [logs]);
 
     return (
-        <section className="space-y-4">
-            <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="w-5 h-5 text-brand-lime" />
-                <h3 className="font-bold text-gray-900 text-lg">
-                    {dogName}님을 위한 맞춤 추천
-                </h3>
+        <section className="space-y-6">
+            <div className="flex items-center justify-between mb-2 px-1">
+                <div className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-brand-lime" />
+                    <h3 className="text-xl font-black text-gray-900 tracking-tight">
+                        {dogName}님을 위한 맞춤 솔루션
+                    </h3>
+                </div>
             </div>
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm relative overflow-hidden"
+                className="glass p-7 rounded-[2.5rem] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/60 relative overflow-hidden group/card ring-1 ring-black/5"
             >
-                {/* Background Pattern */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-lime/10 rounded-full -mr-10 -mt-10 blur-3xl" />
+                {/* Background Accent */}
+                <div className="absolute top-0 right-0 w-48 h-48 bg-brand-lime/10 rounded-full -mr-20 -mt-20 blur-3xl group-hover/card:scale-110 transition-transform duration-1000" />
 
                 <div className="relative z-10">
-                    <div className="flex justify-between items-start mb-4">
-                        <div className="space-y-1">
-                            <span className="inline-block px-2 py-1 bg-brand-lime/20 text-brand-black text-[10px] font-bold rounded-full mb-1">
-                                AI 추천
+                    <div className="flex justify-between items-start mb-6">
+                        <div className="space-y-2">
+                            <span className="inline-block px-3 py-1 bg-brand-lime/10 text-brand-lime text-[10px] font-black rounded-full uppercase tracking-widest border border-brand-lime/20 shadow-sm">
+                                AI Optimized
                             </span>
-                            <h4 className="font-bold text-xl text-gray-900 leading-tight">
+                            <h4 className="text-2xl font-black text-gray-900 leading-tight tracking-tight">
                                 {recommendedCourse.title}
                             </h4>
-                            <p className="text-sm text-gray-500 line-clamp-2">
-                                {recommendedCourse.description}
-                            </p>
                         </div>
                     </div>
 
-                    <div className="space-y-3">
+                    <p className="text-sm font-bold text-gray-500 line-clamp-2 mb-6 leading-relaxed">
+                        {recommendedCourse.description}
+                    </p>
+
+                    <div className="space-y-4">
                         {/* Stage Preview */}
-                        <div className="bg-gray-50 rounded-xl p-3 space-y-2">
-                            <div className="flex items-center justify-between text-xs text-gray-400 font-medium">
-                                <span>커리큘럼 미리보기</span>
-                                <span>총 {recommendedCourse.stages.length}단계</span>
+                        <div className="bg-white/40 backdrop-blur-sm rounded-3xl p-5 space-y-3 border border-white/60 shadow-inner">
+                            <div className="flex items-center justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                <span>Curriculum Preview</span>
+                                <span className="text-brand-lime">Total {recommendedCourse.stages.length} Stages</span>
                             </div>
-                            {recommendedCourse.stages.slice(0, 2).map((stage, idx) => (
-                                <div key={stage.id} className="flex items-center gap-3 text-sm">
-                                    <div className="w-5 h-5 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[10px] font-bold text-gray-500 shrink-0">
-                                        {idx + 1}
+                            <div className="space-y-3">
+                                {recommendedCourse.stages.slice(0, 2).map((stage, idx) => (
+                                    <div key={stage.id} className="flex items-center gap-4 text-sm">
+                                        <div className="w-6 h-6 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-[10px] font-black text-gray-500 shrink-0 shadow-sm group-hover/card:bg-brand-lime group-hover/card:text-white group-hover/card:border-brand-lime transition-all duration-300">
+                                            0{idx + 1}
+                                        </div>
+                                        <span className="font-black text-gray-700 tracking-tight">{stage.title}</span>
                                     </div>
-                                    <span className="text-gray-700 truncate">{stage.title}</span>
-                                </div>
-                            ))}
-                            {recommendedCourse.stages.length > 2 && (
-                                <div className="text-[10px] text-gray-400 pl-8">
-                                    + {recommendedCourse.stages.length - 2}개 더보기
-                                </div>
-                            )}
+                                ))}
+                            </div>
                         </div>
 
-                        <button className="w-full bg-brand-black text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all hover:bg-gray-800">
-                            <Play className="w-4 h-4 fill-current" />
-                            지금 코칭 시작하기
+                        <button className="w-full bg-gray-900 text-white p-5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 active:scale-[0.98] transition-all hover:bg-black hover:shadow-xl hover:shadow-black/10 group/btn">
+                            <div className="w-8 h-8 bg-brand-lime rounded-full flex items-center justify-center group-hover/btn:scale-110 transition-transform">
+                                <Play className="w-4 h-4 text-gray-900 fill-current ml-0.5" />
+                            </div>
+                            맞춤 코칭 플랜 시작하기
                         </button>
                     </div>
                 </div>

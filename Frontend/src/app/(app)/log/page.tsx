@@ -15,6 +15,8 @@ import { toPng } from "html-to-image";
 import { apiClient } from "@/lib/api";
 import { LottieLoading } from "@/components/shared/ui/LottieLoading";
 
+import { PremiumBackground } from "@/components/shared/ui/PremiumBackground";
+
 export default function LogPage() {
     const [activeTab, setActiveTab] = useState<"timeline" | "analytics">("timeline");
     const { token } = useAuth();
@@ -51,7 +53,7 @@ export default function LogPage() {
             let analysisResult = aiAnalysis;
             if (!analysisResult && dogId) {
                 try {
-                    const response = await apiClient.coach.analyze(dogId, { token });
+                    const response = await apiClient.coach.analyze(dogId, { token: token ?? undefined });
                     analysisResult = response;
                     setAiAnalysis(response);
                 } catch (aiErr) {
@@ -112,27 +114,31 @@ export default function LogPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-24">
+        <div className="min-h-screen pb-24 relative">
+            <PremiumBackground />
+
             {/* Header: Date Picker & Tabs */}
-            <header className="sticky top-0 z-30 bg-white border-b border-gray-100">
+            <header className="sticky top-0 z-30 bg-white/40 backdrop-blur-md border-b border-white/60 ring-1 ring-black/5">
                 <div className="flex items-center justify-between px-6 py-4">
-                    <button className="p-2 -ml-2 text-gray-400 hover:text-gray-900">
+                    <button className="p-2 -ml-2 text-gray-400 hover:text-gray-900 transition-colors">
                         <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <div className="flex items-center gap-2 font-bold text-gray-900">
-                        <CalendarIcon className="w-4 h-4 text-brand-lime" />
-                        <span>전체 기록 (최신순)</span>
+                    <div className="flex flex-col items-center">
+                        <span className="text-[10px] font-black text-brand-lime uppercase tracking-[0.2em] mb-0.5">Archive</span>
+                        <div className="flex items-center gap-2 font-black text-gray-900 tracking-tight">
+                            <span>전체 기록</span>
+                        </div>
                     </div>
-                    <button className="p-2 -mr-2 text-gray-400 hover:text-gray-900">
+                    <button className="p-2 -mr-2 text-gray-400 hover:text-gray-900 transition-colors">
                         <ChevronRight className="w-5 h-5" />
                     </button>
                 </div>
 
-                <div className="flex px-6 pb-0">
+                <div className="flex px-6">
                     <button
                         onClick={() => setActiveTab("timeline")}
                         className={cn(
-                            "flex-1 pb-3 text-sm font-bold border-b-2 transition-all flex items-center justify-center gap-2",
+                            "flex-1 pb-3 text-sm font-black border-b-2 transition-all flex items-center justify-center gap-2 tracking-tight",
                             activeTab === "timeline" ? "border-brand-lime text-brand-lime" : "border-transparent text-gray-400 hover:text-gray-600"
                         )}
                     >
@@ -142,7 +148,7 @@ export default function LogPage() {
                     <button
                         onClick={() => setActiveTab("analytics")}
                         className={cn(
-                            "flex-1 pb-3 text-sm font-bold border-b-2 transition-all flex items-center justify-center gap-2",
+                            "flex-1 pb-3 text-sm font-black border-b-2 transition-all flex items-center justify-center gap-2 tracking-tight",
                             activeTab === "analytics" ? "border-brand-lime text-brand-lime" : "border-transparent text-gray-400 hover:text-gray-600"
                         )}
                     >
@@ -153,7 +159,7 @@ export default function LogPage() {
             </header>
 
             {/* Content Area */}
-            <main className="px-6 py-6 container mx-auto max-w-2xl">
+            <main className="px-6 py-8 container mx-auto max-w-2xl relative z-10">
                 <AnimatePresence mode="wait">
                     {activeTab === "timeline" ? (
                         <motion.div

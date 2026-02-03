@@ -1,6 +1,7 @@
 import { DashboardData } from "./types";
 import { FadeIn } from "@/components/ui/animations/FadeIn";
 import { Trophy, Calendar, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface Props {
     data: DashboardData;
@@ -8,50 +9,62 @@ interface Props {
 
 export const DashboardHeader = ({ data }: Props) => {
     return (
-        <FadeIn className="bg-gradient-to-b from-white to-gray-50 p-6 pt-10 rounded-b-[3rem] shadow-sm mb-8 border-b border-gray-100 relative overflow-hidden">
-            {/* Background Accent */}
-            <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-brand-lime/10 rounded-full blur-3xl pointer-events-none" />
+        <FadeIn className="px-6 pt-12 pb-8 relative overflow-hidden">
+            {/* Soft Ambient Flourish */}
+            <div className="absolute top-0 right-0 w-[40%] h-full bg-brand-lime/5 blur-[80px] -z-10 rounded-full" />
 
-            <div className="flex justify-between items-start mb-8 relative z-10">
-                <div>
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-lime/10 text-brand-lime rounded-full text-[10px] font-black uppercase tracking-widest mb-3 border border-brand-lime/20">
-                        <Sparkles className="w-3 h-3" />
-                        오늘의 도그코치
-                    </div>
-                    <h1 className="text-3xl font-black text-gray-900 leading-tight">
-                        반가워요, <br />
-                        <span className="text-brand-lime">{data.dog_profile.name}</span> <span className="text-gray-400">보호자님</span>
-                    </h1>
-                </div>
+            <div className="flex flex-col mb-10 relative z-10">
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="inline-flex items-center gap-2 px-3 py-1 bg-white/40 backdrop-blur-md text-brand-lime rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4 border border-white/60 shadow-sm ring-1 ring-black/5 w-fit"
+                >
+                    <Sparkles className="w-3.5 h-3.5 fill-brand-lime/20" />
+                    Insight Dashboard
+                </motion.div>
+                <h1 className="text-4xl font-black text-gray-900 leading-[1.1] tracking-tight">
+                    반가워요, <br />
+                    <span className="bg-gradient-to-r from-brand-lime to-emerald-500 bg-clip-text text-transparent">{data.dog_profile.name}</span> <span className="text-gray-300 font-medium">보호자님</span>
+                </h1>
             </div>
 
-            {/* Stats Row */}
-            <div className="flex gap-4 relative z-10">
-                <div className="bg-white p-5 rounded-[2rem] flex-1 shadow-md shadow-orange-500/5 border border-orange-100/50 relative overflow-hidden group hover:scale-[1.02] transition-all duration-300">
-                    <div className="absolute -right-2 -top-2 w-16 h-16 bg-orange-50 rounded-full opacity-50 group-hover:scale-125 transition-transform" />
-                    <div className="relative">
-                        <div className="flex items-center gap-1.5 mb-2">
-                            <div className="w-6 h-6 rounded-lg bg-orange-100 flex items-center justify-center">
-                                <Trophy className="w-3.5 h-3.5 text-orange-500" />
-                            </div>
-                            <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">연속 실천</span>
+            {/* Stats Row with Premium Cards */}
+            <div className="flex gap-4 sm:gap-6 relative z-10 max-w-4xl">
+                <motion.div
+                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                    className="glass p-6 rounded-[2.5rem] flex-1 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/60 relative overflow-hidden group ring-1 ring-black/5"
+                >
+                    <div className="absolute -right-4 -top-4 w-20 h-20 bg-orange-500/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+                    <div className="relative flex flex-col items-start gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-orange-100/50 flex items-center justify-center border border-orange-200/30">
+                            <Trophy className="w-5 h-5 text-brand-orange" />
                         </div>
-                        <div className="text-3xl font-black text-gray-900">{data.stats.current_streak} <span className="text-sm font-bold text-gray-400">일</span></div>
+                        <div className="space-y-0.5">
+                            <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest opacity-60">연속 실천</div>
+                            <div className="text-3xl font-black text-gray-900 tabular-nums">
+                                {data.stats.current_streak} <span className="text-sm font-bold text-gray-400">Days</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </motion.div>
 
-                <div className="bg-white p-5 rounded-[2rem] flex-1 shadow-md shadow-brand-lime/5 border border-brand-lime/10 relative overflow-hidden group hover:scale-[1.02] transition-all duration-300">
-                    <div className="absolute -right-2 -top-2 w-16 h-16 bg-brand-lime/5 rounded-full opacity-50 group-hover:scale-125 transition-transform" />
-                    <div className="relative">
-                        <div className="flex items-center gap-1.5 mb-2">
-                            <div className="w-6 h-6 rounded-lg bg-brand-lime/20 flex items-center justify-center">
-                                <Calendar className="w-3.5 h-3.5 text-brand-lime" />
-                            </div>
-                            <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">누적 기록</span>
+                <motion.div
+                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                    className="glass p-6 rounded-[2.5rem] flex-1 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/60 relative overflow-hidden group ring-1 ring-black/5"
+                >
+                    <div className="absolute -right-4 -top-4 w-20 h-20 bg-brand-lime/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+                    <div className="relative flex flex-col items-start gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-brand-lime/10 flex items-center justify-center border border-brand-lime/20">
+                            <Calendar className="w-5 h-5 text-brand-lime" />
                         </div>
-                        <div className="text-3xl font-black text-gray-900">{data.stats.total_logs} <span className="text-sm font-bold text-gray-400">개</span></div>
+                        <div className="space-y-0.5">
+                            <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest opacity-60">누적 기록</div>
+                            <div className="text-3xl font-black text-gray-900 tabular-nums">
+                                {data.stats.total_logs} <span className="text-sm font-bold text-gray-400">Total</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </motion.div>
             </div>
         </FadeIn>
     );

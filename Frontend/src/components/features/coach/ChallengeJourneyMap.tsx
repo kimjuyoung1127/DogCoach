@@ -14,13 +14,12 @@ interface Props {
 export function ChallengeJourneyMap({ stages, currentDay, onDayClick }: Props) {
     return (
         <div className="relative py-12 flex flex-col items-center">
-            {/* S-Curve Path (Background) */}
-            <svg className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-10" style={{ zIndex: 0 }}>
-                {/* Mobile View Path (Simple vertical zigzag or similar) - Dynamic height based on items */}
-                <line x1="50%" y1="40" x2="50%" y2="95%" stroke="#4ADE80" strokeWidth="8" strokeDasharray="12 8" strokeLinecap="round" />
-            </svg>
+            {/* 1. Cinematic Connector Line */}
+            <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-1.5 pointer-events-none opacity-20">
+                <div className="h-full w-full bg-gradient-to-b from-brand-lime via-emerald-400 to-brand-lime/0 rounded-full blur-[0.5px]" />
+            </div>
 
-            <div className="space-y-10 relative z-10 w-full max-w-xs px-4">
+            <div className="space-y-12 relative z-10 w-full">
                 {stages.map((stage, idx) => {
                     const isCompleted = stage.day < currentDay;
                     const isCurrent = stage.day === currentDay;
@@ -29,61 +28,81 @@ export function ChallengeJourneyMap({ stages, currentDay, onDayClick }: Props) {
                     return (
                         <motion.div
                             key={stage.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: idx * 0.05 }}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true, margin: "-100px" }}
+                            transition={{ delay: idx * 0.05, type: "spring", damping: 12 }}
                             onClick={() => (isCurrent || isCompleted) && onDayClick(stage)}
                             className={cn(
-                                "flex items-center gap-4 p-5 rounded-3xl border transition-all relative",
-                                isCurrent
-                                    ? "bg-white border-brand-lime shadow-xl shadow-brand-lime/20 cursor-pointer active:scale-95 ring-4 ring-brand-lime/5"
-                                    : isCompleted
-                                        ? "bg-white border-gray-100 shadow-sm cursor-pointer hover:bg-gray-50 hover:border-brand-lime/30"
-                                        : "bg-gray-50 border-gray-100 opacity-50 cursor-not-allowed grayscale",
-                                idx % 2 === 0 ? "flex-row translate-x-3" : "flex-row-reverse -translate-x-3 text-right" // Zigzag layout visual
+                                "flex items-center gap-6 relative group/node max-w-sm mx-auto",
+                                idx % 2 === 0 ? "flex-row text-left" : "flex-row-reverse text-right"
                             )}
                         >
-                            {/* Icon Circle */}
+                            {/* Card Panel */}
                             <div className={cn(
-                                "w-14 h-14 rounded-2xl flex items-center justify-center border-2 shrink-0 relative shadow-sm",
+                                "flex-1 glass p-5 rounded-[2rem] border transition-all duration-500 shadow-sm",
                                 isCurrent
-                                    ? "bg-brand-lime text-white border-brand-lime"
+                                    ? "bg-white border-brand-lime ring-4 ring-brand-lime/10 shadow-lg scale-105 z-20"
                                     : isCompleted
-                                        ? "bg-brand-lime/10 text-brand-lime border-brand-lime/20"
-                                        : "bg-white text-gray-300 border-gray-200"
+                                        ? "border-white/60 hover:border-brand-lime/40 cursor-pointer"
+                                        : "opacity-40 grayscale border-white/20 cursor-not-allowed"
                             )}>
-                                {isCompleted ? <Check className="w-7 h-7 stroke-[3]" /> : <stage.icon className="w-7 h-7" />}
-
-                                {isLocked && (
-                                    <div className="absolute -top-2 -right-2 bg-white rounded-full p-1.5 border border-gray-200 shadow-sm">
-                                        <Lock className="w-3.5 h-3.5 text-gray-400" />
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Label */}
-                            <div className="flex-1">
-                                <div className={cn("text-[10px] font-black uppercase tracking-wider mb-1", isCurrent ? "text-brand-lime" : "text-gray-400")}>
+                                <div className={cn(
+                                    "text-[9px] font-black uppercase tracking-[0.2em] mb-1.5",
+                                    isCurrent ? "text-brand-lime" : "text-gray-400"
+                                )}>
                                     Day {stage.day}
                                 </div>
-                                <div className="font-black text-gray-900 text-lg leading-tight break-keep">
+                                <div className="font-black text-gray-900 text-base leading-tight">
                                     {stage.title}
                                 </div>
                                 {isCurrent && (
-                                    <div className="text-[10px] text-brand-lime font-bold mt-1.5 flex items-center gap-1 animate-pulse">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-brand-lime" />
-                                        터치해서 시작하기
+                                    <div className="mt-3 flex items-center justify-start gap-2">
+                                        <motion.div
+                                            animate={{ scale: [1, 1.2, 1] }}
+                                            transition={{ repeat: Infinity, duration: 2 }}
+                                            className="w-1.5 h-1.5 rounded-full bg-brand-lime"
+                                        />
+                                        <span className="text-[10px] font-black text-brand-lime uppercase tracking-widest">Active Level</span>
                                     </div>
                                 )}
                             </div>
 
-                            {/* Completed Badge Indicator */}
-                            {isCompleted && (
-                                <div className="absolute -top-2 -right-2 bg-brand-lime text-white rounded-full p-1 shadow-md">
-                                    <Check className="w-3 h-3 stroke-[4]" />
+                            {/* Center Node Button */}
+                            <div className="relative shrink-0">
+                                {isCurrent && (
+                                    <motion.div
+                                        initial={{ scale: 0.8, opacity: 0 }}
+                                        animate={{ scale: 1.5, opacity: 1 }}
+                                        transition={{ repeat: Infinity, duration: 3, repeatType: "mirror" }}
+                                        className="absolute inset-0 bg-brand-lime/20 rounded-2xl blur-xl"
+                                    />
+                                )}
+
+                                <div className={cn(
+                                    "w-16 h-16 rounded-2xl flex items-center justify-center border-2 transition-all duration-500 shadow-lg relative z-10",
+                                    isCurrent
+                                        ? "bg-brand-lime text-gray-900 border-white/40 scale-110 shadow-brand-lime/30"
+                                        : isCompleted
+                                            ? "bg-white text-brand-lime border-brand-lime/20"
+                                            : "bg-white/40 backdrop-blur-md text-gray-300 border-white/60"
+                                )}>
+                                    {isCompleted ? (
+                                        <Check className="w-8 h-8 stroke-[3]" />
+                                    ) : (
+                                        <stage.icon className={cn("w-8 h-8", isCurrent ? "animate-pulse" : "")} />
+                                    )}
+
+                                    {isLocked && (
+                                        <div className="absolute -top-2 -right-2 bg-white rounded-lg p-1.5 border border-gray-100 shadow-sm">
+                                            <Lock className="w-3 h-3 text-gray-300" />
+                                        </div>
+                                    )}
                                 </div>
-                            )}
+                            </div>
+
+                            {/* Invisible spacer to maintain layout */}
+                            <div className="flex-1 hidden sm:block" />
                         </motion.div>
                     );
                 })}
