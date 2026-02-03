@@ -55,3 +55,6 @@ coverage/
 
 # Logs
 *.log
+
+# Binaries
+cloudflared.exe
