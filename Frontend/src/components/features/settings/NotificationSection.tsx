@@ -10,6 +10,9 @@ interface Props {
     onUpdate: (newPref: UserSettings['notification_pref']) => void;
 }
 
+import { cn } from '@/lib/utils';
+import { Bell, Info } from 'lucide-react';
+
 export function NotificationSection({ settings, onUpdate }: Props) {
     const handleChannelChange = (channel: keyof typeof settings.channels, value: boolean) => {
         onUpdate({
@@ -33,131 +36,136 @@ export function NotificationSection({ settings, onUpdate }: Props) {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 px-1">
-                <h2 className="text-xl font-bold">알림 설정</h2>
+        <div className="space-y-8">
+            <div className="flex flex-col gap-2 px-1">
+                <div className="flex items-center gap-2">
+                    <Bell className="w-5 h-5 text-brand-lime" />
+                    <h2 className="text-xl font-black text-gray-900 tracking-tight">알림 설정</h2>
+                </div>
                 {(!settings.channels.alimtalk && !settings.channels.push) && (
-                    <span className="text-xs text-orange-500 font-semibold animate-pulse break-keep">
-                        알림을 끄면 습관 형성이 3배 어려워져요 🥺
+                    <span className="text-[10px] font-black text-brand-orange uppercase tracking-widest animate-pulse">
+                        Notifications help build better habits Faster
                     </span>
                 )}
             </div>
 
-            <div className="grid gap-6">
-                <Card>
-                    <CardHeader className="pt-8 pb-2">
-                        <CardTitle className="text-lg">채널</CardTitle>
-                    </CardHeader>
-                    <CardContent>
+            <div className="grid gap-10">
+                {/* 1. Channels */}
+                <div className="glass p-8 rounded-[2.5rem] border border-white/60 shadow-sm transition-all hover:shadow-md ring-1 ring-black/5">
+                    <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6">Delivery Channels</h3>
+                    <div className="space-y-4">
                         <SmoothToggle
                             label="카카오 알림톡"
-                            description="중요 정보 및 AI 리포트 수신"
+                            description="AI 분석 보고서 및 긴급 미션"
                             checked={settings.channels.alimtalk}
                             onCheckedChange={(v) => handleChannelChange('alimtalk', v)}
                         />
                         <SmoothToggle
                             label="앱 푸시"
-                            description="데일리 미션 및 가벼운 알림"
+                            description="데일리 기록 리마인더 및 응원"
                             checked={settings.channels.push}
                             onCheckedChange={(v) => handleChannelChange('push', v)}
                         />
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
-                <Card>
-                    <CardHeader className="pt-8 pb-2">
-                        <CardTitle className="text-lg">알림 유형</CardTitle>
-                    </CardHeader>
-                    <CardContent>
+                {/* 2. Notification Types */}
+                <div className="glass p-8 rounded-[2.5rem] border border-white/60 shadow-sm ring-1 ring-black/5">
+                    <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6">Notification Content</h3>
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <SmoothToggle
+                                label="기록 리마인더"
+                                description={`매일 ${settings.remind_time}에 기록 제안`}
+                                checked={settings.types.reminder}
+                                onCheckedChange={(v) => handleTypeChange('reminder', v)}
+                            />
+                            <AnimatePresence>
+                                {settings.types.reminder && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: "auto", opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        className="overflow-hidden"
+                                    >
+                                        <div className="flex items-center justify-between p-5 bg-white/40 backdrop-blur-sm rounded-3xl border border-white/60 shadow-inner mt-2">
+                                            <span className="text-xs font-black text-gray-900 uppercase tracking-widest">Remind Time</span>
+                                            <input
+                                                type="time"
+                                                value={settings.remind_time}
+                                                onChange={(e) => onUpdate({ ...settings, remind_time: e.target.value })}
+                                                className="bg-white border border-gray-100 rounded-xl px-4 py-2 text-sm font-black text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-lime/30 shadow-sm"
+                                            />
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
                         <SmoothToggle
-                            label="기록 리마인더"
-                            description={`매일 ${settings.remind_time}에 기록 알림`}
-                            checked={settings.types.reminder}
-                            onCheckedChange={(v) => handleTypeChange('reminder', v)}
-                        />
-                        <AnimatePresence>
-                            {settings.types.reminder && (
-                                <motion.div
-                                    initial={{ height: 0, opacity: 0 }}
-                                    animate={{ height: "auto", opacity: 1 }}
-                                    exit={{ height: 0, opacity: 0 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="overflow-hidden"
-                                >
-                                    <div className="flex items-center justify-between py-3 pl-4 border-l-2 border-brand-lime bg-gray-50 pr-4 rounded mb-2 mt-2">
-                                        <span className="text-sm text-gray-700">발송 시간</span>
-                                        <input
-                                            type="time"
-                                            value={settings.remind_time}
-                                            onChange={(e) => onUpdate({ ...settings, remind_time: e.target.value })}
-                                            className="bg-white border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-brand-lime"
-                                        />
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                        <SmoothToggle
-                            label="주간 리포트"
-                            description="매주 월요일 분석 리포트 발송"
+                            label="심층 분석 리포트"
+                            description="정밀 AI 행동 패턴 보고서"
                             checked={settings.types.weekly_report}
                             onCheckedChange={(v) => handleTypeChange('weekly_report', v)}
                         />
                         <SmoothToggle
-                            label="마케팅 정보"
-                            description="이벤트 및 혜택 소식"
+                            label="혜택 및 이벤트"
+                            description="멤버십 사은 프로모션 및 소식"
                             checked={settings.types.marketing}
                             onCheckedChange={(v) => handleTypeChange('marketing', v)}
                         />
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
-                <Card>
-                    <CardHeader className="pt-8 pb-2">
-                        <div className="flex items-center justify-between">
-                            <CardTitle className="text-lg">방해 금지 시간</CardTitle>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" className="sr-only peer" checked={settings.quiet_hours.enabled} onChange={(e) => handleQuietHoursChange('enabled', e.target.checked)} />
-                                <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-brand-lime rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-lime"></div>
-                            </label>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
+                {/* 3. Quiet Hours */}
+                <div className="glass p-8 rounded-[2.5rem] border border-white/60 shadow-sm ring-1 ring-black/5">
+                    <div className="flex items-center justify-between mb-8">
+                        <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em]">Silent Hours</h3>
+                        <label className="relative inline-flex items-center cursor-pointer group">
+                            <input type="checkbox" className="sr-only peer" checked={settings.quiet_hours.enabled} onChange={(e) => handleQuietHoursChange('enabled', e.target.checked)} />
+                            <div className="w-12 h-6 bg-gray-100/50 border border-gray-200/50 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-lime shadow-inner group-hover:scale-110 duration-200"></div>
+                        </label>
+                    </div>
+
+                    <div className="space-y-4">
                         <AnimatePresence>
                             {settings.quiet_hours.enabled && (
                                 <motion.div
                                     initial={{ height: 0, opacity: 0 }}
                                     animate={{ height: "auto", opacity: 1 }}
                                     exit={{ height: 0, opacity: 0 }}
-                                    transition={{ duration: 0.2 }}
                                     className="overflow-hidden"
                                 >
-                                    <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg mb-4">
+                                    <div className="flex items-center gap-4 bg-white/40 backdrop-blur-sm p-6 rounded-3xl border border-white/60 shadow-inner mb-4">
                                         <div className="flex-1">
-                                            <label className="block text-xs text-gray-500 mb-1">시작</label>
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Start</label>
                                             <input
                                                 type="time"
                                                 value={settings.quiet_hours.start}
                                                 onChange={(e) => handleQuietHoursChange('start', e.target.value)}
-                                                className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
+                                                className="w-full bg-white border border-gray-100 rounded-xl px-4 py-3 text-sm font-black text-gray-900 focus:outline-none shadow-sm"
                                             />
                                         </div>
-                                        <div className="text-gray-400">~</div>
+                                        <div className="pt-6 font-black text-gray-300">→</div>
                                         <div className="flex-1">
-                                            <label className="block text-xs text-gray-500 mb-1">종료</label>
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">End</label>
                                             <input
                                                 type="time"
                                                 value={settings.quiet_hours.end}
                                                 onChange={(e) => handleQuietHoursChange('end', e.target.value)}
-                                                className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
+                                                className="w-full bg-white border border-gray-100 rounded-xl px-4 py-3 text-sm font-black text-gray-900 focus:outline-none shadow-sm"
                                             />
                                         </div>
                                     </div>
                                 </motion.div>
                             )}
                         </AnimatePresence>
-                        <p className="text-xs text-gray-400">이 시간대에는 긴급 알림을 제외한 모든 알림이 차단됩니다.</p>
-                    </CardContent>
-                </Card>
+                        <div className="flex items-start gap-2 text-xs font-bold text-gray-400 leading-relaxed px-1">
+                            <Info className="w-4 h-4 shrink-0 text-brand-lime mt-0.5" />
+                            <p>방해 금지 시간대에는 긴급 분석 요청을 제외한 일반 리마인더 발송이 제한됩니다.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

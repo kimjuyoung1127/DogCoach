@@ -46,6 +46,8 @@ const MOCK_USER: UserProfile = {
     created_at: new Date().toISOString()
 };
 
+import { PremiumBackground } from '@/components/shared/ui/PremiumBackground';
+
 export default function SettingsPage() {
     const [settings, setSettings] = useState<UserSettings>(MOCK_SETTINGS);
     const [subscription, setSubscription] = useState<Subscription>(MOCK_SUBSCRIPTION);
@@ -53,12 +55,10 @@ export default function SettingsPage() {
 
     const handleSettingsUpdate = (key: keyof UserSettings, value: any) => {
         setSettings(prev => ({ ...prev, [key]: value }));
-        // Ideally call API here
         console.log('Settings Updated:', key, value);
     };
 
     const handlePhoneUpdate = async (phone: string) => {
-        // API Call simulation
         await new Promise(r => setTimeout(r, 500));
         setUser(prev => ({ ...prev, phone_number: phone }));
     };
@@ -68,15 +68,22 @@ export default function SettingsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-24">
-            <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-6 py-4 transition-all">
-                <h1 className="text-xl font-extrabold text-gray-900 tracking-tight">설정</h1>
+        <div className="min-h-screen pb-32 relative">
+            <PremiumBackground />
+
+            {/* 1. Glass Header */}
+            <header className="sticky top-0 z-40 bg-white/40 backdrop-blur-md border-b border-white/60 ring-1 ring-black/5 px-6 py-5">
+                <div className="container mx-auto max-w-2xl flex items-center justify-between">
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-black text-brand-lime uppercase tracking-[0.2em] mb-0.5">Configuration</span>
+                        <h1 className="text-2xl font-black text-gray-900 tracking-tight">환경 설정</h1>
+                    </div>
+                </div>
             </header>
 
-            <main className="px-6 py-6 container mx-auto max-w-2xl space-y-8 animate-in fade-in duration-500">
-
-                {/* 1. 멤버십 (최우선) */}
-                <section id="subscription">
+            <main className="px-6 py-10 container mx-auto max-w-2xl space-y-10 relative z-10">
+                {/* 1. 멤버십 (Bento Card) */}
+                <section id="subscription" className="transition-all hover:translate-y-[-2px] duration-500">
                     <SubscriptionSection
                         subscription={subscription}
                         onUpgrade={() => console.log('Upgrade clicked')}
@@ -84,49 +91,43 @@ export default function SettingsPage() {
                     />
                 </section>
 
-                <hr className="border-gray-200" />
+                {/* Grid for settings sections */}
+                <div className="grid grid-cols-1 gap-10">
+                    {/* 2. 알림 */}
+                    <section id="notifications">
+                        <NotificationSection
+                            settings={settings.notification_pref}
+                            onUpdate={(newPref) => handleSettingsUpdate('notification_pref', newPref)}
+                        />
+                    </section>
 
-                {/* 2. 알림 (이탈 방지) */}
-                <section id="notifications">
-                    <NotificationSection
-                        settings={settings.notification_pref}
-                        onUpdate={(newPref) => handleSettingsUpdate('notification_pref', newPref)}
-                    />
-                </section>
+                    {/* 3. 계정 */}
+                    <section id="account">
+                        <AccountSection
+                            user={user}
+                            onUpdatePhone={handlePhoneUpdate}
+                            onUpdateTimezone={handleTimezoneUpdate}
+                        />
+                    </section>
 
-                <hr className="border-gray-200" />
+                    {/* 4. AI 설정 */}
+                    <section id="ai-preference">
+                        <AiPreferenceSettings
+                            preference={settings.ai_persona}
+                            onUpdate={(newPersona) => handleSettingsUpdate('ai_persona', newPersona)}
+                        />
+                    </section>
 
-                {/* 3. 계정 (기본 정보) */}
-                <section id="account">
-                    <AccountSection
-                        user={user}
-                        onUpdatePhone={handlePhoneUpdate}
-                        onUpdateTimezone={handleTimezoneUpdate}
-                    />
-                </section>
+                    {/* 5. 데이터 */}
+                    <section id="data">
+                        <DataSection isPro={subscription.plan_type !== 'FREE'} />
+                    </section>
 
-                <hr className="border-gray-200" />
-
-                {/* 4. AI 설정 (개인화) */}
-                <section id="ai-preference">
-                    <AiPreferenceSettings
-                        preference={settings.ai_persona}
-                        onUpdate={(newPersona) => handleSettingsUpdate('ai_persona', newPersona)}
-                    />
-                </section>
-
-                <hr className="border-gray-200" />
-
-                {/* 5. 데이터 (전문가/초기화) */}
-                <section id="data">
-                    <DataSection isPro={subscription.plan_type !== 'FREE'} />
-                </section>
-
-                {/* 6. 앱 정보 */}
-                <section id="app-info">
-                    <AppInfoSection />
-                </section>
-
+                    {/* 6. 앱 정보 */}
+                    <section id="app-info">
+                        <AppInfoSection />
+                    </section>
+                </div>
             </main>
         </div>
     );

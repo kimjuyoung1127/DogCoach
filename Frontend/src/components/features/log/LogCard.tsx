@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowDown, Clock, MapPin, MoreHorizontal } from "lucide-react";
+import { Clock, MapPin, MoreHorizontal, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface LogData {
@@ -22,120 +22,118 @@ interface Props {
 }
 
 export function LogCard({ log }: Props) {
-    // Intensity Color Logic
+    // Intensity Logic with Premium Hues
     const getIntensityColor = (level: number) => {
-        if (level <= 3) return "bg-green-500";
-        if (level <= 7) return "bg-amber-500";
-        return "bg-red-500";
+        if (level <= 3) return "bg-emerald-400";
+        if (level <= 7) return "bg-brand-orange";
+        return "bg-rose-500";
     };
 
     const getIntensityBg = (level: number) => {
-        if (level <= 3) return "bg-green-50";
-        if (level <= 7) return "bg-amber-50";
-        return "bg-red-50";
-    };
-
-    const getIntensityText = (level: number) => {
-        if (level <= 3) return "text-green-700";
-        if (level <= 7) return "text-amber-700";
-        return "text-red-700";
+        if (level <= 3) return "bg-emerald-500/10";
+        if (level <= 7) return "bg-brand-orange/10";
+        return "bg-rose-500/10";
     };
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            whileTap={{ scale: 0.98 }}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-4 cursor-pointer transition-colors hover:border-brand-lime/50"
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="glass p-6 rounded-[2.5rem] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/60 relative overflow-hidden group ring-1 ring-black/5"
         >
-            {/* Header: Time & Location & Intensity Badge */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-gray-50">
-                <div className="flex items-center gap-3">
-                    <div className={cn("px-2.5 py-0.5 rounded-full text-xs font-bold text-white", getIntensityColor(log.intensity))}>
-                        Lv.{log.intensity}
-                    </div>
-                    <div className="flex items-center gap-1 text-gray-500 text-sm">
-                        <Clock className="w-3.5 h-3.5" />
-                        <span>{log.time}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-gray-500 text-sm">
-                        <MapPin className="w-3.5 h-3.5" />
-                        <span>{log.location}</span>
-                    </div>
-                </div>
-                <button className="text-gray-300 hover:text-gray-600">
-                    <MoreHorizontal className="w-5 h-5" />
-                </button>
-            </div>
-
-            {/* Body: ABC Flow */}
-            <div className="p-5 relative">
-                {/* Visual Connector Line */}
-                <motion.div
-                    initial={{ height: 0 }}
-                    animate={{ height: "calc(100% - 64px)" }}
-                    transition={{ delay: 0.3, duration: 0.5 }}
-                    className="absolute left-[29px] top-8 w-0.5 bg-gray-100 -z-10"
-                />
-
-                {/* A: Antecedent */}
-                <div className="flex items-start gap-4 mb-4">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 z-10 bg-white ring-4 ring-white">
-                        A
+            {/* Header: Time & Intensity */}
+            <div className="flex items-center justify-between mb-8 relative z-10">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-white/40 backdrop-blur-sm rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-white/60 group-hover:bg-brand-lime/10 transition-all duration-500">
+                        {log.behavior.includes("짖음") || log.behavior.includes("Barking") ? "🔊" : "📝"}
                     </div>
                     <div>
-                        <div className="text-sm font-bold text-gray-900">{log.antecedent}</div>
-                        <div className="text-xs text-gray-500 mt-1">원인 (상황)</div>
-                    </div>
-                </div>
-
-                {/* B: Behavior */}
-                <div className="flex items-start gap-4 mb-4">
-                    <div className={cn("w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 z-10 bg-white ring-4 ring-white", getIntensityBg(log.intensity), getIntensityText(log.intensity))}>
-                        B
-                    </div>
-                    <div>
-                        <div className="text-sm font-bold text-gray-900">{log.behavior}</div>
-                        <div className="text-xs text-gray-500 mt-1">
-                            {log.duration} 동안 지속됨
+                        <div className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Entry Log</div>
+                        <div className="flex items-center gap-2">
+                            <Clock className="w-3.5 h-3.5 text-brand-lime" />
+                            <span className="text-sm font-black text-gray-900">{log.time}</span>
+                            <span className="text-gray-300 mx-1">|</span>
+                            <MapPin className="w-3.5 h-3.5 text-gray-400" />
+                            <span className="text-sm font-black text-gray-400 uppercase tracking-tight">{log.location}</span>
                         </div>
                     </div>
                 </div>
-
-                {/* C: Consequence */}
-                <div className="flex items-start gap-4">
-                    <div className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 z-10 bg-white ring-4 ring-white">
-                        C
-                    </div>
-                    <div>
-                        <div className="text-sm font-bold text-gray-900">{log.consequence}</div>
-                        <div className="text-xs text-gray-500 mt-1">나의 대처 (반응)</div>
-                    </div>
+                <div className={cn("px-4 py-2 rounded-2xl text-[10px] font-black text-white uppercase tracking-widest shadow-lg shadow-black/5 ring-1 ring-inset ring-white/20", getIntensityColor(log.intensity))}>
+                    Intensity {log.intensity}
                 </div>
             </div>
 
-            {/* Tags & AI Feedback */}
-            <div className="px-5 pb-5 space-y-3">
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2">
-                    {log.tags.map((tag, idx) => (
-                        <span key={idx} className="px-2 py-1 bg-gray-50 text-gray-500 text-xs rounded-md">
-                            #{tag}
-                        </span>
-                    ))}
-                </div>
+            {/* Body: ABC Flow with Cinematic Path */}
+            <div className="space-y-6 relative ml-2">
+                <div className="absolute left-[11px] top-6 bottom-6 w-0.5 bg-gradient-to-b from-brand-lime/40 via-gray-100 to-gray-50 -z-0" />
 
-                {/* AI Comment (If exists) */}
-                {log.aiComment && (
-                    <div className="flex gap-3 bg-brand-lime/10 p-3 rounded-xl">
-                        <span className="text-lg">💡</span>
-                        <p className="text-xs text-gray-700 leading-relaxed">
-                            <span className="font-bold text-brand-lime-darker block mb-0.5">TailLog AI 코치</span>
-                            {log.aiComment}
-                        </p>
-                    </div>
-                )}
+                <ABCStep
+                    char="A"
+                    title={log.antecedent}
+                    label="Antecedent"
+                    desc="원인 및 상황"
+                    color="bg-blue-500"
+                />
+
+                <ABCStep
+                    char="B"
+                    title={log.behavior}
+                    label="Behavior"
+                    desc={`${log.duration} 동안 지속`}
+                    active
+                    intensityBg={getIntensityBg(log.intensity)}
+                    intensityColor={getIntensityColor(log.intensity)}
+                />
+
+                <ABCStep
+                    char="C"
+                    title={log.consequence}
+                    label="Consequence"
+                    desc="보호자의 대처"
+                    color="bg-purple-500"
+                />
             </div>
+
+            {/* AI Coaching Insight */}
+            {log.aiComment && (
+                <div className="mt-8 pt-6 border-t border-gray-100/50">
+                    <div className="bg-white/40 backdrop-blur-md p-5 rounded-3xl border border-white/60 flex gap-4 relative overflow-hidden group/insight">
+                        <div className="absolute top-0 right-0 p-3 opacity-5 group-hover/insight:scale-125 transition-transform duration-700">
+                            <Sparkles className="w-12 h-12 text-brand-lime" />
+                        </div>
+                        <div className="shrink-0 w-10 h-10 rounded-xl bg-brand-lime/10 flex items-center justify-center border border-brand-lime/20">
+                            <Sparkles className="w-5 h-5 text-brand-lime" />
+                        </div>
+                        <div>
+                            <div className="text-[10px] font-black text-brand-lime uppercase tracking-[0.2em] mb-1">TailLog AI Coach</div>
+                            <p className="text-xs font-bold text-gray-700 leading-relaxed break-keep">
+                                {log.aiComment}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
         </motion.div>
+    );
+}
+
+function ABCStep({ char, title, label, desc, active, color, intensityBg, intensityColor }: any) {
+    return (
+        <div className="flex items-start gap-5 group/step">
+            <div className={cn(
+                "w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black text-white shrink-0 z-10 ring-4 ring-white shadow-sm transition-all duration-300 group-hover/step:scale-110",
+                active ? intensityColor : (color || "bg-gray-200")
+            )}>
+                {char}
+            </div>
+            <div className="flex-1">
+                <div className="flex items-center gap-2 mb-0.5">
+                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest opacity-60">{label}</span>
+                </div>
+                <div className="text-base font-black text-gray-900 tracking-tight leading-snug">{title}</div>
+                <div className="text-[10px] font-bold text-gray-400 opacity-80">{desc}</div>
+            </div>
+        </div>
     );
 }

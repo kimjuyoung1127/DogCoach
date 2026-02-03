@@ -10,67 +10,110 @@ interface Props {
     onManageSubscription: () => void;
 }
 
+import { motion } from 'framer-motion';
+import { Star, CheckCircle2, Crown } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
 export function SubscriptionSection({ subscription, onUpgrade, onManageSubscription }: Props) {
     const isPro = subscription?.plan_type === 'PRO_MONTHLY' || subscription?.plan_type === 'PRO_YEARLY';
 
     return (
-        <div className="space-y-4">
-            <h2 className="text-xl font-bold">멤버십 및 구독</h2>
+        <div className="space-y-6">
+            <div className="flex items-center gap-2 px-1">
+                <Star className="w-5 h-5 text-brand-lime" />
+                <h2 className="text-xl font-black text-gray-900 tracking-tight">멤버십 및 구독</h2>
+            </div>
 
-            <Card>
-                <CardHeader className="pt-8">
-                    <CardTitle className="flex justify-between items-center text-lg">
-                        <span>현재 플랜</span>
-                        <span className={`px-2 py-1 rounded text-xs font-bold ${isPro ? 'bg-brand-lime/10 text-brand-lime' : 'bg-gray-100 text-gray-600'}`}>
-                            {isPro ? 'PRO' : 'FREE'}
-                        </span>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-2">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass p-8 rounded-[3rem] shadow-[0_15px_50px_rgba(0,0,0,0.05)] border border-white/60 relative overflow-hidden group ring-1 ring-black/5"
+            >
+                {/* Background Decor */}
+                <div className="absolute top-0 right-0 w-48 h-48 bg-brand-lime/10 rounded-full -mr-20 -mt-20 blur-3xl" />
+
+                <div className="relative z-10">
+                    <div className="flex justify-between items-center mb-8">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Current Plan</span>
+                            <div className="flex items-center gap-3">
+                                <h3 className="text-2xl font-black text-gray-900 tracking-tight">
+                                    {isPro ? 'Pro Member' : 'Standard'}
+                                </h3>
+                                <div className={cn(
+                                    "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
+                                    isPro
+                                        ? "bg-brand-lime/10 text-brand-lime border-brand-lime/20 shadow-sm"
+                                        : "bg-gray-100/50 text-gray-400 border-gray-200/50"
+                                )}>
+                                    {isPro ? 'Premium' : 'Free'}
+                                </div>
+                            </div>
+                        </div>
+                        {isPro && <Crown className="w-8 h-8 text-brand-lime animate-pulse" />}
+                    </div>
+
+                    <div className="space-y-6">
                         {isPro ? (
-                            <>
-                                <p className="text-sm text-gray-600">
-                                    다음 결제일: {subscription?.next_billing_date ? new Date(subscription.next_billing_date).toLocaleDateString() : '-'}
-                                </p>
-                                <div className="flex gap-2 mt-4">
-                                    <Button variant="outline" onClick={onManageSubscription} className="w-full text-sm">
-                                        결제 수단 관리
-                                    </Button>
+                            <div className="space-y-6">
+                                <div className="p-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/60 shadow-inner">
+                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Next Billing Date</p>
+                                    <p className="text-sm font-black text-gray-900">
+                                        {subscription?.next_billing_date ? new Date(subscription.next_billing_date).toLocaleDateString() : 'Active'}
+                                    </p>
                                 </div>
-                            </>
+                                <button
+                                    onClick={onManageSubscription}
+                                    className="w-full bg-white/60 border border-white/80 py-4 rounded-2xl text-sm font-black text-gray-700 hover:bg-white transition-all shadow-sm"
+                                >
+                                    결제 수단 및 구독 관리
+                                </button>
+                            </div>
                         ) : (
-                            <>
-                                <p className="text-sm text-gray-600 mb-4 whitespace-pre-line break-keep">
-                                    Pro로 업그레이드하고 AI 심층 분석과 무제한 코칭을 받아보세요.
+                            <div className="space-y-6">
+                                <p className="text-sm font-bold text-gray-500 leading-relaxed mb-4">
+                                    Pro 멤버십으로 업그레이드하고 <br />
+                                    <span className="text-gray-900">AI 심층 행동 분석</span>과 무제한 솔루션을 경험하세요.
                                 </p>
-                                <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 rounded-lg mb-4 border border-gray-200">
-                                    <ul className="text-sm space-y-1 text-gray-700">
-                                        <li>✨ AI 정밀 행동 분석</li>
-                                        <li>📊 주간/월간 리포트</li>
-                                        <li>👩‍⚕️ 전문가 코칭 연계</li>
-                                    </ul>
+
+                                <div className="space-y-3 bg-white/40 backdrop-blur-sm p-6 rounded-3xl border border-white/60 shadow-inner">
+                                    {[
+                                        "실시간 AI 정밀 행동 분석 레이더",
+                                        "맞춤형 주간 훈련 리포트 발급",
+                                        "전문 도그 위스퍼러 1:1 채팅"
+                                    ].map((feature, i) => (
+                                        <div key={i} className="flex items-center gap-3 text-sm font-black text-gray-700">
+                                            <CheckCircle2 className="w-5 h-5 text-brand-lime shrink-0" />
+                                            <span>{feature}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                                <Button onClick={onUpgrade} className="w-full bg-gray-900 hover:bg-black text-white shadow-md">
-                                    Pro 시작하기 (7일 무료)
-                                </Button>
-                            </>
+
+                                <button
+                                    onClick={onUpgrade}
+                                    className="w-full bg-gray-900 text-white p-5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 active:scale-[0.98] transition-all hover:bg-black hover:shadow-xl hover:shadow-black/20 group/btn"
+                                >
+                                    지금 Pro 시작하기 (7일 무료)
+                                    <div className="w-8 h-8 bg-brand-lime rounded-full flex items-center justify-center group-hover/btn:scale-110 transition-transform">
+                                        <Crown className="w-4 h-4 text-gray-900 fill-current" />
+                                    </div>
+                                </button>
+
+                                <div className="flex gap-2 p-2 bg-white/30 backdrop-blur-sm rounded-2xl border border-white/60 focus-within:ring-2 focus-within:ring-brand-lime/30 transition-all">
+                                    <input
+                                        type="text"
+                                        placeholder="초대/프로모션 코드"
+                                        className="flex-1 px-4 bg-transparent text-xs font-bold focus:outline-none placeholder:text-gray-400"
+                                    />
+                                    <button className="px-4 py-2 bg-white/50 text-gray-500 rounded-xl text-xs font-black hover:bg-white hover:text-gray-900 transition-all">
+                                        적용
+                                    </button>
+                                </div>
+                            </div>
                         )}
                     </div>
-                </CardContent>
-                {!isPro && (
-                    <CardFooter className="pt-4">
-                        <div className="w-full flex gap-2">
-                            <input
-                                type="text"
-                                placeholder="초대/프로모션 코드"
-                                className="flex-1 px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime"
-                            />
-                            <Button variant="ghost" className="shrink-0">적용</Button>
-                        </div>
-                    </CardFooter>
-                )}
-            </Card>
+                </div>
+            </motion.div>
         </div>
     );
 }

@@ -68,18 +68,25 @@ export function AnalyticsView({ logs, id }: AnalyticsViewProps) {
     }
 
     return (
-        <div id={id} className="space-y-6">
+        <div id={id} className="space-y-8">
             {/* 1. Radar Chart: Major Causes */}
-            <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-                <h4 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <span className="w-1 h-4 bg-brand-lime rounded-full" />
-                    주요 원인 분석
-                </h4>
-                <div className="h-64 w-full relative">
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="glass p-7 rounded-[2.5rem] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/60 relative overflow-hidden ring-1 ring-black/5"
+            >
+                <div className="flex flex-col mb-6">
+                    <span className="text-[10px] font-black text-brand-lime uppercase tracking-[0.2em] mb-1">Causes Analysis</span>
+                    <h4 className="text-xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+                        주요 원인 분석
+                    </h4>
+                </div>
+
+                <div className="h-72 w-full relative">
                     <ResponsiveContainer width="100%" height="100%">
                         <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
-                            <PolarGrid stroke="#e5e7eb" />
-                            <PolarAngleAxis dataKey="subject" tick={{ fill: '#6b7280', fontSize: 10 }} />
+                            <PolarGrid stroke="#e5e7eb" strokeDasharray="3 3" />
+                            <PolarAngleAxis dataKey="subject" tick={{ fill: '#9ca3af', fontSize: 10, fontWeight: 700 }} />
                             <PolarRadiusAxis
                                 angle={30}
                                 domain={[0, 'auto']}
@@ -89,81 +96,109 @@ export function AnalyticsView({ logs, id }: AnalyticsViewProps) {
                             <Radar
                                 name="Frequency"
                                 dataKey="A"
-                                stroke="#a3e635"
-                                strokeWidth={2}
-                                fill="#a3e635"
-                                fillOpacity={0.4}
+                                stroke="#4ADE80"
+                                strokeWidth={3}
+                                fill="url(#radarGradient)"
+                                fillOpacity={0.6}
                             />
+                            <defs>
+                                <linearGradient id="radarGradient" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#4ADE80" stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor="#10B981" stopOpacity={0.2} />
+                                </linearGradient>
+                            </defs>
                         </RadarChart>
                     </ResponsiveContainer>
                     {radarData.length === 0 && (
-                        <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-400">
-                            데이터 부족
+                        <div className="absolute inset-0 flex items-center justify-center text-xs font-black text-gray-300 uppercase tracking-widest">
+                            No Data Available
                         </div>
                     )}
                 </div>
-            </div>
+            </motion.div>
 
             {/* 2. Hourly Activity (Bar Chart) */}
-            <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-                <h4 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <span className="w-1 h-4 bg-brand-lime rounded-full" />
-                    시간대별 활동 패턴
-                </h4>
-                <div className="h-48 w-full">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="glass p-7 rounded-[2.5rem] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/60 relative overflow-hidden ring-1 ring-black/5"
+            >
+                <div className="flex flex-col mb-6">
+                    <span className="text-[10px] font-black text-brand-orange uppercase tracking-[0.2em] mb-1">Activity Pattern</span>
+                    <h4 className="text-xl font-black text-gray-900 tracking-tight">
+                        시간대별 활동 패턴
+                    </h4>
+                </div>
+
+                <div className="h-56 w-full">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={hourlyData} margin={{ top: 5, right: 0, left: -25, bottom: 0 }}>
                             <XAxis
                                 dataKey="hour"
-                                tick={{ fontSize: 10, fill: '#9ca3af' }}
+                                tick={{ fontSize: 10, fill: '#9ca3af', fontWeight: 700 }}
                                 tickLine={false}
                                 axisLine={false}
                                 interval={3}
                             />
                             <YAxis
-                                tick={{ fontSize: 10, fill: '#9ca3af' }}
+                                tick={{ fontSize: 10, fill: '#9ca3af', fontWeight: 700 }}
                                 tickLine={false}
                                 axisLine={false}
                                 allowDecimals={false}
                             />
                             <Tooltip
-                                cursor={{ fill: '#f3f4f6' }}
-                                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                labelStyle={{ color: '#374151', fontWeight: 'bold' }}
+                                cursor={{ fill: 'rgba(0,0,0,0.02)', radius: 8 }}
+                                contentStyle={{
+                                    backgroundColor: 'rgba(255,255,255,0.8)',
+                                    backdropFilter: 'blur(10px)',
+                                    borderRadius: '16px',
+                                    border: '1px solid rgba(0,0,0,0.05)',
+                                    boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)'
+                                }}
+                                labelStyle={{ color: '#111827', fontWeight: 900, marginBottom: '4px' }}
                             />
                             <Bar
                                 dataKey="count"
-                                fill="#27272a"
-                                radius={[4, 4, 0, 0]}
-                                activeBar={{ fill: '#a3e635' }}
+                                fill="#111827"
+                                radius={[6, 6, 2, 2]}
+                                activeBar={{ fill: '#4ADE80' }}
                             />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
-            </div>
+            </motion.div>
 
             {/* 3. Daily Heatmap (Simple Grid) */}
-            <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-                <h4 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <span className="w-1 h-4 bg-brand-lime rounded-full" />
-                    요일별 빈도
-                </h4>
-                <div className="grid grid-cols-7 gap-2">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="glass p-7 rounded-[2.5rem] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/60 relative overflow-hidden ring-1 ring-black/5"
+            >
+                <div className="flex flex-col mb-8">
+                    <span className="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em] mb-1">Weekly Frequency</span>
+                    <h4 className="text-xl font-black text-gray-900 tracking-tight">
+                        요일별 빈도
+                    </h4>
+                </div>
+
+                <div className="grid grid-cols-7 gap-3 sm:gap-4 h-40">
                     {dayData.map((d, i) => (
-                        <div key={i} className="flex flex-col items-center gap-2">
-                            <div className="relative w-full aspect-[1/3] bg-gray-100 rounded-full overflow-hidden">
+                        <div key={i} className="flex flex-col items-center gap-3">
+                            <div className="relative w-full aspect-[1/4] bg-gray-50/50 rounded-full overflow-hidden border border-gray-100/50 shadow-inner">
                                 <motion.div
                                     initial={{ height: 0 }}
                                     animate={{ height: `${Math.min((d.count / (Math.max(...dayData.map(x => x.count)) || 1)) * 100, 100)}%` }}
-                                    transition={{ duration: 0.5, delay: i * 0.1 }}
-                                    className="absolute bottom-0 w-full bg-brand-lime rounded-full"
+                                    transition={{ duration: 1, delay: 0.3 + (i * 0.05), type: "spring", damping: 15 }}
+                                    className="absolute bottom-0 w-full bg-gradient-to-t from-brand-lime to-emerald-400 rounded-full shadow-[0_0_15px_rgba(74,222,128,0.3)]"
                                 />
                             </div>
-                            <span className="text-[10px] text-gray-500 font-medium">{d.day}</span>
+                            <span className="text-[10px] text-gray-400 font-black uppercase tracking-tighter">{d.day}</span>
                         </div>
                     ))}
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 }
