@@ -42,11 +42,14 @@
 [x] **Expert PDF Report**: `@react-pdf/renderer` 및 `html-to-image`를 활용한 전문가용 문진표 PDF 생성 기능.
 [x] **Local AI Integration**: Cloudflare Tunnel을 통한 로컬 Ollama(Qwen2.5) 연동 및 리포트 내 AI 심층 분석/편지 기능 탑재.
 
-### ✅ Phase 4: 지능 (Coach & Curriculum)
+### ✅ Phase 4: 지능 (Coach & Curriculum) [COMPLETED]
 - [x] **AI 코칭 API**: 기본적인 슬롯 필링 기반 코칭 로직 (`coach/service.py`) 구현 완료.
 - [x] **LLM 심층 분석**: 최근 로그 및 환경 데이터를 기반으로 한 AI 전문가 진단 및 '강아지의 속마음 편지' 생성 기능 (Phase 1 완료).
 - [x] **맞춤형 커리큘럼**: 사용자 이슈에 따른 7일 챌린지 자동 생성 및 데이터 매핑 (`curriculum.ts`, `CoachPage`).
-- [x] **UX 최적화**: 결과 분석 -> AI 리포트 생성 -> 훈련 추천으로 이어지는 유기적인 전환 flow 구축.
+- [x] **모듈화 아키텍처**: 커리큘럼 데이터를 증상별 모듈로 분리하여 유지보수성 극대화 (`src/data/curriculum/`).
+- [x] **가변형 훈련 개입 (Plan B)**: 미션 단계별 AI 맞춤형 대안 스와핑 시스템 및 프리미엄 스캔 UX 구현.
+- [x] **훈련 보관함 (Vault)**: 원래의 훈련 계획(Plan A)을 삭제하지 않고 보존하며 조회/복구할 수 있는 기능 탑재.
+- [x] **UX 최적화**: 결과 분석 -> AI 리포트 생성 -> 훈련 추천 -> 단계별 개입으로 이어지는 유기적인 전환 flow 구축.
 - [ ] **RAG 고도화**: 벡터 DB(Supabase Vector) 연동 및 실제 로그 데이터 컨텍스트 주입 예정.
 - [x] **AI 비용 최적화**: 로컬 LLM(Qwen2.5) 도입으로 API 비용 $0 달성.
 

@@ -114,7 +114,7 @@ export default function LogPage() {
     };
 
     return (
-        <div className="min-h-screen pb-24 relative">
+        <div className="min-h-screen relative overflow-y-auto">
             <PremiumBackground />
 
             {/* Header: Date Picker & Tabs */}

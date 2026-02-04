@@ -50,7 +50,7 @@ export const QuickLogWidget = ({ dogId, onLogCreated }: Props) => {
     const actions = [
         { label: "짖음", val: "Barking", icon: "🔊", color: "brand-lime" },
         { label: "입질", val: "Biting", icon: "🦷", color: "brand-orange" },
-        { label: "배변실수", val: "Toileting", icon: "blue", color: "blue" },
+        { label: "배변실수", val: "Toileting", icon: "💧", color: "brand-orange" },
         { label: "분리불안", val: "Anxiety", icon: "🏠", color: "purple" },
         { label: "흥분", val: "Excitement", icon: "⚡", color: "yellow" },
         { label: "기타", val: "기타", icon: "📝", color: "gray" },

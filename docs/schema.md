@@ -11,6 +11,7 @@
 | **`asset_type`** | `PHOTO`, `VIDEO`, `LOTTIE_SNAPSHOT` | 미디어 파일 유형 |
 | **`report_type`** | `DAILY`, `WEEKLY`, `INSIGHT` | AI 리포트/코칭 유형 |
 | **`noti_channel`** | `ALIMTALK`, `WEB_PUSH`, `EMAIL` | 알림 발송 채널 |
+| **`training_status`** | `COMPLETED`, `SKIPPED_INEFFECTIVE`, `SKIPPED_ALREADY_DONE`, `HIDDEN_BY_AI` | 훈련 진행 상태 |
 
 ---
 
@@ -143,6 +144,19 @@ AI가 분석한 리포트 결과입니다.
 | `is_completed` | `BOOLEAN` | Default: `FALSE` | 실천 완료 여부 |
 | `created_at` | `TIMESTAMPTZ` | Default: `NOW()` | 생성 일시 |
 | `updated_at` | `TIMESTAMPTZ` | Default: `NOW()` | 수정 일시 |
+
+#### `user_training_status`
+사용자별 훈련 진행 및 스킵 상태를 저장합니다.
+| Column | Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| **`id`** | `UUID` | **PK**, Default: `uuid_generate_v4()` | 상태 ID |
+| `user_id` | `UUID` | **FK** (`users.id`), On Delete: Cascade | 사용자 |
+| `curriculum_id` | `VARCHAR(50)` | Not Null | 커리큘럼 ID (예: separation_anxiety) |
+| `stage_id` | `VARCHAR(50)` | Not Null | 스테이지 ID (예: sep_1) |
+| `step_number` | `INTEGER` | Not Null | 스텝 번호 |
+| `status` | `training_status` | Not Null | 상태 (COMPLETED, SKIPPED_INEFFECTIVE 등) |
+| `created_at` | `TIMESTAMPTZ` | Default: `NOW()` | 생성 일시 |
+
 
 ---
 

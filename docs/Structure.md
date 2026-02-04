@@ -33,9 +33,15 @@ Frontend/
 │   │       │   ├── FadeIn.tsx      # 페이드인 애니메이션
 │   │       │   └── ScaleButton.tsx # 터치 피드백 (Scale) 버튼
 │   │       └── Toast.tsx           # 알림 토스트
+│   ├── data/                    # [NEW] 정적 데이터 관리
+│   │   └── curriculum/          # [MODULAR] 훈련 커리큘럼 아키텍처
+│   │       ├── index.ts         # 커리큘럼 통합 Entry
+│   │       ├── types.ts         # 공유 인터페이스 (Plan B, Vault 지원)
+│   │       └── modules/         # 증상별 개별 모듈 (분리불안, 짖음 등)
 │   ├── hooks/
 │   │   ├── useAuth.ts           # Supabase Auth & 게스트 로그인 핸들링
-│   │   └── useQueries.ts        # [UPDATED] TanStack Query 훅 (Queries & Mutations, 낙관적 업데이트)
+│   │   ├── useQueries.ts        # [UPDATED] TanStack Query 훅 (Queries & Mutations)
+│   │   └── usePersonalizedCurriculum.ts # [NEW] 맞춤형 커리큘럼 & Plan B/Vault 로직
 │   ├── lib/
 │   │   ├── api.ts               # Backend API 클라이언트 (Fetch Wrapper, Token Interceptor)
 │   │   ├── localization.ts      # [NEW] 영문 DB ID -> 한글 마스킹 맵

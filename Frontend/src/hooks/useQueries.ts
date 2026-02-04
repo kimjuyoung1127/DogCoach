@@ -48,6 +48,19 @@ export function useUserProfile(token?: string | null) {
     });
 }
 
+// 4. Training Statuses Hook
+export function useTrainingStatuses(token?: string | null) {
+    return useQuery({
+        queryKey: ['training_status'],
+        queryFn: async () => {
+            if (!token) return [];
+            return await apiClient.get<any[]>("/coach/status", { token });
+        },
+        enabled: !!token,
+    });
+}
+
+
 // ==========================================
 // MUTATIONS
 // ==========================================
@@ -129,3 +142,35 @@ export function useGetCoachingAdvice(token?: string | null) {
         },
     });
 }
+
+// 5. Update Training Status
+export function useUpdateTrainingStatus(token?: string | null) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (data: any) => {
+            if (!token) throw new Error("Authentication required");
+            return await apiClient.post('/coach/status', data, { token });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['training_status'] });
+        },
+    });
+}
+
+// 6. Delete Training Status
+export function useDeleteTrainingStatus(token?: string | null) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async ({ curriculumId, stageId, stepNumber }: { curriculumId: string, stageId: string, stepNumber: number }) => {
+            if (!token) throw new Error("Authentication required");
+            return await apiClient.delete(`/coach/status/${curriculumId}/${stageId}/${stepNumber}`, { token });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['training_status'] });
+        },
+    });
+}
+
+

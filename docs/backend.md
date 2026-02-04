@@ -33,10 +33,12 @@ Backend/
     - [x] **Strict Query Keys** 설계를 통한 캐시 충돌 방지 및 자동 무효화(Invalidation) 적용.
     - [x] **Timezone Awareness**: `X-Timezone` 헤더 기반 로컬 시간 처리.
 
-### ✅ Phase 4: 지능 (Coach & Curriculum)
+### ✅ Phase 4: 지능 (Coach & Curriculum) [COMPLETED]
 - [x] **AI 코칭 API**: 기본적인 슬롯 필링 기반 코칭 로직 (`coach/service.py`) 구현 완료.
 - [x] **Local AI 리포트**: `AIClient`를 통한 로컬 LLM 연동 및 최근 로그 기반 행동 데이터 심층 분석 기능 구현.
-- [x] **맞춤형 커리큘럼 매핑**: `curriculum.ts`를 통한 이슈별 7일 챌린지 자동 매핑 및 추천 시스템 구축.
+- [x] **모듈형 커리큘럼 아키텍처**: 커리큘럼 데이터를 증상별 모듈로 분리하여 유지보수성 극대화 (`src/data/curriculum/`).
+- [x] **가변형 훈련 개입 (Plan B)**: 미션 단계별 AI 맞춤형 대안 스와핑 시스템 및 프리미엄 스캔 UX 구축.
+- [x] **훈련 보관함 (Vault)**: 원래의 계획(Plan A)을 보관하고 언제든지 조회/취소할 수 있는 보관 시스템 구현.
 - [x] **UX 최적화**: 결과 분석 -> AI 리포트 생성 -> 훈련 추천으로 이어지는 유기적인 전환 flow 구축.
 - [ ] **RAG 고도화**: 벡터 DB(Supabase Vector) 연동 및 실제 로그 데이터 컨텍스트 주입 예정.
 - [ ] **사용자 설정**: 알림 채널 및 AI 페르소나 설정 API 구현 예정.
