@@ -61,6 +61,13 @@ class NotiChannel(str, PyEnum):
     WEB_PUSH = "WEB_PUSH"
     EMAIL = "EMAIL"
 
+class TrainingStatus(str, PyEnum):
+    COMPLETED = "COMPLETED"
+    SKIPPED_INEFFECTIVE = "SKIPPED_INEFFECTIVE"
+    SKIPPED_ALREADY_DONE = "SKIPPED_ALREADY_DONE"
+    HIDDEN_BY_AI = "HIDDEN_BY_AI"
+
+
 # --- Models ---
 
 class User(Base):
@@ -247,3 +254,18 @@ class UserSettings(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     user = relationship("User", back_populates="settings")
+
+
+class UserTrainingStatus(Base):
+    __tablename__ = "user_training_status"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    curriculum_id = Column(String(50), nullable=False)
+    stage_id = Column(String(50), nullable=False)
+    step_number = Column(Integer, nullable=False)
+    status = Column(Enum(TrainingStatus, name="training_status"), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User")
+

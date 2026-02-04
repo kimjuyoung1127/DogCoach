@@ -100,9 +100,12 @@ PowerShell에서 아래 명령어를 입력하여 로컬 AI를 외부로 노출�
     *   Prompt: 한국어 구어체 및 ABC 분석에 최적화된 시스템 프롬프트 작성.
     *   Frontend: 리포트 다운로드 버튼 클릭 시 AI 분석 요청 -> 완료 시 PDF 생성.
 
-### Phase 2: 구조화된 훈련 제안
-*   **목표**: 단순 텍스트가 아닌, JSON 형태의 Action Plan을 받아와 앱 내 '오늘의 미션'을 동적으로 변경.
-*   **구현**: `AICoaching` 테이블에 분석 결과 저장 및 Dashboard 연동.
+### Phase 2: 가변형 훈련 개입 (Plan B & Vault) [DONE]
+*   **목표**: 단순 텍스트가 아닌, 사용자의 상황에 따른 동적 Action Plan(Plan B)을 제시하고 성과가 없는 훈련을 대체.
+*   **구현**: 
+    *   `MissionActionOverlay`: 개별 단계별 스와핑 시스템 및 AI 스캔 UX 구축.
+    *   `Training Vault`: 교체된 원래 계획(Plan A)을 '보관함'에 저장하여 데이터 유실 방지.
+    *   `usePersonalizedCurriculum`: 스와핑된 메타데이터를 추적하고 맞춤형 커리큘럼 라이브러리에 실시간 반영.
 
 ### Phase 3: 전문가 및 보호자 공유 확장
 *   **목표**: 'Expert View' 링크 활성화 및 보호자 간 커뮤니티 공유 기능.

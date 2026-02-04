@@ -1,6 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from app.shared.models import Dog, DogEnv, BehaviorLog
+from sqlalchemy import select, delete
+from typing import List
+from app.shared.models import Dog, DogEnv, BehaviorLog, UserTrainingStatus
+from sqlalchemy.dialects.postgresql import insert
+
 from app.features.coach import schemas, templates, prompts
 from app.shared.clients.ai_client import ai_client
 from fastapi import HTTPException
@@ -181,3 +184,52 @@ async def analyze_behavior_with_ai(db: AsyncSession, dog_id: str) -> schemas.AIA
         dog_voice=dog_voice,
         raw_analysis=ai_response_text
     )
+
+async def update_training_status(
+    db: AsyncSession, 
+    user_id: str, 
+    update: schemas.TrainingStatusUpdate
+) -> UserTrainingStatus:
+    # SQL Upsert (PostgreSQL specific)
+    stmt = insert(UserTrainingStatus).values(
+        user_id=user_id,
+        curriculum_id=update.curriculum_id,
+        stage_id=update.stage_id,
+        step_number=update.step_number,
+        status=update.status
+    )
+    
+    # On conflict, update status
+    # Note: unique constraint must exist on (user_id, curriculum_id, stage_id, step_number)
+    stmt = stmt.on_conflict_do_update(
+        index_elements=['user_id', 'curriculum_id', 'stage_id', 'step_number'],
+        set_={'status': update.status}
+    ).returning(UserTrainingStatus)
+    
+    result = await db.execute(stmt)
+    await db.commit()
+    return result.scalar_one()
+
+async def get_training_statuses(db: AsyncSession, user_id: str):
+    query = select(UserTrainingStatus).where(UserTrainingStatus.user_id == user_id)
+    result = await db.execute(query)
+    return result.scalars().all()
+
+async def delete_training_status(
+    db: AsyncSession,
+    user_id: str,
+    curriculum_id: str,
+    stage_id: str,
+    step_number: int
+):
+    stmt = delete(UserTrainingStatus).where(
+        UserTrainingStatus.user_id == user_id,
+        UserTrainingStatus.curriculum_id == curriculum_id,
+        UserTrainingStatus.stage_id == stage_id,
+        UserTrainingStatus.step_number == step_number
+    )
+    await db.execute(stmt)
+    await db.commit()
+    return True
+
+

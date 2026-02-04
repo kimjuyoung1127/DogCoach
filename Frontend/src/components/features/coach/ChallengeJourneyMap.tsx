@@ -24,6 +24,7 @@ export function ChallengeJourneyMap({ stages, currentDay, onDayClick }: Props) {
                     const isCompleted = stage.day < currentDay;
                     const isCurrent = stage.day === currentDay;
                     const isLocked = stage.day > currentDay;
+                    const activeAltId = stage.steps.reduce((acc: string | null, s: any) => s.activeAlternativeId || acc, null);
 
                     return (
                         <motion.div
@@ -55,6 +56,11 @@ export function ChallengeJourneyMap({ stages, currentDay, onDayClick }: Props) {
                                 </div>
                                 <div className="font-black text-gray-900 text-base leading-tight">
                                     {stage.title}
+                                    {activeAltId && (
+                                        <span className="ml-2 inline-flex items-center gap-1 bg-purple-50 text-purple-600 text-[8px] font-black px-1.5 py-0.5 rounded border border-purple-100 uppercase">
+                                            Plan {activeAltId}
+                                        </span>
+                                    )}
                                 </div>
                                 {isCurrent && (
                                     <div className="mt-3 flex items-center justify-start gap-2">

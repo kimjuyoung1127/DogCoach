@@ -101,10 +101,10 @@ export function AccountSection({ user, onUpdatePhone, onUpdateTimezone }: Props)
                                     </button>
                                 )}
                             </div>
-                            <p className="text-[10px] font-bold text-gray-400 mt-4 leading-relaxed flex items-center gap-2">
+                            <div className="text-[10px] font-bold text-gray-400 mt-4 leading-relaxed flex items-center gap-2">
                                 <div className="w-1 h-1 rounded-full bg-brand-lime" />
                                 AI 분석 결과 및 중요 정기 솔루션을 발송하는 데 사용됩니다.
-                            </p>
+                            </div>
                         </div>
                     </div>
 

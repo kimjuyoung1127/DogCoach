@@ -3,14 +3,21 @@
 import { useState, useEffect } from "react";
 import { ChallengeJourneyMap } from "@/components/features/coach/ChallengeJourneyMap";
 import { MissionActionOverlay } from "@/components/features/coach/MissionActionOverlay";
-import { Trophy, Zap, ChevronRight, BookOpen, Sparkles, CheckCircle2 } from "lucide-react";
+import { Trophy, Zap, ChevronRight, BookOpen, Sparkles, CheckCircle2, RotateCcw, EyeOff, Info } from "lucide-react";
+
 import { motion, AnimatePresence } from "framer-motion";
 import { TRAINING_CURRICULUM, TrainingStage, mapIssueToCurriculum } from "@/data/curriculum";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { useDashboardData } from "@/hooks/useQueries";
+import { useDashboardData, useDeleteTrainingStatus } from "@/hooks/useQueries";
+import { usePersonalizedCurriculum } from "@/hooks/usePersonalizedCurriculum";
 import { useSearchParams } from "next/navigation";
+import { Toast } from "@/components/ui/Toast";
+
+
 import { PremiumBackground } from "@/components/shared/ui/PremiumBackground";
+import { ScaleButton } from "@/components/ui/animations/ScaleButton";
+
 
 export default function CoachPage() {
     const { token } = useAuth();
@@ -19,6 +26,8 @@ export default function CoachPage() {
 
     // Data Fetching
     const { data: dashboardData } = useDashboardData(!!token, token);
+    const { activeCurriculum, hiddenStages } = usePersonalizedCurriculum();
+    const deleteStatus = useDeleteTrainingStatus(token);
 
     // State
     const [xp, setXp] = useState(300);
@@ -27,8 +36,18 @@ export default function CoachPage() {
     const [currentDay, setCurrentDay] = useState(1);
     const [selectedMission, setSelectedMission] = useState<TrainingStage | null>(null);
 
-    const currentCourse = TRAINING_CURRICULUM.find(c => c.id === currentCourseId) || TRAINING_CURRICULUM[0];
+    // Toast state
+    const [toastMessage, setToastMessage] = useState("");
+    const [isToastVisible, setIsToastVisible] = useState(false);
+
+    // Accordion state
+    const [isHiddenExpanded, setIsHiddenExpanded] = useState(false);
+
+    const currentCourse = activeCurriculum.find(c => c.id === currentCourseId) || activeCurriculum[0] || TRAINING_CURRICULUM[0];
+
     const recommendedCourse = dashboardData ? mapIssueToCurriculum(dashboardData.issues) : null;
+
+
 
     // Auto-select recommended course on load
     useEffect(() => {
@@ -50,10 +69,34 @@ export default function CoachPage() {
     // Handler
     const handleMissionComplete = (reaction: string) => {
         setSelectedMission(null);
+        if (reaction === "skipped_ineffective") {
+            showToast("훈련이 '숨겨진 보관함'으로 이동되었습니다.");
+            return;
+        }
+        if (reaction === "swapped_to_plan_b") {
+            showToast("AI가 제안한 Plan B로 훈련이 전환되었습니다! ✨");
+            return;
+        }
         if (reaction) {
             setXp((prev) => prev + 100);
         }
     };
+
+    const showToast = (message: string) => {
+        setToastMessage(message);
+        setIsToastVisible(true);
+    };
+
+    const handleRestore = async (courseId: string, stageId: string, stepNumber: number) => {
+        try {
+            await deleteStatus.mutateAsync({ curriculumId: courseId, stageId, stepNumber });
+            showToast("훈련을 다시 커리큘럼으로 되돌렸습니다.");
+        } catch (err) {
+            console.error("Failed to restore stage:", err);
+            showToast("복구에 실패했습니다.");
+        }
+    };
+
 
     return (
         <div className="min-h-screen pb-32 relative">
@@ -139,17 +182,18 @@ export default function CoachPage() {
                 </AnimatePresence>
 
                 {/* 3. Sub: Course Selector */}
-                <section className="pb-24" id="training-list">
+                <section className="pb-12" id="training-list">
                     <div className="flex items-center justify-between mb-8 px-1">
                         <div className="flex items-center gap-2">
                             <BookOpen className="w-5 h-5 text-gray-400" />
                             <h2 className="font-black text-gray-900 text-xl tracking-tight">훈련 라이브러리</h2>
                         </div>
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Available {TRAINING_CURRICULUM.length}</span>
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Available {activeCurriculum.length}</span>
                     </div>
 
                     <div className="space-y-6">
-                        {TRAINING_CURRICULUM.map((course, idx) => (
+                        {activeCurriculum.map((course, idx) => (
+
                             <CourseCard
                                 key={course.id}
                                 index={idx}
@@ -166,14 +210,98 @@ export default function CoachPage() {
                         ))}
                     </div>
                 </section>
+
+                {/* 4. Hidden/Skipped Stages Section */}
+                {hiddenStages.length > 0 && (
+                    <section className="pb-32">
+                        <button
+                            onClick={() => setIsHiddenExpanded(!isHiddenExpanded)}
+                            className="w-full flex items-center justify-between py-4 px-1 group"
+                        >
+                            <div className="flex items-center gap-2">
+                                <EyeOff className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                                <h2 className="font-black text-gray-900 text-xl tracking-tight">숨겨진 훈련</h2>
+                                <span className="bg-gray-100 text-gray-400 text-[9px] font-black px-2 py-0.5 rounded-full ml-1">
+                                    {hiddenStages.length}
+                                </span>
+                            </div>
+                            <motion.div
+                                animate={{ rotate: isHiddenExpanded ? 180 : 0 }}
+                                className="w-8 h-8 rounded-full bg-white/40 border border-white/60 flex items-center justify-center text-gray-400 group-hover:bg-white transition-all shadow-sm"
+                            >
+                                <ChevronRight className="w-4 h-4 rotate-90" />
+                            </motion.div>
+                        </button>
+
+                        <AnimatePresence>
+                            {isHiddenExpanded && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                                    className="overflow-hidden"
+                                >
+                                    <div className="space-y-4 pt-2">
+                                        <div className="bg-blue-50/50 rounded-2xl p-4 flex gap-3 mb-2 border border-blue-100/50">
+                                            <Info className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                                            <p className="text-xs text-blue-600 font-bold leading-relaxed">
+                                                효과가 없거나 이미 알고 있는 훈련들은 이곳에 보관됩니다. 언제든지 다시 시도할 수 있어요.
+                                            </p>
+                                        </div>
+
+                                        {hiddenStages.map((hidden) => (
+                                            <motion.div
+                                                key={`${hidden.courseId}-${hidden.stage.id}`}
+                                                className="glass p-5 rounded-3xl border border-white/60 flex items-center justify-between gap-4 shadow-sm"
+                                            >
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400">
+                                                        <hidden.stage.icon className="w-6 h-6" />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="font-black text-gray-800 text-sm leading-tight mb-0.5">{hidden.stage.title}</h4>
+                                                        <div className="flex items-center gap-2">
+                                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{hidden.courseTitle} • Day {hidden.stage.day}</p>
+                                                            <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 uppercase">
+                                                                {hidden.status === 'SKIPPED_INEFFECTIVE' ? '효과 없음' : '이미 해봄'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <ScaleButton
+                                                    onClick={() => handleRestore(hidden.courseId, hidden.stage.id, hidden.stage.steps[0].step_number)}
+                                                    className="px-4 py-2.5 bg-brand-lime/10 text-brand-lime rounded-xl text-xs font-black flex items-center gap-2 border border-brand-lime/20 hover:bg-brand-lime hover:text-white transition-all shadow-sm"
+                                                >
+                                                    <RotateCcw className="w-3.5 h-3.5" />
+                                                    다시 시도
+                                                </ScaleButton>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </section>
+                )}
+
             </main>
 
             <MissionActionOverlay
                 isOpen={!!selectedMission}
+                curriculumId={currentCourseId}
                 mission={selectedMission}
                 onClose={() => setSelectedMission(null)}
                 onComplete={handleMissionComplete}
             />
+
+            <Toast
+                message={toastMessage}
+                isVisible={isToastVisible}
+                onClose={() => setIsToastVisible(false)}
+            />
+
+
         </div>
     );
 }
