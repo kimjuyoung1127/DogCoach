@@ -19,7 +19,14 @@ export const fearAvoidance: TrainingCourse = {
                     step_number: 1,
                     title: "자극원 오면 쿨하게 뒤로 가기",
                     description: "무서워하는 대상이 오면 억지로 참게 하지 말고 뒤로 후퇴하세요.",
-                    success_criteria: "두려움을 느낄 때 짖지 않고 보호자와 함께 3걸음 이상 후퇴"
+                    success_criteria: "두려움을 느낄 때 짖지 않고 보호자와 함께 3걸음 이상 후퇴",
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'보호자 등 뒤'로 숨기기",
+                            description: "뒤로 가도 불안해한다면, 보호자가 대상과 강아지 사이를 몸으로 완전히 가로막아 서세요. 보호자가 '방패'가 되어준다는 확신을 줍니다."
+                        }
+                    ]
                 },
                 {
                     step_number: 2,
@@ -52,7 +59,14 @@ export const fearAvoidance: TrainingCourse = {
                     step_number: 2,
                     title: "아지트 안에서는 무조건 함부로 금지",
                     description: "집에 들어가 있을 때는 어떤 방해도 하지 말고 평화를 보장하세요.",
-                    success_criteria: "집 안에서 30초 이상 누워 안정을 취하는 빈도 증가"
+                    success_criteria: "집 안에서 30초 이상 누워 안정을 취하는 빈도 증가",
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'하우스 근처' 간식 비 내리기",
+                            description: "집 안에서도 떨고 있다면, 억지로 만지지 말고 하우스 구멍으로 간식만 조용히 넣어주세요. '집 안에 있으면 좋은 일이 알아서 온다'는 믿음을 줍니다."
+                        }
+                    ]
                 },
                 {
                     step_number: 3,
@@ -140,7 +154,14 @@ export const fearAvoidance: TrainingCourse = {
                     step_number: 2,
                     title: "1초 관찰 후 나를 보기",
                     description: "대상을 슥 쳐다봤다 바로 나를 볼 때 칭찬의 폭풍을 선물하세요.",
-                    success_criteria: "확인-체크인-보상으로 이어지는 흐름이 5회 연속 완성"
+                    success_criteria: "확인-체크인-보상으로 이어지는 흐름이 5회 연속 완성",
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'거울'이나 '영상'으로 관찰",
+                            description: "실물을 보는 게 패닉이라면, 멀리서 거울로 대상을 비춰보거나 TV 화면에 나오는 대상을 보며 간식 먹는 연습부터 시작합니다."
+                        }
+                    ]
                 },
                 {
                     step_number: 3,

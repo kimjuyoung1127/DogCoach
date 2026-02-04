@@ -115,7 +115,14 @@ export const separationAnxiety: TrainingCourse = {
                     title: "박스 노즈워크 완결판: 보물 상자",
                     description: "종이 박스(택배 박스 등) 안에 신문지를 구겨 넣고 그 사이에 간식을 20알 정도 숨기세요. 박스 입구를 살짝 닫아둡니다. 강아지가 박스를 뜯고 파헤치며 야생의 사냥 본능을 충족하게 해주세요.",
                     success_criteria: "5분 이상 집중하여 박스를 탐색하며, 보호자가 방으로 들어가도 전혀 신경 쓰지 않음",
-                    tags: ["nosework", "treat_reward"]
+                    tags: ["nosework", "treat_reward"],
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'퍼즐 토이' 활용",
+                            description: "박스를 부수는 소리에 강아지가 놀란다면, 소리 나지 않는 고무 재질의 노즈워크 장난감을 사용하세요. 파괴보다는 '핥기'와 '빼내기'에 집중하게 하여 도파민을 안정적으로 분비시킵니다."
+                        }
+                    ]
                 }
             ]
         },
@@ -145,7 +152,14 @@ export const separationAnxiety: TrainingCourse = {
                     title: "방 문을 닫고 '5분의 기적'",
                     description: "방 안으로 들어가 문을 닫고 시야를 완전히 차단하세요. 처음에는 10초, 성공하면 1분, 5분까지 늘립니다. 방 안에서 작은 부스럭 소리를 내어 보호자가 안에 있음을 인지시켜주세요.",
                     success_criteria: "시야 차단 후에도 5분간 짖거나 문을 긁지 않고 평온하게 자기 할 일을 함",
-                    tags: ["waiting", "ignoring"]
+                    tags: ["waiting", "ignoring"],
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'투명 펜스' 활용 시야 확보",
+                            description: "문이 닫히는 순간 패닉이 온다면, 투명한 펜스를 설치하고 보호자가 안 보일 듯 말 듯한 위치(벽 뒤)에서 10초씩 대기하세요. '시야 차단'보다 '물리적 거리 두기'를 먼저 익힙니다."
+                        }
+                    ]
                 }
             ]
         },
@@ -175,7 +189,14 @@ export const separationAnxiety: TrainingCourse = {
                     title: "귀가 후 5분간의 '무관심' 골든타임",
                     description: "집에 오자마자 예쁘다고 안아주지 마세요. 짐을 정리하고 손을 씻는 등 5분간 투명인간 취급을 합니다. 강아지가 흥분해서 뛰어오를수록 더 무시해야 합니다. 차분해질 때가 진짜 인사 타임입니다.",
                     success_criteria: "보호자 귀가 후 5분 내에 흥분을 스스로 가라앉고 네 발을 바닥에 붙이고 기다리는 상태",
-                    tags: ["ignoring", "waiting"]
+                    tags: ["ignoring", "waiting"],
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'앉아' 신호 후 낮은 자세 인사",
+                            description: "무시하는 동안 강아지가 너무 심하게 흥분한다면, 아예 무시하기보다 차분한 목소리로 '앉아'를 시키세요. 앉았을 때만 아주 낮고 느린 손길로 한 번 쓰다듬어 주어 '차분함'의 보상을 즉각적으로 줍니다."
+                        }
+                    ]
                 },
                 {
                     step_number: 3,

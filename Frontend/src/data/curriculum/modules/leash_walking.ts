@@ -19,7 +19,14 @@ export const leashWalking: TrainingCourse = {
                     step_number: 1,
                     title: "집 안에서 줄 매고 산책 기분 내기",
                     description: "거실에서 줄을 매고 천천히 걸어가며 자연스럽게 받아들이게 하세요.",
-                    success_criteria: "리드줄 착용 후 30초 이내에 과도한 흥분 없이 걸음"
+                    success_criteria: "리드줄 착용 후 30초 이내에 과도한 흥분 없이 걸음",
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'줄' 바닥에 늘어뜨리고 간식 먹기",
+                            description: "줄을 매는 것만으로 굳어버린다면, 줄을 강아지 몸에 매지 말고 그냥 바닥에 두세요. 줄 근처에서 간식을 먹으며 '줄은 무서운 게 아니다'를 먼저 배웁니다."
+                        }
+                    ]
                 },
                 {
                     step_number: 2,
@@ -77,8 +84,8 @@ export const leashWalking: TrainingCourse = {
                     alternatives: [
                         {
                             id: "B",
-                            title: "'반대 방향' 무심하게 걷기",
-                            description: "멈추는 것만으로 통제가 안 된다면, 당기는 순간 아무 말 없이 180도 반대로 걸으세요. '네가 당기면 우리는 네가 원하는 곳의 반대로 간다'는 것을 몸소 느끼게 합니다."
+                            title: "'L자 걷기' (직각 회전)",
+                            description: "멈추는 게 효과 없다면, 강아지가 당길 때 보호자가 강아지의 앞을 가로막으며 90도 옆으로 방향을 트세요. 보호자의 움직임에 강아지가 계속 신경 쓰게 만듭니다."
                         }
                     ]
                 },
@@ -134,7 +141,14 @@ export const leashWalking: TrainingCourse = {
                     step_number: 1,
                     title: "안전 지대에서 관망하기",
                     description: "다른 개나 사람이 보이면 충분히 먼 거리에서 멈춰 지켜보세요.",
-                    success_criteria: "자극을 발견해도 3초 이상 차분히 서서 기다릴 수 있음"
+                    success_criteria: "자극을 발견해도 3초 이상 차분히 서서 기다릴 수 있음",
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'자동차' 안에서 구경하기",
+                            description: "밖에서 다른 개를 보는 게 너무 흥분된다면, 주차된 차 안이나 카페 창가처럼 물리적으로 완전히 분리된 곳에서 창밖의 개들을 구경하며 간식을 먹으세요."
+                        }
+                    ]
                 },
                 {
                     step_number: 2,
@@ -161,7 +175,14 @@ export const leashWalking: TrainingCourse = {
                     step_number: 1,
                     title: "미션! 20걸음 예쁘게 걷기",
                     description: "일정한 구간을 보호자 옆에서 완벽하게 걸어보세요.",
-                    success_criteria: "리드줄이 일관되게 느슨한 상태로 20걸음 이상 이동"
+                    success_criteria: "리드줄이 일관되게 느슨한 상태로 20걸음 이상 이동",
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'S자' 곡선 걷기",
+                            description: "일직선 걷기가 지루해 당긴다면, 지그재그로 걸으며 보호자의 발걸음에 집중하지 않으면 길을 잃을 것 같은 환경을 만드세요."
+                        }
+                    ]
                 },
                 {
                     step_number: 2,

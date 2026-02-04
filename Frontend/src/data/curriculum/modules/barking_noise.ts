@@ -71,7 +71,14 @@ export const barkingNoise: TrainingCourse = {
                     title: "소리 들리자마자 '자리로' 긴급 출동",
                     description: "작은 외부음이 들리는 즉시, 아이가 짖기 '직전'에 매트로 가라는 신호를 주세요. 이미 짖기 시작했다면 간식으로 유도해서라도 매트로 데려갑니다. '소리=매트 가는 시간'이라는 공식을 만듭니다.",
                     success_criteria: "복도 소음이나 문 두드리는 소리 직후, 짖는 대신 스스로 매트로 이동하여 엎드림",
-                    tags: ["kennel", "sound_desensitization"]
+                    tags: ["kennel", "sound_desensitization"],
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'리드줄' 매고 매트 가이드",
+                            description: "스스로 매트로 가지 않는다면, 실내에서 리드줄을 매고 소리가 날 때 간식으로 매트까지 부드럽게 이끌어주세요. '소리=매트'라는 근육 기억을 먼저 만듭니다."
+                        }
+                    ]
                 },
                 {
                     step_number: 3,
@@ -131,7 +138,14 @@ export const barkingNoise: TrainingCourse = {
                     title: "바닥에 주어지는 '10알의 기적'",
                     description: "짖음이 시작되려 할 때 간식 10여 알을 바닥에 넓게 흩뿌려주세요. 코를 바닥에 박고 냄새를 맡는 순간, 신체적으로 짖기가 어려워지며 심박수가 안정됩니다.",
                     success_criteria: "간식을 찾는 2분 동안 단 한 번의 짖음도 없이 탐색 행위에만 완벽히 몰입함",
-                    tags: ["nosework", "treat_reward"]
+                    tags: ["nosework", "treat_reward"],
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'오래 씹는 껌' 제공",
+                            description: "간식을 다 먹고 다시 짖는다면, 소음이 예상되는 시간대에 10분 이상 씹을 수 있는 간식을 미리 주세요. 턱 근육을 사용하면 흥분도가 낮아지는 생리적 효과를 노립니다."
+                        }
+                    ]
                 },
                 {
                     step_number: 3,
@@ -154,7 +168,14 @@ export const barkingNoise: TrainingCourse = {
                     title: "인위적인 소음 적응 훈련",
                     description: "가족에게 부탁해 밖에서 문을 살짝 두드리거나 발소리를 내게 하세요. 소리가 나자마자 최애 간식을 줍니다. 처음에는 아주 작은 소리부터 시작해 점차 강도를 높여갑니다.",
                     success_criteria: "의도적인 소음 발생 시 짖지 않고 보호자를 쳐다보며 간식을 기대하는 표정을 지음",
-                    tags: ["sound_desensitization", "treat_reward"]
+                    tags: ["sound_desensitization", "treat_reward"],
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'소리 녹음본' 아주 작은 볼륨 재생",
+                            description: "실제 소리에 바로 노출하는 게 어렵다면, 유튜브 소음을 핸드폰 볼륨 1단계부터 틀어주며 간식을 주세요. 아주 미세한 자극부터 정복해 나갑니다."
+                        }
+                    ]
                 },
                 {
                     step_number: 2,

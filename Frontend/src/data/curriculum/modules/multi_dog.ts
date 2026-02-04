@@ -19,7 +19,14 @@ export const multiDog: TrainingCourse = {
                     step_number: 1,
                     title: "각자의 아지트(방석) 마련",
                     description: "서로의 동선이 겹치지 않는 곳에 각자의 잠자리를 지정하세요.",
-                    success_criteria: "각자 정해준 방석으로 3초 이내에 기쁘게 올라감"
+                    success_criteria: "각자 정해준 방석으로 3초 이내에 기쁘게 올라감",
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'높이가 다른' 휴식처 제공",
+                            description: "바닥 방석에서 서로 싸운다면, 한 아이는 소파 위, 한 아이는 바닥 방석으로 높낮이를 다르게 설정하세요. 영역 구분이 훨씬 명확해집니다."
+                        }
+                    ]
                 },
                 {
                     step_number: 2,
@@ -46,12 +53,12 @@ export const multiDog: TrainingCourse = {
                     step_number: 1,
                     title: "정확하게 호명하고 보상하기",
                     description: "특정한 이름 뒤에만 간식이 나간다는 것을 명확히 인지시키세요.",
-                    success_criteria: "A의 이름을 부를 때 B가 옆에서 침착하게 지켜봄",
+                    success_criteria: "A의 이름을 부를 때 B가 옆에서 침착하게 지켜함",
                     alternatives: [
                         {
                             id: "B",
-                            title: "'물리적 칸막이' 활용 보상",
-                            description: "옆에서 끼어드는 게 통제 안 된다면, 처음에는 울타리를 사이에 두고 각자에게 보상하세요. 서로 신체적 방해를 할 수 없는 상태에서 '기다리면 내 차례가 온다'는 규칙을 먼저 배웁니다."
+                            title: "'주먹 쥔 손' 활용 대기",
+                            description: "끼어드는 아이가 있다면, 간식을 쥔 주먹을 보여주고 기다리는 아이에게만 손을 펴서 주세요. 주먹 쥔 손은 '참아야 한다'는 시각적 신호가 됩니다."
                         }
                     ]
                 },
@@ -113,7 +120,14 @@ export const multiDog: TrainingCourse = {
                     step_number: 2,
                     title: "식사 후 '체킹' 금지",
                     description: "다 먹은 후 상대 그릇 주변을 서성이지 않게 보호자가 막아주세요.",
-                    success_criteria: "식사 직후 상대 그릇 쪽으로 가지 않고 보호자에게 복귀"
+                    success_criteria: "식사 직후 상대 그릇 쪽으로 가지 않고 보호자에게 복귀",
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'다 먹은 그릇' 즉시 회수",
+                            description: "식사 후 싸움이 난다면, 다 먹은 아이를 즉시 다른 방으로 분리하고 그릇을 바로 치우세요. '빈 그릇을 지킬 이유' 자체를 없앱니다."
+                        }
+                    ]
                 },
                 {
                     step_number: 3,
@@ -134,7 +148,14 @@ export const multiDog: TrainingCourse = {
                     step_number: 1,
                     title: "2m 간격의 안전 산책",
                     description: "서로 으르렁대지 않는 충분한 거리를 두고 앞뒤/좌우로 걸으세요.",
-                    success_criteria: "상대방의 존재를 의식하면서도 편안한 발걸음 유지"
+                    success_criteria: "상대방의 존재를 의식하면서도 편안한 발걸음 유지",
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'다른 가족'과 따로 출발해서 만나기",
+                            description: "같이 나가면 흥분한다면, 5분 간격으로 따로 집을 나선 뒤 공원 특정 지점에서 만나 나란히 걷기를 시작하세요. 문을 나설 때의 경쟁심을 원천 차단합니다."
+                        }
+                    ]
                 },
                 {
                     step_number: 2,
