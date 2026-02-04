@@ -19,7 +19,14 @@ export const picaCorrection: TrainingCourse = {
                     step_number: 1,
                     title: "호기심 대상 발견 시 즉시 부르기",
                     description: "무언가 발견하면 즉시 흥분을 낮추는 톤으로 보호자에게 불러주세요.",
-                    success_criteria: "대상 발견 후 2초 내 보호자를 쳐다보거나 1m 내로 복귀"
+                    success_criteria: "대상 발견 후 2초 내 보호자를 쳐다보거나 1m 내로 복귀",
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'반대 방향' 간식 던지기",
+                            description: "이름을 불러도 오지 않는다면, 강아지의 시선 반대편으로 간식을 굴려주세요. 유혹 대상으로부터 물리적 거리를 자동으로 벌리게 합니다."
+                        }
+                    ]
                 },
                 {
                     step_number: 2,
@@ -107,7 +114,14 @@ export const picaCorrection: TrainingCourse = {
                     step_number: 1,
                     title: "꽁꽁 얼린 정답 장난감",
                     description: "고무 장난감 안에 좋아하는 음식을 채워 얼려서 제공하세요.",
-                    success_criteria: "장난감을 받자마자 자신의 아지트(방석/집)로 가져가 집중함"
+                    success_criteria: "장난감을 받자마자 자신의 아지트(방석/집)로 가져가 집중함",
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'종이컵' 노즈워크",
+                            description: "고무 장난감에 흥미가 없다면, 종이컵 속에 간식을 넣고 구겨서 주세요. '찢는 맛'을 통해 파괴 욕구를 안전하게 해소하게 합니다."
+                        }
+                    ]
                 },
                 {
                     step_number: 2,
@@ -146,7 +160,14 @@ export const picaCorrection: TrainingCourse = {
                     step_number: 3,
                     title: "기피제 가이드 도포",
                     description: "물면 안 되는 전선 등에는 쓴맛 기피제를 발라 학습을 돕습니다.",
-                    success_criteria: "해당 물건 근처에 가도 핥기/씹기 시도 없이 스스로 돌아섬"
+                    success_criteria: "해당 물건 근처에 가도 핥기/씹기 시도 없이 스스로 돌아섬",
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'전선 커버' 물리적 차단",
+                            description: "기피제를 발라도 계속 씹는다면, 아예 딱딱한 플라스틱 전선 커버를 씌우세요. 씹어도 아무런 느낌이 나지 않게 하여 흥미를 완전히 떨어뜨립니다."
+                        }
+                    ]
                 }
             ]
         }

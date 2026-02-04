@@ -57,7 +57,14 @@ export const toiletTraining: TrainingCourse = {
                     title: "식후 즉시 '화장실 특급 열차' 탑승",
                     description: "사료를 먹은 뒤나 잠에서 깬 직후는 배변 확률이 90% 이상입니다. 강아지가 바닥을 킁킁거리며 빙글빙글 돌기 시작하면, 지체 없이 간식으로 유도하거나 안아서 지정된 패드 위로 데려가세요.",
                     success_criteria: "배변 신호 포착 후 30초 내로 아이를 지정된 패드 위에 안착시키는 데 성공함",
-                    tags: ["treat_reward", "touch"]
+                    tags: ["treat_reward", "touch"],
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'배변 유도제' 또는 '실제 소변' 활용",
+                            description: "패드 위에서 볼일을 안 본다면, 이전에 실수했던 소변을 패드에 아주 살짝 묻혀두세요. 후각적 스위치를 강제로 켜주는 방식입니다."
+                        }
+                    ]
                 },
                 {
                     step_number: 2,
@@ -108,7 +115,14 @@ export const toiletTraining: TrainingCourse = {
                     title: "완벽한 '네 발 안착' 가이드",
                     description: "조준 실패 방지를 위해 앞발만 걸치는 게 아니라 몸 전체가 패드 중앙에 오도록 유도하세요. 패드를 여러 장 겹쳐 깔아 범위를 넓혀주는 것도 좋은 방법입니다. 네 발이 모두 패드 위에 있을 때만 보상하세요.",
                     success_criteria: "네 발이 모두 패드 안쪽으로 들어온 안정적인 자세로 3회 연속 배변에 성공함",
-                    tags: ["treat_reward"]
+                    tags: ["treat_reward"],
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'패드 경계' 울타리 설치",
+                            description: "패드 옆 맨바닥에 계속 실수한다면, 패드 주변에 낮은 울타리를 쳐서 발바닥에 무조건 패드가 닿아야만 들어갈 수 있게 만드세요."
+                        }
+                    ]
                 }
             ]
         },
@@ -161,7 +175,14 @@ export const toiletTraining: TrainingCourse = {
                     title: "하루 한 장씩! '패드 다이어트'",
                     description: "성공률이 안정되면 가장자리 패드부터 한 장씩 서서히 치워주세요. 강아지가 인지하지 못할 정도로 천천히 범위를 좁혀가며, 좁아진 범위에서도 정확히 조준하도록 유도합니다.",
                     success_criteria: "패드 장수가 줄어들어도 실수 없이 정확히 남은 패드 위로 올라가 3회 연속 성공",
-                    tags: ["treat_reward"]
+                    tags: ["treat_reward"],
+                    alternatives: [
+                        {
+                            id: "B",
+                            title: "'신문지' 크기만큼 천천히 오려내기",
+                            description: "패드를 한 장씩 치울 때마다 실수한다면, 패드 크기를 가위로 아주 조금씩(매일 2cm씩) 잘라내며 범위를 극한으로 천천히 줄여나갑니다."
+                        }
+                    ]
                 },
                 {
                     step_number: 3,

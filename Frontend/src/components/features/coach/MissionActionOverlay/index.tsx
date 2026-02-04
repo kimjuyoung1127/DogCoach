@@ -1,12 +1,10 @@
-import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, ArrowRight, ArrowLeft, Sparkles, Wand2, Search } from "lucide-react";
-import confetti from "canvas-confetti";
-import { TrainingStage, TrainingAlternative, TrainingStep } from "@/data/curriculum";
-import { useAuth } from "@/hooks/useAuth";
-import { useUpdateTrainingStatus } from "@/hooks/useQueries";
+import { TrainingStage } from "../../../../data/curriculum/types";
 import { Button } from "@/components/ui/Button";
 import { ScaleButton } from "@/components/ui/animations/ScaleButton";
+import { useMissionAction } from "./useMissionAction";
+import { MissionSuccessView } from "./MissionSuccessView";
 
 // Premium AI Scanning Animation Component
 function ScanningBar() {
@@ -41,156 +39,28 @@ interface MissionActionOverlayProps {
 }
 
 export function MissionActionOverlay({ isOpen, curriculumId, mission, onClose, onComplete }: MissionActionOverlayProps) {
-    const { token } = useAuth();
-    const updateStatus = useUpdateTrainingStatus(token);
-    const [currentStep, setCurrentStep] = useState(0);
-    const [isCompleted, setIsCompleted] = useState(false);
-    const [swapping, setSwapping] = useState(false);
-    // Track swaps per step number: { [step_number]: TrainingAlternative }
-    const [swappedSteps, setSwappedSteps] = useState<Record<number, TrainingAlternative>>({});
-    const [showVault, setShowVault] = useState(false);
-
-    useEffect(() => {
-        if (isOpen && mission) {
-            // Reset state for a new mission session
-            setIsCompleted(false);
-            setCurrentStep(0);
-            setSwapping(false);
-            setShowVault(false);
-
-            // Initialize swapped steps from current mission status
-            const initialSwaps: Record<number, TrainingAlternative> = {};
-            mission.steps.forEach(s => {
-                const altId = s.activeAlternativeId;
-                if (altId) {
-                    const alt = s.alternatives?.find((a: TrainingAlternative) => a.id === altId);
-                    if (alt) {
-                        initialSwaps[s.step_number] = alt;
-                    }
-                }
-            });
-            setSwappedSteps(initialSwaps);
-        }
-    }, [isOpen, mission?.id]); // Size is constant, but only resets when mission changes
+    const {
+        currentStep,
+        isCompleted,
+        swapping,
+        isPending,
+        swappedSteps,
+        showVault,
+        setShowVault,
+        handleNext,
+        handleBack,
+        handleIneffective,
+        handleSkipStep,
+        handleConfirmSwap,
+        handleReaction,
+        cancelSwap
+    } = useMissionAction({ curriculumId, mission, onComplete, isOpen });
 
     if (!isOpen || !mission) return null;
 
     const totalSteps = mission.steps.length;
-
-    const handleNext = () => {
-        if (currentStep < totalSteps - 1) {
-            setCurrentStep(prev => prev + 1);
-        } else {
-            handleComplete();
-        }
-    };
-
-    const handleBack = () => {
-        if (currentStep > 0) {
-            setCurrentStep(prev => prev - 1);
-        }
-    };
-
-    const handleComplete = () => {
-        setIsCompleted(true);
-        confetti({
-            particleCount: 150,
-            spread: 70,
-            origin: { y: 0.6 },
-            colors: ['#4ADE80', '#D9F99D', '#f7fee7']
-        });
-    };
-
     const step = mission.steps[currentStep];
     const selectedAlternative = swappedSteps[step.step_number] || null;
-
-    const handleIneffective = async () => {
-        if (!curriculumId || !mission || !step) return;
-
-        // Find available alternative (Plan B/C/D) using the correct 'alternatives' array
-        const alternatives = step.alternatives || [];
-        const nextAlt = alternatives[0]; // For now, default to first (B)
-
-        if (nextAlt && !selectedAlternative) {
-            // Initiate Premium "System Scan" Animation
-            setSwapping(true);
-
-            // Artificial delay for scanning effect
-            setTimeout(() => {
-                setSwappedSteps(prev => ({
-                    ...prev,
-                    [step.step_number]: nextAlt
-                }));
-                setSwapping(false);
-                // AI Completion effect
-                confetti({
-                    particleCount: 40,
-                    spread: 40,
-                    origin: { y: 0.7 },
-                    colors: ['#8B5CF6', '#A78BFA', '#C4B5FD']
-                });
-            }, 1800);
-            return;
-        }
-
-        try {
-            await updateStatus.mutateAsync({
-                curriculum_id: curriculumId,
-                stage_id: mission.id,
-                step_number: step.step_number,
-                status: "SKIPPED_INEFFECTIVE"
-            });
-            // Move to next or complete
-            if (currentStep < totalSteps - 1) {
-                setCurrentStep(prev => prev + 1);
-            } else {
-                handleComplete();
-            }
-        } catch (err) {
-            console.error("Failed to update status:", err);
-        }
-    };
-
-    const handleConfirmSwap = async () => {
-        if (!curriculumId || !mission || !step || !selectedAlternative) return;
-        try {
-            await updateStatus.mutateAsync({
-                curriculum_id: curriculumId,
-                stage_id: mission.id,
-                step_number: step.step_number,
-                status: `SWAPPED:${selectedAlternative.id}`
-            });
-            // Move to next automatically after swapping a single step
-            handleNext();
-        } catch (err) {
-            console.error("Failed to swap status:", err);
-        }
-    };
-
-    const handleReaction = async (reaction: string) => {
-        if (curriculumId && mission) {
-            try {
-                // IMPORTANT: Preserving the "Plan B" status in history/storage.
-                await Promise.all(mission.steps.map(s => {
-                    const currentStepStatus = swappedSteps[s.step_number] || s.activeAlternativeId;
-                    if (currentStepStatus) {
-                        // Already swapped, don't overwrite with 'COMPLETED'
-                        return Promise.resolve();
-                    }
-                    return updateStatus.mutateAsync({
-                        curriculum_id: curriculumId,
-                        stage_id: mission.id,
-                        step_number: s.step_number,
-                        status: "COMPLETED"
-                    });
-                }));
-            } catch (err) {
-                console.error("Failed to mark steps as completed:", err);
-            }
-        }
-        onComplete(reaction);
-    };
-
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
@@ -227,7 +97,7 @@ export function MissionActionOverlay({ isOpen, curriculumId, mission, onClose, o
                     <AnimatePresence mode="wait">
                         {!isCompleted ? (
                             <motion.div
-                                key={selectedAlternative ? `alt-${selectedAlternative.id}-${currentStep}` : `step-${currentStep}`}
+                                key={selectedAlternative ? `step-${currentStep}-alt-${selectedAlternative.id}` : `step-${currentStep}-plan-a`}
                                 initial={swapping ? { rotateY: 90, opacity: 0 } : { x: 20, opacity: 0 }}
                                 animate={{ rotateY: 0, x: 0, opacity: 1 }}
                                 exit={{ rotateY: -90, x: -20, opacity: 0 }}
@@ -284,12 +154,35 @@ export function MissionActionOverlay({ isOpen, curriculumId, mission, onClose, o
                                 {/* Action Buttons */}
                                 <div className="flex gap-3 pt-4">
                                     {selectedAlternative ? (
-                                        <ScaleButton asChild className="w-full">
-                                            <Button onClick={handleConfirmSwap} variant="brand" className="w-full bg-purple-600 hover:bg-purple-700 rounded-2xl py-6 text-lg font-black gap-2 shadow-xl shadow-purple-200">
-                                                {currentStep === totalSteps - 1 ? "Plan B로 미션 완료!" : "Plan B로 교체하고 다음으로"}
-                                                <ArrowRight className="w-5 h-5" />
-                                            </Button>
-                                        </ScaleButton>
+                                        <>
+                                            {currentStep > 0 && (
+                                                <ScaleButton asChild className="flex-1">
+                                                    <Button onClick={handleBack} variant="secondary" className="w-full rounded-2xl py-6 gap-2 border-gray-200">
+                                                        <ArrowLeft className="w-4 h-4" />
+                                                        이전
+                                                    </Button>
+                                                </ScaleButton>
+                                            )}
+                                            <ScaleButton asChild className={currentStep === 0 ? "w-full" : "flex-[2]"}>
+                                                <Button
+                                                    onClick={handleConfirmSwap}
+                                                    disabled={isPending || swapping}
+                                                    variant="brand"
+                                                    className="w-full bg-purple-600 hover:bg-purple-700 rounded-2xl py-6 text-lg font-black gap-2 shadow-xl shadow-purple-200 disabled:opacity-70"
+                                                >
+                                                    {isPending ? (
+                                                        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}>
+                                                            <Wand2 className="w-5 h-5" />
+                                                        </motion.div>
+                                                    ) : (
+                                                        <>
+                                                            {currentStep === totalSteps - 1 ? "Plan B로 미션 완료!" : "Plan B로 교체하고 다음으로"}
+                                                            <ArrowRight className="w-5 h-5" />
+                                                        </>
+                                                    )}
+                                                </Button>
+                                            </ScaleButton>
+                                        </>
                                     ) : (
                                         <>
                                             {currentStep > 0 && (
@@ -301,7 +194,7 @@ export function MissionActionOverlay({ isOpen, curriculumId, mission, onClose, o
                                                 </ScaleButton>
                                             )}
                                             <ScaleButton asChild className={currentStep === 0 ? "w-full" : "flex-[2]"}>
-                                                <Button onClick={handleNext} disabled={swapping} variant="brand" className="w-full rounded-2xl py-6 text-lg font-black gap-2 shadow-xl shadow-brand-lime/20">
+                                                <Button onClick={handleNext} disabled={swapping || isPending} variant="brand" className="w-full rounded-2xl py-6 text-lg font-black gap-2 shadow-xl shadow-brand-lime/20">
                                                     {currentStep === totalSteps - 1 ? "미션 완료!" : "다음 단계로"}
                                                     <ArrowRight className="w-5 h-5" />
                                                 </Button>
@@ -313,13 +206,28 @@ export function MissionActionOverlay({ isOpen, curriculumId, mission, onClose, o
                                 {!selectedAlternative && (
                                     <div className="pt-6 border-t border-gray-100 flex flex-col gap-3">
                                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">도움이 필요한가요?</p>
-                                        <ScaleButton onClick={handleIneffective}>
+                                        <ScaleButton
+                                            onClick={() => {
+                                                if (step.alternatives && step.alternatives.length > 0) {
+                                                    handleIneffective();
+                                                } else {
+                                                    handleSkipStep();
+                                                }
+                                            }}
+                                            disabled={swapping || isPending}
+                                        >
                                             <div className="w-full p-4 bg-gray-50 hover:bg-white border border-gray-100 hover:border-brand-lime/30 rounded-2xl flex items-center gap-4 transition-all group active:scale-95">
                                                 <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-all">
-                                                    {step.alternatives && step.alternatives.length > 0 ? (
-                                                        <Search className="w-5 h-5 text-gray-400 group-hover:text-brand-lime" />
+                                                    {isPending ? (
+                                                        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}>
+                                                            <Wand2 className="w-4 h-4 text-brand-lime" />
+                                                        </motion.div>
                                                     ) : (
-                                                        <Check className="w-5 h-5 text-gray-400 group-hover:text-amber-500" />
+                                                        step.alternatives && step.alternatives.length > 0 ? (
+                                                            <Search className="w-5 h-5 text-gray-400 group-hover:text-brand-lime" />
+                                                        ) : (
+                                                            <Check className="w-5 h-5 text-gray-400 group-hover:text-amber-500" />
+                                                        )
                                                     )}
                                                 </div>
                                                 <div className="flex-1 text-left">
@@ -368,14 +276,7 @@ export function MissionActionOverlay({ isOpen, curriculumId, mission, onClose, o
                                         </AnimatePresence>
 
                                         <button
-                                            onClick={() => {
-                                                setSwappedSteps(prev => {
-                                                    const next = { ...prev };
-                                                    delete next[step.step_number];
-                                                    return next;
-                                                });
-                                                setShowVault(false);
-                                            }}
+                                            onClick={() => cancelSwap(step.step_number)}
                                             disabled={swapping}
                                             className="w-full text-xs text-gray-400 font-medium hover:text-gray-600 underline decoration-gray-300 underline-offset-4 disabled:opacity-30 pb-2"
                                         >
@@ -385,39 +286,7 @@ export function MissionActionOverlay({ isOpen, curriculumId, mission, onClose, o
                                 )}
                             </motion.div>
                         ) : (
-                            <motion.div
-                                initial={{ scale: 0.9, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                className="py-8 space-y-8"
-                            >
-                                <div className="text-center">
-                                    <div className="text-6xl mb-6">🎉</div>
-                                    <h3 className="text-2xl font-black text-gray-900 mb-3">훌륭합니다!</h3>
-                                    <p className="text-gray-500 font-medium break-keep leading-relaxed">
-                                        오늘의 훈련을 성공적으로 마쳤어요.<br />
-                                        훈련 중 강아지의 반응은 어땠나요?
-                                    </p>
-                                </div>
-
-                                <div className="grid grid-cols-1 gap-3">
-                                    {[
-                                        { id: "comfortable", emoji: "🙂", label: "편안해해요", sub: "긍정적인 변화", color: "text-brand-lime" },
-                                        { id: "neutral", emoji: "😐", label: "평소와 같아요", sub: "지속적인 관찰 필요", color: "text-amber-500" },
-                                        { id: "barking", emoji: "😠", label: "여전히 예민해요", sub: "도움이 필요해요", color: "text-red-500" }
-                                    ].map((reaction) => (
-                                        <ScaleButton key={reaction.id} onClick={() => handleReaction(reaction.id)}>
-                                            <div className="w-full flex items-center gap-4 p-5 bg-white border-2 border-gray-100 rounded-2xl hover:border-brand-lime hover:bg-brand-lime/5 transition-all text-left group shadow-sm">
-                                                <span className="text-3xl group-hover:scale-110 transition-transform">{reaction.emoji}</span>
-                                                <div className="flex-1">
-                                                    <p className="font-bold text-gray-800">{reaction.label}</p>
-                                                    <p className={`text-[10px] font-black uppercase ${reaction.color}`}>{reaction.sub}</p>
-                                                </div>
-                                                <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-brand-lime group-hover:translate-x-1 transition-all" />
-                                            </div>
-                                        </ScaleButton>
-                                    ))}
-                                </div>
-                            </motion.div>
+                            <MissionSuccessView onReaction={handleReaction} />
                         )}
                     </AnimatePresence>
                 </div>
@@ -434,3 +303,5 @@ export function MissionActionOverlay({ isOpen, curriculumId, mission, onClose, o
     );
 }
 
+// Re-export as default for easier imports if needed, but original used named export
+export default MissionActionOverlay;

@@ -33,3 +33,4 @@ export const mapIssueToCurriculum = (issues: string[]) => {
 };
 
 export * from "./types";
+export type { TrainingStage, TrainingAlternative, TrainingStep, TrainingCourse } from "./types";
