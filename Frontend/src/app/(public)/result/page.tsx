@@ -95,8 +95,7 @@ export default function ResultPage() {
                             isOpen={showMissionOverlay}
                             mission={firstStage}
                             onComplete={handleMissionComplete}
-                            onClose={() => setShowMissionOverlay(false)}
-                        />
+                            onClose={() => setShowMissionOverlay(false)} curriculumId={null}                        />
                     </>
                 )}
 

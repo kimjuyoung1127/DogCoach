@@ -153,3 +153,4 @@ python -m pytest tests
 - [AI 도입 전략 및 터널 가이드 (AI_Adoption_Plan.md)](./docs/AI_Adoption_Plan.md)
 - [서버 아키텍처 및 인프라 (ServerPlan.md)](./docs/ServerPlan.md)
 - [데이터베이스 설계 (schema.md)](./docs/schema.md)
+- [미래 확장 로드맵 (future_roadmap.md)](./docs/future_roadmap.md)
