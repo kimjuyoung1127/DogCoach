@@ -131,13 +131,13 @@ export function SurveyContainer() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 2, ease: "easeOut" }}
-                className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-brand-lime/5 rounded-full blur-[120px] -z-0"
+                className="absolute top-[-4%] right-[-3%] w-[300px] h-[300px] sm:top-[-10%] sm:right-[-5%] sm:w-[600px] sm:h-[600px] bg-brand-lime/5 rounded-full blur-[64px] sm:blur-[120px] -z-0"
             />
             <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 2, ease: "easeOut", delay: 0.5 }}
-                className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-brand-orange/5 rounded-full blur-[100px] -z-0"
+                className="absolute bottom-[-3%] left-[-2%] w-[260px] h-[260px] sm:bottom-[-10%] sm:left-[-5%] sm:w-[500px] sm:h-[500px] bg-brand-orange/5 rounded-full blur-[56px] sm:blur-[100px] -z-0"
             />
 
             <div className="flex-1 flex flex-col py-12 relative z-10 animate-in fade-in duration-1000">

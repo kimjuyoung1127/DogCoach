@@ -20,6 +20,20 @@ export const metadata: Metadata = {
         title: "TailLog - 데이터 기반 반려견 행동 교정",
         description: "이미 5,000명의 보호자가 경험한 변화. 3분 무료 진단으로 시작하세요.",
         siteName: "TailLog",
+        images: [
+            {
+                url: "/og/taillog-share.png",
+                width: 1200,
+                height: 630,
+                alt: "TailLog 데이터 기반 반려견 행동 코칭",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "TailLog - 데이터 기반 반려견 행동 교정",
+        description: "이미 5,000명의 보호자가 경험한 변화. 3분 무료 진단으로 시작하세요.",
+        images: ["/og/taillog-share.png"],
     },
 };
 

@@ -42,11 +42,11 @@ export function BarkingHeatmap() {
                 </motion.div>
             </div>
 
-            <div className="bg-white/60 backdrop-blur-3xl rounded-[2.5rem] p-8 shadow-2xl shadow-gray-200/40 border border-white relative overflow-hidden group">
+            <div className="bg-white/60 backdrop-blur-3xl rounded-[2.5rem] p-6 sm:p-8 shadow-2xl shadow-gray-200/40 border border-white relative overflow-hidden group">
                 {/* Visual Depth */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/5 rounded-full blur-3xl -z-10" />
 
-                <div className="flex items-end justify-between h-40 gap-1 md:gap-2 min-w-[280px]">
+                <div className="flex items-end justify-between h-40 gap-0.5 sm:gap-1 md:gap-2 min-w-0">
                     {hours.map((h) => {
                         const intensity = getIntensity(h);
                         const isPeak = intensity > 80;

@@ -36,6 +36,27 @@ export const metadata: Metadata = {
   title: "TailLog - 반려견 행동 교정",
   description: "AI 기반 반려견 행동 교정 및 기록 서비스",
   manifest: "/manifest.json",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://dogcoach-1.vercel.app"
+  ),
+  openGraph: {
+    title: "TailLog - 반려견 행동 교정",
+    description: "AI 기반 반려견 행동 교정 및 기록 서비스",
+    images: [
+      {
+        url: "/og/taillog-share.png",
+        width: 1200,
+        height: 630,
+        alt: "TailLog 데이터 기반 반려견 행동 코칭",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TailLog - 반려견 행동 교정",
+    description: "AI 기반 반려견 행동 교정 및 기록 서비스",
+    images: ["/og/taillog-share.png"],
+  },
 };
 
 export const viewport: Viewport = {
