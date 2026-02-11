@@ -13,27 +13,27 @@ import { FAQSection } from "@/components/features/landing/FAQSection";
 import { FinalCTASection } from "@/components/features/landing/FinalCTASection";
 
 export const metadata: Metadata = {
-    title: "TailLog | 데이터로 이해하는 반려견 행동 분석",
-    description: "머루의 짖음, 이제 감이 아닌 데이터로 해결하세요. AI 행동 분석, 맞춤 솔루션, 동물병원 용 리포트까지. 오늘 시작하면 내일의 10년 평화가 찾아옵니다.",
-    keywords: ["반려견 훈련", "강아지 행동 교정", "AI Dog Training", "TailLog", "테일로그", "분리불안", "강아지 히트맵"],
+    title: "TailLog | ?�이?�로 ?�해?�는 반려�??�동 분석",
+    description: "머루??짖음, ?�제 감이 ?�닌 ?�이?�로 ?�결?�세?? AI ?�동 분석, 맞춤 ?�루?? ?�물병원 ??리포?�까지. ?�늘 ?�작?�면 ?�일??10???�화가 찾아?�니??",
+    keywords: ["반려�??�련", "강아지 ?�동 교정", "AI Dog Training", "TailLog", "?�일로그", "분리불안", "강아지 ?�트�?],
     openGraph: {
-        title: "TailLog - 데이터 기반 반려견 행동 교정",
-        description: "이미 5,000명의 보호자가 경험한 변화. 3분 무료 진단으로 시작하세요.",
+        title: "TailLog - ?�이??기반 반려�??�동 교정",
+        description: "?��? 5,000명의 보호?��? 경험??변?? 3�?무료 진단?�로 ?�작?�세??",
         siteName: "TailLog",
         images: [
             {
-                url: "/og/taillog-share.png",
+                url: "/og/taillog-share-v2.png",
                 width: 1200,
                 height: 630,
-                alt: "TailLog 데이터 기반 반려견 행동 코칭",
+                alt: "TailLog ?�이??기반 반려�??�동 코칭",
             },
         ],
     },
     twitter: {
         card: "summary_large_image",
-        title: "TailLog - 데이터 기반 반려견 행동 교정",
-        description: "이미 5,000명의 보호자가 경험한 변화. 3분 무료 진단으로 시작하세요.",
-        images: ["/og/taillog-share.png"],
+        title: "TailLog - ?�이??기반 반려�??�동 교정",
+        description: "?��? 5,000명의 보호?��? 경험??변?? 3�?무료 진단?�로 ?�작?�세??",
+        images: ["/og/taillog-share-v2.png"],
     },
 };
 

@@ -33,29 +33,29 @@ const nanumSquareRound = localFont({
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-  title: "TailLog - 반려견 행동 교정",
-  description: "AI 기반 반려견 행동 교정 및 기록 서비스",
+  title: "TailLog - 반려�??�동 교정",
+  description: "AI 기반 반려�??�동 교정 �?기록 ?�비??,
   manifest: "/manifest.json",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://dogcoach-1.vercel.app"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://taillog-nu.vercel.app/"
   ),
   openGraph: {
-    title: "TailLog - 반려견 행동 교정",
-    description: "AI 기반 반려견 행동 교정 및 기록 서비스",
+    title: "TailLog - 반려�??�동 교정",
+    description: "AI 기반 반려�??�동 교정 �?기록 ?�비??,
     images: [
       {
-        url: "/og/taillog-share.png",
+        url: "/og/taillog-share-v2.png",
         width: 1200,
         height: 630,
-        alt: "TailLog 데이터 기반 반려견 행동 코칭",
+        alt: "TailLog ?�이??기반 반려�??�동 코칭",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "TailLog - 반려견 행동 교정",
-    description: "AI 기반 반려견 행동 교정 및 기록 서비스",
-    images: ["/og/taillog-share.png"],
+    title: "TailLog - 반려�??�동 교정",
+    description: "AI 기반 반려�??�동 교정 �?기록 ?�비??,
+    images: ["/og/taillog-share-v2.png"],
   },
 };
 
