@@ -98,9 +98,13 @@ export function HeroSection() {
                         <div className="flex flex-col items-center sm:items-start gap-1">
                             <span className="text-sm text-gray-400 font-medium">⚡️ 지금 3,241명이 상담 중</span>
                             <div className="flex -space-x-2">
-                                {[1, 2, 3, 4].map((i) => (
-                                    <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
-                                        <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="user" />
+                                {["🐶", "🐕", "🦴", "🐾"].map((icon, i) => (
+                                    <div
+                                        key={i}
+                                        className="w-6 h-6 rounded-full border-2 border-white bg-brand-lime/20 flex items-center justify-center text-[10px]"
+                                        aria-label="tailog-community"
+                                    >
+                                        {icon}
                                     </div>
                                 ))}
                                 <div className="w-6 h-6 rounded-full border-2 border-white bg-brand-lime flex items-center justify-center text-[8px] font-bold text-brand-dark">
