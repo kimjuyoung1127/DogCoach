@@ -21,8 +21,8 @@ export function useAuth() {
                     attemptMigration(session.access_token);
                 }
             } else {
-                // 2. Auto-login Anonymously if no session
-                signInAnonymously();
+                // 2. No session — continue as guest (anonymous auth disabled)
+                setLoading(false);
             }
         });
 
@@ -45,17 +45,6 @@ export function useAuth() {
 
         return () => subscription.unsubscribe();
     }, []);
-
-    const signInAnonymously = async () => {
-        try {
-            const { data, error } = await supabase.auth.signInAnonymously();
-            if (error) throw error;
-            // State will be updated by onAuthStateChange
-        } catch (error) {
-            console.error("Anonymous login failed:", error);
-            setLoading(false);
-        }
-    };
 
     const attemptMigration = async (accessToken: string) => {
         migrationAttempted.current = true;

@@ -12,7 +12,7 @@ import { MissionActionOverlay } from "@/components/features/coach/MissionActionO
 import { Check, ArrowRight } from "lucide-react";
 import { SurveyLoading } from "@/components/features/survey/SurveyLoading";
 
-import { TRAINING_CURRICULUM, mapIssueToCurriculum } from "@/data/curriculum";
+import { mapIssueToCurriculum } from "@/data/curriculum";
 import { useAuth } from "@/hooks/useAuth";
 import { useDashboardData } from "@/hooks/useQueries";
 
@@ -21,7 +21,7 @@ export default function ResultPage() {
     const { token, user } = useAuth();
 
     // Fetch Data (Guest supported via Cookie)
-    const { data: dashboardData, isLoading, error } = useDashboardData(true, token);
+    const { data: dashboardData, isLoading } = useDashboardData(true, token);
 
     // Local State for interactions
     const [showChallengeModal, setShowChallengeModal] = useState(false);
@@ -44,17 +44,9 @@ export default function ResultPage() {
         return <SurveyLoading dogName="분석중" />;
     }
 
-    if (error || !dashboardData) {
-        // Fallback or Error Display. 
-        // For MVP, just redirect to home or show error.
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <p>데이터를 불러오는데 실패했습니다. 다시 시도해주세요.</p>
-            </div>
-        );
-    }
-
-    const { dog_profile, issues } = dashboardData;
+    // Fallback for guests without data — show partial result with locked UI
+    const dog_profile = dashboardData?.dog_profile ?? { name: "반려견", profile_image_url: null };
+    const issues = dashboardData?.issues ?? [];
     const curriculum = mapIssueToCurriculum(issues);
     const firstStage = curriculum.stages[0];
 

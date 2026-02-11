@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git mv:*)",
+      "Bash(npm run build:*)",
+      "Bash(find \"c:\\\\DogCoach\\\\Backend\\\\app\"\" -maxdepth 2 -type d 2>/dev/null || powershell -Command \"Get-ChildItem -Path 'c:\\\\DogCoach\\\\Backend\\\\app\\\\' -Directory -Recurse -Depth 1)",
+      "Bash(Select-Object FullName \")"
+    ]
+  }
+}

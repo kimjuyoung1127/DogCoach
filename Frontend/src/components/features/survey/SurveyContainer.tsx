@@ -67,32 +67,21 @@ export function SurveyContainer() {
             console.log("Survey Completed:", data);
             setIsAnalyzing(true);
 
-            // API Submission
-            const doSubmit = () => {
-                if (!token) {
-                    alert("로그인이 필요합니다.");
-                    router.push("/login");
-                    return;
+            // API Submission (guest submit allowed via credentials cookie)
+            const payload = mapSurveyDataToSubmission(data);
+            console.log("DEBUG: Sending Payload:", JSON.stringify(payload, null, 2));
+
+            submitSurvey(payload, {
+                onSuccess: () => {
+                    console.log("SURVEY SUBMISSION SUCCESS!");
+                    router.push('/result');
+                },
+                onError: (error) => {
+                    console.error("Survey submission failed:", error);
+                    setIsAnalyzing(false);
+                    alert("설문 제출에 실패했습니다. 다시 시도해주세요.");
                 }
-
-                const payload = mapSurveyDataToSubmission(data);
-                console.log("DEBUG: Sending Payload:", JSON.stringify(payload, null, 2));
-
-                submitSurvey(payload, {
-                    onSuccess: () => {
-                        console.log("SURVEY SUBMISSION SUCCESS!");
-                        alert("설문이 성공적으로 저장되었습니다!");
-                        router.push('/result');
-                    },
-                    onError: (error) => {
-                        console.error("Survey submission failed:", error);
-                        setIsAnalyzing(false);
-                        alert("설문 제출에 실패했습니다. 다시 시도해주세요.");
-                    }
-                });
-            };
-
-            doSubmit();
+            });
         }
     };
 

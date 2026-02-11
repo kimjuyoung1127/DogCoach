@@ -122,15 +122,14 @@ export function useUpdateLog(dogId: string, token?: string | null) {
     });
 }
 
-// 3. Submit Survey
+// 3. Submit Survey (guest submit allowed – token is optional)
 export function useSubmitSurvey(token?: string | null) {
     const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: async (payload: any) => {
-            if (!token) throw new Error("Authentication required");
             return await apiClient.post('/onboarding/survey', payload, {
-                token,
+                token: token || undefined,
                 credentials: 'include',
             });
         },

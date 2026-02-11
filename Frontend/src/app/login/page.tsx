@@ -1,10 +1,40 @@
 'use client';
 
 import { supabase } from '@/lib/supabase';
-import { useState } from 'react';
+import { apiClient } from '@/lib/api';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [checking, setChecking] = useState(true);
+
+    // Check if already logged in (non-anonymous) and redirect
+    useEffect(() => {
+        const checkSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (session && !session.user.is_anonymous) {
+                try {
+                    const profile = await apiClient.get<any>("/auth/me", { token: session.access_token });
+                    if (profile?.latest_dog_id) {
+                        router.push('/dashboard');
+                    } else {
+                        router.push('/survey');
+                    }
+                    return;
+                } catch {
+                    router.push('/survey');
+                    return;
+                }
+            }
+
+            setChecking(false);
+        };
+
+        checkSession();
+    }, [router]);
 
     const handleGoogleLogin = async () => {
         try {
@@ -28,6 +58,14 @@ export default function LoginPage() {
             setLoading(false);
         }
     };
+
+    if (checking) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
+                <div className="w-8 h-8 border-4 border-brand-lime border-t-transparent rounded-full animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">

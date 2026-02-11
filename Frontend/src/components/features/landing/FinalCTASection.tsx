@@ -39,7 +39,7 @@ export function FinalCTASection() {
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
                         <Link
-                            href="/Survey"
+                            href="/survey"
                             className={cn(
                                 "group relative inline-flex items-center justify-center px-10 py-5 text-xl font-bold text-brand-dark transition-all bg-brand-lime rounded-full overflow-hidden hover:scale-105 shadow-2xl shadow-brand-lime/30"
                             )}

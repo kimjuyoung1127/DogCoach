@@ -59,7 +59,7 @@ export default function DashboardPage() {
         <div className="p-8 text-center pt-20">
             <h2 className="text-xl font-bold mb-4">반려견 정보가 없습니다.</h2>
             <p className="text-gray-500 mb-6">설문을 완료하고 맞춤형 코칭을 받아보세요.</p>
-            <button onClick={() => router.push('/Survey')} className="bg-primary text-white px-6 py-3 rounded-full font-bold shadow-lg">
+            <button onClick={() => router.push('/survey')} className="bg-primary text-white px-6 py-3 rounded-full font-bold shadow-lg">
                 DogCoach 시작하기
             </button>
         </div>

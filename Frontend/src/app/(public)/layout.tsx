@@ -12,7 +12,7 @@ export default function PublicLayout({
     const pathname = usePathname();
 
     // Paths where footer should be hidden for better focus on content (e.g., Survey)
-    const hiddenFooterPaths = ["/Survey", "/result"];
+    const hiddenFooterPaths = ["/survey", "/result"];
     const showFooter = !hiddenFooterPaths.includes(pathname);
 
     return (

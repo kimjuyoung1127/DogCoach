@@ -199,7 +199,11 @@ function buildUrl(path: string): string {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   const hasPrefix = normalizedPath.startsWith(API_PREFIX);
   const finalPath = hasPrefix ? normalizedPath : `${API_PREFIX}${normalizedPath}`;
-  return `${API_BASE_URL}${finalPath}`;
+  // Avoid double prefix when API_BASE_URL already includes /api/v1
+  const base = API_BASE_URL.endsWith(API_PREFIX)
+    ? API_BASE_URL.slice(0, -API_PREFIX.length)
+    : API_BASE_URL;
+  return `${base}${finalPath}`;
 }
 
 async function request<T>(

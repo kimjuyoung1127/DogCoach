@@ -84,7 +84,7 @@ export function HeroSection() {
                         className="flex flex-col sm:flex-row gap-6 justify-center pt-8 items-center"
                     >
                         <Link
-                            href={hasDog ? "/dashboard" : "/Survey"}
+                            href={hasDog ? "/dashboard" : "/survey"}
                             className={cn(
                                 "group relative inline-flex items-center justify-center px-10 py-5 text-xl font-bold text-white transition-all bg-brand-lime rounded-full overflow-hidden hover:scale-105 shadow-2xl shadow-brand-lime/30"
                             )}

@@ -12,7 +12,7 @@ const plans = [
         description: "가볍게 시작하는 행동 기록",
         features: ["기본 행동 로그 기록", "주간 히트맵(Heatmap) 제공", "커뮤니티 접근 권한"],
         cta: "무료로 시작하기",
-        href: "/Survey",
+        href: "/survey",
         popular: false,
     },
     {
@@ -27,7 +27,7 @@ const plans = [
             "수의사 제출용 PDF 리포트",
         ],
         cta: "7일 무료 체험 시작",
-        href: "/Survey",
+        href: "/survey",
         popular: true,
     },
 ];
