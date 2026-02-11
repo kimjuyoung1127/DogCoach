@@ -1,7 +1,8 @@
 # General
 .DS_Store
 Thumbs.db
-.agent/
+.agent/*
+!.agent/ai-context/
 .agents/
 
 # Python
