@@ -121,7 +121,7 @@ function updateDashboardFromLogs(store: DemoStore) {
 }
 
 async function mockRequest<T>(
-  method: "GET" | "POST" | "PATCH",
+  method: "GET" | "POST" | "PATCH" | "DELETE",
   path: string,
   body?: unknown
 ): Promise<T> {
@@ -203,7 +203,7 @@ function buildUrl(path: string): string {
 }
 
 async function request<T>(
-  method: "GET" | "POST" | "PATCH",
+  method: "GET" | "POST" | "PATCH" | "DELETE",
   path: string,
   body?: unknown,
   options: RequestOptions = {}
@@ -244,6 +244,9 @@ export const apiClient = {
   },
   patch<T>(path: string, body?: unknown, options?: RequestOptions) {
     return request<T>("PATCH", path, body, options);
+  },
+  delete<T>(path: string, options?: RequestOptions) {
+    return request<T>("DELETE", path, undefined, options);
   },
 };
 

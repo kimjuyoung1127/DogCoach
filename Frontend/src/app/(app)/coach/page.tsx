@@ -179,6 +179,7 @@ export default function CoachPage() {
             {/* Mission Overlay Modal */}
             <MissionActionOverlay
                 isOpen={!!selectedMission}
+                curriculumId={currentCourseId}
                 mission={selectedMission}
                 onClose={() => setSelectedMission(null)}
                 onComplete={handleMissionComplete}

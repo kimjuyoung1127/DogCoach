@@ -53,7 +53,7 @@ export default function LogPage() {
             let analysisResult = aiAnalysis;
             if (!analysisResult && dogId) {
                 try {
-                    const response = await apiClient.coach.analyze(dogId, { token: token ?? undefined });
+                    const response = await apiClient.post(`/coach/analyze/${dogId}`, {}, { token: token ?? undefined });
                     analysisResult = response;
                     setAiAnalysis(response);
                 } catch (aiErr) {

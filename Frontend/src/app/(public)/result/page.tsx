@@ -69,6 +69,7 @@ export default function ResultPage() {
                     />
                     <MissionActionOverlay
                         isOpen={showMissionOverlay}
+                        curriculumId={curriculum.id}
                         mission={firstStage}
                         onComplete={handleMissionComplete}
                         onClose={() => setShowMissionOverlay(false)}
