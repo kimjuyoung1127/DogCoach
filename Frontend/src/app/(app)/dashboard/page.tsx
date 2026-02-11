@@ -101,6 +101,7 @@ export default function DashboardPage() {
                         }}
                         envTriggers={data.env_triggers || []}
                         envConsequences={data.env_consequences || []}
+                        dogId={data.dog_profile.id}
                     />
                 )}
             </AnimatePresence>

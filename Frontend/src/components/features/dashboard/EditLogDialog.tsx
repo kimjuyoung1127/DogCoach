@@ -14,6 +14,7 @@ interface Props {
     onUpdate: () => void;
     envTriggers: string[];
     envConsequences: string[];
+    dogId: string;
 }
 
 // Simple Chip Component
@@ -29,9 +30,9 @@ const TagChip = ({ label, selected, onClick }: { label: string, selected: boolea
     </button>
 );
 
-export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envConsequences }: Props) => {
+export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envConsequences, dogId }: Props) => {
     const { token } = useAuth();
-    const { mutate: updateLog, isPending } = useUpdateLog(token);
+    const { mutate: updateLog, isPending } = useUpdateLog(dogId, token);
 
     const [intensity, setIntensity] = useState<number>(5);
     const [antecedent, setAntecedent] = useState<string>("");

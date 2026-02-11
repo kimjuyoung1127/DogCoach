@@ -107,7 +107,7 @@ export function useCreateLog(dogId: string, token?: string | null) {
 }
 
 // 2. Update Log
-export function useUpdateLog(token?: string | null) {
+export function useUpdateLog(dogId: string, token?: string | null) {
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -117,18 +117,25 @@ export function useUpdateLog(token?: string | null) {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dashboard('me') });
-            // Invalidate specific log key if we had one (we mostly use list)
-            queryClient.invalidateQueries({ queryKey: ['logs'] });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.logs(dogId) });
         },
     });
 }
 
 // 3. Submit Survey
 export function useSubmitSurvey(token?: string | null) {
+    const queryClient = useQueryClient();
+
     return useMutation({
         mutationFn: async (payload: any) => {
             if (!token) throw new Error("Authentication required");
-            return await apiClient.post('/onboarding/survey', payload, { token });
+            return await apiClient.post('/onboarding/survey', payload, {
+                token,
+                credentials: 'include',
+            });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dashboard('me') });
         },
     });
 }

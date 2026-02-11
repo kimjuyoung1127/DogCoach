@@ -121,7 +121,7 @@ class Dog(Base):
     birth_date = Column(Date)
     sex = Column(Enum(DogSex, name="dog_sex"))
     profile_image_url = Column(Text)
-    anonymous_sid = Column(String(255))
+    anonymous_sid = Column(String(255), index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 

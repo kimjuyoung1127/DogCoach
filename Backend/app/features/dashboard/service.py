@@ -3,10 +3,12 @@ from sqlalchemy import select, func, desc
 from app.shared.models import Dog, BehaviorLog
 from app.features.dashboard import schemas
 from datetime import date, timedelta
+from zoneinfo import ZoneInfo
 
 from app.shared.models import Dog, BehaviorLog, DogEnv
+from app.shared.utils.timezone import get_today_with_timezone
 
-async def get_dashboard_data(db: AsyncSession, dog_id: str) -> schemas.DashboardResponse:
+async def get_dashboard_data(db: AsyncSession, dog_id: str, timezone_str: str = "Asia/Seoul") -> schemas.DashboardResponse:
     # 1. Fetch Dog Info
     result = await db.execute(select(Dog).where(Dog.id == dog_id))
     dog = result.scalar_one_or_none()
@@ -14,11 +16,10 @@ async def get_dashboard_data(db: AsyncSession, dog_id: str) -> schemas.Dashboard
     if not dog:
         raise Exception("Dog not found") 
 
-    # Calculate Age
+    # Calculate Age (using user's timezone for accurate date)
     age_months = 0
     if dog.birth_date:
-        today = date.today()
-        # Rough calculation
+        today = get_today_with_timezone(timezone_str)
         delta = today - dog.birth_date
         age_months = int(delta.days / 30)
 
@@ -85,12 +86,14 @@ async def get_dashboard_data(db: AsyncSession, dog_id: str) -> schemas.Dashboard
     last_log_query = select(BehaviorLog.occurred_at).where(BehaviorLog.dog_id == dog_id).order_by(desc(BehaviorLog.occurred_at)).limit(1)
     last_logged_at = (await db.execute(last_log_query)).scalar_one_or_none()
 
-    # Streak Calculation (Simplified for MVP)
+    # Streak Calculation (using user's timezone for correct day boundary)
     current_streak = 0
     if last_logged_at:
-        diff = date.today() - last_logged_at.date()
+        user_today = get_today_with_timezone(timezone_str)
+        last_logged_local = last_logged_at.astimezone(ZoneInfo(timezone_str)).date()
+        diff = user_today - last_logged_local
         if diff.days <= 1:
-            current_streak = 1 # Active
+            current_streak = 1  # Active
         else:
             current_streak = 0
     

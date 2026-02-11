@@ -44,7 +44,9 @@ async def get_current_dog_id(
 
 @router.get("/", response_model=schemas.DashboardResponse)
 async def get_dashboard_summary(
+    request: Request,
     dog_id: str = Depends(get_current_dog_id),
     db: AsyncSession = Depends(get_db)
 ):
-    return await service.get_dashboard_data(db, dog_id)
+    x_timezone = request.headers.get("X-Timezone", "Asia/Seoul")
+    return await service.get_dashboard_data(db, dog_id, x_timezone)

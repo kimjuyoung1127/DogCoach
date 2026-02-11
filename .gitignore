@@ -53,6 +53,10 @@ yarn-error.log
 out/
 coverage/
 
+# Keep frontend source lib tracked
+!Frontend/src/lib/
+!Frontend/src/lib/*.ts
+
 # Logs
 *.log
 

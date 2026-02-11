@@ -28,3 +28,8 @@ class UserResponse(UserBase):
     latest_dog_name: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class MigrateGuestResponse(BaseModel):
+    migrated_count: int
+    dog_ids: list[str] = []
