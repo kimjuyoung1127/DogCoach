@@ -1,6 +1,7 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, status, Request, Response
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.security import get_current_user_id, get_current_user_id_optional
 from app.features.onboarding import service, schemas
@@ -46,7 +47,16 @@ async def submit_onboarding_survey(
         
         # 5. Set Cookie if new guest
         if is_new_guest:
-            response.set_cookie(key="anonymous_sid", value=guest_id, httponly=True, max_age=31536000) # 1 year
+            response.set_cookie(
+                key="anonymous_sid",
+                value=guest_id,
+                httponly=True,
+                secure=settings.anonymous_cookie_secure,
+                samesite=settings.anonymous_cookie_samesite,
+                max_age=settings.ANONYMOUS_COOKIE_MAX_AGE,
+                domain=settings.ANONYMOUS_COOKIE_DOMAIN,
+                path="/",
+            )
             
         print(f"DEBUG: Survey Submitted Successfully: {result.id}")
         return result

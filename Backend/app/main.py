@@ -59,3 +59,8 @@ app.include_router(log_router, prefix=f"{settings.API_V1_STR}/logs", tags=["log"
 @app.get("/")
 def root():
     return {"message": "Welcome to DogCoach API"}
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}

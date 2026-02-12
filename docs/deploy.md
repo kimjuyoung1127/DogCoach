@@ -1,50 +1,64 @@
-# TailLog Deploy Guide
+# TailLog Deploy Guide (Vercel + Render)
 
-## 1) Frontend ?�독 배포 (Vercel, ?�모 모드)
-?�재 Frontend??`NEXT_PUBLIC_API_URL`???�으�?DEMO_MODE�??�작?�도�??�어 ?�어, 백엔???�이???�모 배포가 가?�합?�다.
+## 1) Architecture
+- Frontend: Vercel (`Frontend` root)
+- Backend: Render Web Service (`Backend` root)
+- DB/Auth: Supabase
 
-### ?�차
-1. `kimjuyoung1127/DogCoach`�??�시
-2. Vercel?�서 Repository Import
-3. Root Directory�?`Frontend`�?지??4. ?�경변???�정
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - (?�택) `NEXT_PUBLIC_SITE_URL` = 배포 ?�메??5. Deploy
+## 2) Backend Deploy (Render)
 
-## 2) Backend ?�동 배포 (추후)
-Backend ?�버 배포 ??Frontend ?�경변?�에 API URL 추�?:
+### Create service
+- Runtime: Python
+- Root Directory: `Backend`
+- Build Command: `pip install -r requirements.txt`
+- Start Command: `python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- Health Check Path: `/health`
 
-- `NEXT_PUBLIC_API_URL=https://<backend-domain>`
+### Required env vars
+- `ENVIRONMENT=production`
+- `DATABASE_URL=postgresql+asyncpg://...`
+- `SECRET_KEY=...`
+- `SUPABASE_URL=https://<project>.supabase.co`
+- `SUPABASE_ANON_KEY=...`
+- `OPENAI_API_KEY=...`
+- `BACKEND_CORS_ORIGINS=https://<your-vercel-domain>,http://localhost:3000`
 
-?�한 Backend CORS??Vercel ?�메?�을 ?�함?�야 ?�니??
+### Cookie options (guest -> user migration)
+- Default in production:
+  - `ANONYMOUS_COOKIE_SECURE=true`
+  - `ANONYMOUS_COOKIE_SAMESITE=none`
+- Optional override:
+  - `ANONYMOUS_COOKIE_DOMAIN=.your-domain.com`
 
-- `BACKEND_CORS_ORIGINS=https://<vercel-domain>,http://localhost:3000`
+## 3) Frontend Deploy (Vercel)
 
-## 3) OG ?��?지(카카???�네?? ?�영 규칙
+### Project settings
+- Root Directory: `Frontend`
 
-### ?��?지 경로/규격
-- ?�일: `Frontend/public/og/taillog-share-v2.png`
-- 권장 규격: `1200x630`
-- 권장 ?�맷: PNG
+### Required env vars
+- `NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY=...`
+- `NEXT_PUBLIC_API_URL=https://<your-render-domain>`
 
-### 메�??�이???�정 ?�치
-- 공통: `Frontend/src/app/layout.tsx`
-- ?�딩 override: `Frontend/src/app/(public)/page.tsx`
+Note:
+- If `NEXT_PUBLIC_API_URL` is empty, app falls back to DEMO mode.
 
-???�일 모두 `openGraph.images` / `twitter.images`?�서 `/og/taillog-share-v2.png`�?참조?�니??
+## 4) Validation Checklist
+1. Backend health:
+   - `GET https://<render-domain>/health` returns `{"status":"ok"}`.
+2. CORS:
+   - Requests from Vercel domain are allowed.
+3. Guest onboarding cookie:
+   - `POST /api/v1/onboarding/survey` sets `anonymous_sid`.
+4. Guest dashboard:
+   - Same browser can call `/api/v1/dashboard/`.
+5. Guest -> user migration:
+   - After login, `POST /api/v1/auth/migrate-guest` returns `migrated_count > 0`.
+6. Auth endpoints:
+   - `/api/v1/auth/me`, `/api/v1/logs/{dog_id}`, `/api/v1/coach/*` work with token.
 
-## 4) 카카??캐시 갱신 체크리스??카카??링크 ?�네?��? 캐시가 ?�아 ?�전 ?��?지가 보일 ???�습?�다.
-
-1. 배포 URL??최신?��? ?�인
-2. `og:image`가 200 ?�답?��? ?�인
-3. 카카???�버거에??URL ?�수�??�크??갱신) ?�행
-4. 카카?�톡?�로 ?�전?�해 ?�네???�인
-
-## 5) 모바??가�??�크�??��? ?�스??배포 ???�래 ?�이지?�서 320/360/390/430px 기�??�로 좌우 ?�크롤이 ?�는지 ?�인?�니??
-
-- `/`
-- `/survey`
-- `/result`
-- `/dashboard`
-- `/log`
-- `/coach`
+## 5) Demo Runbook
+1. Warm up Render 5-10 minutes before demo (`/health` ping).
+2. Run full rehearsal once:
+   - guest survey -> dashboard -> login -> migrate -> logged-in dashboard/logs.
+3. Keep `NEXT_PUBLIC_API_URL` fixed to Render URL during demo.

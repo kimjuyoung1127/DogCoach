@@ -227,7 +227,7 @@ async function request<T>(
   const res = await fetch(buildUrl(path), {
     method,
     headers,
-    credentials: options.credentials ?? "same-origin",
+    credentials: options.credentials ?? (API_BASE_URL ? "include" : "same-origin"),
     body: body ? JSON.stringify(body) : undefined,
   });
 
