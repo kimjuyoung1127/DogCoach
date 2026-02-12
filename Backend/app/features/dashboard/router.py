@@ -7,6 +7,7 @@ from app.features.dashboard import service, schemas
 from app.shared.models import Dog
 from typing import Optional
 from uuid import UUID
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 router = APIRouter()
 
@@ -22,8 +23,7 @@ async def get_current_dog_id(
     3. Return dog_id.
     """
     guest_id = request.cookies.get("anonymous_sid")
-    print(f"DEBUG: Dashboard Auth Check. User={user_id}, Guest={guest_id}, Cookies={request.cookies}")
-    
+
     query = select(Dog.id)
     if user_id:
         query = query.where(Dog.user_id == UUID(user_id))
@@ -49,4 +49,8 @@ async def get_dashboard_summary(
     db: AsyncSession = Depends(get_db)
 ):
     x_timezone = request.headers.get("X-Timezone", "Asia/Seoul")
+    try:
+        ZoneInfo(x_timezone)
+    except (ZoneInfoNotFoundError, KeyError):
+        x_timezone = "Asia/Seoul"
     return await service.get_dashboard_data(db, dog_id, x_timezone)

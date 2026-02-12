@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar as CalendarIcon, BarChart2, List, ChevronLeft, ChevronRight, FileDown, Sparkles, Loader2 } from "lucide-react";
@@ -29,6 +29,15 @@ export default function LogPage() {
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [pendingCourseId, setPendingCourseId] = useState<string | null>(null);
 
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get("tab");
+        if (tab === "analytics") {
+            setActiveTab("analytics");
+        }
+    }, []);
+
     // Fetch Data
     const { data: dashboardData } = useDashboardData(!!token, token);
     const dogId = dashboardData?.dog_profile?.id;
@@ -56,7 +65,7 @@ export default function LogPage() {
                 onError: () => { /* 409 = already exists, ignore */ },
             });
         }
-        router.push("/coach?highlight=true");
+        router.push("/coach?highlight=true&from=log");
     };
 
     // PDF Generation Handler
@@ -88,8 +97,27 @@ export default function LogPage() {
                     console.error("AI Analysis failed, falling back to static", aiErr);
                     // Fallback insight if AI fails
                     analysisResult = {
-                        insight: "데이터 패턴 기반 정밀 진단 준비 중...",
-                        dog_voice: "다음 기록을 더 정밀하게 분석해 드릴게요!"
+                        insight: `${dogName}의 최근 패턴을 기반으로 초기 분석을 제공합니다. 기록이 늘수록 정확도가 높아집니다.`,
+                        action_plan: "1) 같은 상황에서 일관된 대체 행동을 하루 2회 반복하세요.\n2) 반응 직전 신호를 포착해 즉시 개입하세요.\n3) 성공 직후 즉시 보상해 안정 행동을 강화하세요.",
+                        dog_voice: `${dogName}: 내가 긴장하기 전에 먼저 도와주면 훨씬 편안해질 수 있어요.`,
+                        top_patterns: [
+                            "최근 반복되는 자극 상황을 우선 추적하세요.",
+                            "고빈도 시간대를 중심으로 훈련 타이밍을 고정하세요.",
+                            "보상 타이밍의 일관성이 개선 속도를 좌우합니다.",
+                        ],
+                        next_7_days_plan: [
+                            "1-2일차: 반응 직전 신호 관찰 및 기록",
+                            "3-5일차: 대체 행동 반복 학습",
+                            "6-7일차: 강도/빈도 변화 재측정",
+                        ],
+                        risk_signals: [
+                            "반응 강도가 2일 이상 연속 상승",
+                            "같은 자극에서 반응 빈도가 증가",
+                        ],
+                        consultation_questions: [
+                            "우리 아이의 핵심 트리거를 줄이는 환경 조정은?",
+                            "현재 단계에 맞는 훈련 난도는 어느 정도인가요?",
+                        ],
                     };
                 }
             }
@@ -291,4 +319,3 @@ export default function LogPage() {
         </div>
     );
 }
-

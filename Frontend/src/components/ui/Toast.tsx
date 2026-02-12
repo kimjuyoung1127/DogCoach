@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 
 interface ToastProps {
@@ -31,10 +32,11 @@ export const Toast = ({ message, isVisible, onClose, duration = 2000, type = "su
         info: "bg-blue-500"
     };
 
-    return (
+    const toast = (
         <div
+            style={{ zIndex: 9999 }}
             className={cn(
-                "fixed bottom-24 left-1/2 -translate-x-1/2 z-50",
+                "fixed bottom-24 left-1/2 -translate-x-1/2",
                 "flex items-center gap-3 px-6 py-3 rounded-full shadow-xl",
                 bgColors[type],
                 "transition-all duration-300 transform",
@@ -51,4 +53,7 @@ export const Toast = ({ message, isVisible, onClose, duration = 2000, type = "su
             </span>
         </div>
     );
+
+    if (typeof document === "undefined") return toast;
+    return createPortal(toast, document.body);
 };

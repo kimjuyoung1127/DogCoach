@@ -144,12 +144,6 @@ export function useMissionAction({ curriculumId, dogId, mission, onComplete, isO
             setTimeout(() => {
                 setSelectedAlternativeIndex((prev) => ({ ...prev, [stepNumber]: 0 }));
                 setSwapping(false);
-                confetti({
-                    particleCount: 40,
-                    spread: 40,
-                    origin: { y: 0.7 },
-                    colors: ["#8B5CF6", "#A78BFA", "#C4B5FD"],
-                });
             }, 500);
             return;
         }
@@ -204,12 +198,6 @@ export function useMissionAction({ curriculumId, dogId, mission, onComplete, isO
             });
 
             setSelectedAlternativeIndex((prev) => ({ ...prev, [stepNumber]: 1 }));
-            confetti({
-                particleCount: 40,
-                spread: 40,
-                origin: { y: 0.7 },
-                colors: ["#8B5CF6", "#A78BFA", "#C4B5FD"],
-            });
         } finally {
             setSwapping(false);
             setIsLoadingCOption(false);

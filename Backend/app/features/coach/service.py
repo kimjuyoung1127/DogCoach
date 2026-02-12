@@ -1,13 +1,141 @@
 from datetime import date, timedelta
+from collections import Counter
+import json
+import re
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete, func as sqlfunc
-from typing import List, Optional
+from typing import List, Optional, Any, Dict
 from app.shared.models import Dog, DogEnv, BehaviorLog, UserTrainingStatus, TrainingBehaviorSnapshot
 from sqlalchemy.dialects.postgresql import insert
 
 from app.features.coach import schemas, templates, prompts
 from app.shared.clients.ai_client import ai_client
 from fastapi import HTTPException
+
+def _format_age_from_birth_date(birth_date: Optional[date]) -> str:
+    if not birth_date:
+        return "정보 없음"
+    today = date.today()
+    age_months = max(0, int((today - birth_date).days / 30))
+    return f"{age_months}개월"
+
+
+def _extract_json_object(text: str) -> Optional[Dict[str, Any]]:
+    if not text:
+        return None
+
+    cleaned = text.strip()
+    fence_match = re.search(r"```(?:json)?\s*([\s\S]*?)```", cleaned, re.IGNORECASE)
+    if fence_match:
+        cleaned = fence_match.group(1).strip()
+
+    candidates = [cleaned]
+    start = cleaned.find("{")
+    end = cleaned.rfind("}")
+    if start != -1 and end != -1 and end > start:
+        candidates.append(cleaned[start:end + 1])
+
+    for candidate in candidates:
+        try:
+            parsed = json.loads(candidate)
+            if isinstance(parsed, dict):
+                return parsed
+        except Exception:
+            continue
+    return None
+
+
+def _clean_text(value: Any, fallback: str) -> str:
+    if not isinstance(value, str):
+        return fallback
+    text = value.strip()
+    if not text:
+        return fallback
+    if "생성 중" in text or "읽고 있습니다" in text:
+        return fallback
+    return text
+
+
+def _clean_list(value: Any, fallback: List[str], max_len: int) -> List[str]:
+    if not isinstance(value, list):
+        return fallback
+    cleaned = [str(v).strip() for v in value if str(v).strip()]
+    if not cleaned:
+        return fallback
+    return cleaned[:max_len]
+
+
+def _build_rule_based_analysis(dog_name: str, logs_list: List[Dict[str, Any]]) -> Dict[str, Any]:
+    if not logs_list:
+        return {
+            "insight": f"{dog_name}의 기록이 아직 적어 정밀 패턴을 단정하기는 어렵습니다. 다만 초기 데이터 기준으로 자극-반응 연결을 빠르게 안정화하는 훈련이 우선입니다.",
+            "action_plan": "1) 하루 2회, 3분씩 짧은 훈련을 고정 시간에 진행하세요.\n2) 문제 행동 직전 신호(시선 고정, 긴장)를 발견하면 즉시 간단한 대체 행동으로 전환하세요.\n3) 성공 직후 2초 안에 보상해 성공 경험을 누적하세요.",
+            "dog_voice": f"{dog_name}: 아직 낯설지만, 짧고 쉽게 알려주면 더 잘할 수 있어요.",
+            "top_patterns": [
+                "기록이 누적되면 주요 촉발 상황이 자동으로 정리됩니다.",
+                "초기에는 같은 시간대/같은 상황 반복 여부를 우선 확인하세요.",
+                "보상 타이밍(즉시/지연)이 반응 안정화에 큰 영향을 줍니다.",
+            ],
+            "next_7_days_plan": [
+                "1-2일차: 문제 행동 직전 신호를 관찰하고 동일 기준으로 기록",
+                "3-5일차: 대체 행동 1개를 고정해 짧게 반복",
+                "6-7일차: 성공률이 높은 상황부터 난도를 소폭 상승",
+            ],
+            "risk_signals": [
+                "강도(intensity)가 3일 연속 상승",
+                "동일 상황에서 반응 빈도가 빠르게 증가",
+            ],
+            "consultation_questions": [
+                "반응 직전의 공통 선행 자극은 무엇인가요?",
+                "보상 시점과 보상 종류를 어떻게 조정하면 좋을까요?",
+            ],
+        }
+
+    antecedent_counter = Counter((log.get("antecedent") or "미기록") for log in logs_list)
+    behavior_counter = Counter((log.get("behavior") or "미기록") for log in logs_list)
+    hour_counter = Counter(
+        int(str(log.get("occurred_at", "00:00")).split(" ")[-1].split(":")[0])
+        for log in logs_list
+        if log.get("occurred_at")
+    )
+    intensity_values = [int(log.get("intensity")) for log in logs_list if isinstance(log.get("intensity"), int)]
+    avg_intensity = round(sum(intensity_values) / len(intensity_values), 1) if intensity_values else 0
+
+    top_antecedent, top_antecedent_count = antecedent_counter.most_common(1)[0]
+    top_behavior, top_behavior_count = behavior_counter.most_common(1)[0]
+    top_hour = hour_counter.most_common(1)[0][0] if hour_counter else None
+    peak_hour_text = f"{top_hour:02d}시 전후" if top_hour is not None else "특정 시간대"
+
+    return {
+        "insight": (
+            f"최근 기록 기준으로 {dog_name}는 '{top_antecedent}' 상황에서 '{top_behavior}' 반응이 가장 자주 나타났습니다. "
+            f"평균 강도는 {avg_intensity}이며, {peak_hour_text}에 재발 가능성이 높습니다."
+        ),
+        "action_plan": (
+            f"1) '{top_antecedent}' 직전 1-2분에 대체 행동을 먼저 제시하세요.\n"
+            f"2) '{top_behavior}'이 나오기 전에 시선 전환/거리 확보로 반응 고리를 끊으세요.\n"
+            f"3) 성공 시 즉시 보상하고 같은 패턴을 하루 2회 반복하세요."
+        ),
+        "dog_voice": f"{dog_name}: 내가 긴장하는 순간을 먼저 알아채고 도와주면 훨씬 편안해져요.",
+        "top_patterns": [
+            f"가장 잦은 선행 자극: {top_antecedent} ({top_antecedent_count}회)",
+            f"가장 잦은 문제 반응: {top_behavior} ({top_behavior_count}회)",
+            f"재발 가능 시간대: {peak_hour_text}",
+        ],
+        "next_7_days_plan": [
+            "1-2일차: 문제 상황 직전 개입 타이밍 고정",
+            "3-5일차: 대체 행동 성공률 70% 이상 목표",
+            "6-7일차: 동일 자극에서 반응 강도/빈도 재측정",
+        ],
+        "risk_signals": [
+            "반응 강도 평균이 2일 연속 상승",
+            "같은 자극에서 반응 지속시간이 증가",
+        ],
+        "consultation_questions": [
+            "현재 반응을 줄이기 위한 최우선 자극 관리 방법은?",
+            "우리 아이에게 맞는 대체 행동 기준 난도는?",
+        ],
+    }
 
 async def generate_coaching(db: AsyncSession, request: schemas.CoachingRequest) -> schemas.CoachingResponse:
     # 1. Fetch Dog & Env
@@ -153,37 +281,39 @@ async def analyze_behavior_with_ai(db: AsyncSession, dog_id: str) -> schemas.AIA
     dog_info = {
         "name": dog.name,
         "breed": dog.breed,
-        "age": dog.age,
-        "sex": dog.sex
+        "age": _format_age_from_birth_date(dog.birth_date),
+        "sex": dog.sex.value if dog.sex else "정보 없음",
     }
     
     prompt = prompts.create_analysis_prompt(dog_info, env_data, logs_list)
     system_prompt = prompts.SYSTEM_PROMPT
 
-    # 3. Call AI
+    # 3. Call AI + Parse (JSON first, rule fallback)
     ai_response_text = await ai_client.generate_response(prompt, system_prompt)
+    parsed = _extract_json_object(ai_response_text)
+    fallback = _build_rule_based_analysis(dog.name, logs_list)
 
-    # 4. Parse Response (Simple heuristic for now, assuming LLM follows structure)
-    # Ideally, use structured output from LLM, but for Qwen-1.5B, we parse manually or just return
-    sections = ai_response_text.split("\n\n")
-    
-    insight = "진단 결과 데이터를 생성 중입니다."
-    action_plan = "솔루션을 생성 중입니다."
-    dog_voice = "강아지의 마음을 읽고 있습니다."
-
-    for i, section in enumerate(sections):
-        if "종합 진단" in section or "1." in section:
-            insight = section.strip()
-        elif "맞춤 솔루션" in section or "3." in section:
-            action_plan = section.strip()
-        elif "강아지의 속마음" in section or "4." in section:
-            dog_voice = section.strip()
+    if parsed is None:
+        return schemas.AIAnalysisResponse(
+            insight=fallback["insight"],
+            action_plan=fallback["action_plan"],
+            dog_voice=fallback["dog_voice"],
+            top_patterns=fallback["top_patterns"],
+            next_7_days_plan=fallback["next_7_days_plan"],
+            risk_signals=fallback["risk_signals"],
+            consultation_questions=fallback["consultation_questions"],
+            raw_analysis=ai_response_text,
+        )
 
     return schemas.AIAnalysisResponse(
-        insight=insight,
-        action_plan=action_plan,
-        dog_voice=dog_voice,
-        raw_analysis=ai_response_text
+        insight=_clean_text(parsed.get("insight"), fallback["insight"]),
+        action_plan=_clean_text(parsed.get("action_plan"), fallback["action_plan"]),
+        dog_voice=_clean_text(parsed.get("dog_voice"), fallback["dog_voice"]),
+        top_patterns=_clean_list(parsed.get("top_patterns"), fallback["top_patterns"], 3),
+        next_7_days_plan=_clean_list(parsed.get("next_7_days_plan"), fallback["next_7_days_plan"], 3),
+        risk_signals=_clean_list(parsed.get("risk_signals"), fallback["risk_signals"], 2),
+        consultation_questions=_clean_list(parsed.get("consultation_questions"), fallback["consultation_questions"], 2),
+        raw_analysis=ai_response_text,
     )
 
 async def update_training_status(
@@ -377,5 +507,3 @@ async def get_behavior_snapshot_comparison(
         log_frequency_per_week=frequency_metric,
         overall_trend=overall,
     )
-
-

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { DashboardData } from "@/components/features/dashboard/types";
 import { DashboardHeader } from "@/components/features/dashboard/DashboardHeader";
 import { EditLogDialog } from "@/components/features/dashboard/EditLogDialog";
 import { MainDashboardTab } from "@/components/features/dashboard/MainDashboardTab";
@@ -14,30 +13,25 @@ import { FadeIn } from "@/components/ui/animations/FadeIn";
 import { AnimatePresence } from "framer-motion";
 
 import { useDashboardData } from "@/hooks/useQueries";
-import { useQueryClient } from "@tanstack/react-query";
-import { QUERY_KEYS } from "@/lib/query-keys";
 
 import { PremiumBackground } from "@/components/shared/ui/PremiumBackground";
 
 export default function DashboardPage() {
     const router = useRouter();
     const { token } = useAuth();
-    const queryClient = useQueryClient();
-
     const [editingLog, setEditingLog] = useState<any | null>(null);
 
-    // Use React Query Hook
     const { data, isLoading, error, refetch } = useDashboardData(!!token, token);
 
     const handleLogCreated = (newLog?: any) => {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dashboard('me') });
+        // Cache invalidation handled by useCreateLog.onSettled
         if (newLog) {
             setEditingLog(newLog);
         }
     };
 
     const handleLogUpdated = () => {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dashboard('me') });
+        // Cache invalidation handled by useUpdateLog.onSuccess
     };
 
     if (isLoading) return <DashboardSkeleton />;
@@ -84,8 +78,6 @@ export default function DashboardPage() {
                     </FadeIn>
                 </div>
             </div>
-
-            {/* Hoisted Edit Dialog */}
 
             {/* Hoisted Edit Dialog */}
             <AnimatePresence>

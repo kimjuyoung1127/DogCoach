@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ChallengeJourneyMap } from "@/components/features/coach/ChallengeJourneyMap";
 import { MissionActionOverlay } from "@/components/features/coach/MissionActionOverlay";
 import { Trophy, Zap, ChevronRight, BookOpen, Sparkles, CheckCircle2 } from "lucide-react";
@@ -12,12 +13,15 @@ import { useDashboardData } from "@/hooks/useQueries";
 
 export default function CoachPage() {
     const { token } = useAuth();
+    const router = useRouter();
     const [shouldHighlight, setShouldHighlight] = useState(false);
+    const [entrySource, setEntrySource] = useState<string>("coach");
 
     useEffect(() => {
         if (typeof window === "undefined") return;
         const params = new URLSearchParams(window.location.search);
         setShouldHighlight(params.get("highlight") === "true");
+        setEntrySource(params.get("from") || "coach");
     }, []);
 
     const { data: dashboardData } = useDashboardData(!!token, token);
@@ -51,6 +55,11 @@ export default function CoachPage() {
         setSelectedMission(null);
         if (reaction) {
             setXp((prev) => prev + 100);
+        }
+
+        // Keep post-completion navigation consistent with entry source.
+        if (entrySource === "log") {
+            router.push("/log?trainingSaved=1&tab=analytics");
         }
     };
 
@@ -132,6 +141,7 @@ export default function CoachPage() {
                             <ChallengeJourneyMap
                                 stages={currentCourse.stages}
                                 currentDay={currentDay}
+                                unlockMode="all"
                                 onDayClick={(stage) => setSelectedMission(stage)}
                             />
                         </div>

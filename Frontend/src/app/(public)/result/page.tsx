@@ -32,12 +32,13 @@ export default function ResultPage() {
     const isPro = userRole === 'PRO_USER';
 
     const handleStartJourney = () => {
-        router.push("/coach?highlight=true");
+        setShowChallengeModal(false);
+        setShowMissionOverlay(true);
     };
 
     const handleMissionComplete = (reaction: string) => {
         console.log("Mission Completed:", reaction);
-        router.push("/dashboard");
+        setShowMissionOverlay(false);
     };
 
     if (isLoading) {

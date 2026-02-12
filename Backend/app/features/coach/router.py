@@ -22,6 +22,16 @@ async def generate_coaching_advice(
     return await service.generate_coaching(db, request)
 
 
+@router.post("/analyze/{dog_id}", response_model=schemas.AIAnalysisResponse)
+async def analyze_behavior(
+    dog_id: str,
+    user_id: str = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    await verify_dog_ownership(db, UUID(dog_id), user_id, None)
+    return await service.analyze_behavior_with_ai(db, dog_id)
+
+
 @router.post("/status", response_model=schemas.TrainingStatusResponse)
 async def update_training_status(
     request: schemas.TrainingStatusUpdate,

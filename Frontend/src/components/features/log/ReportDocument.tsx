@@ -110,6 +110,10 @@ interface ReportDocumentProps {
         insight: string;
         action_plan: string;
         dog_voice: string;
+        top_patterns?: string[];
+        next_7_days_plan?: string[];
+        risk_signals?: string[];
+        consultation_questions?: string[];
     };
 }
 
@@ -167,6 +171,7 @@ export function ReportDocument({ dogName, logs, chartImage, recommendedCourse, a
                     <Text style={styles.sectionTitle}>3. AI 맞춤 추천 솔루션</Text>
                     <Text style={{ ...styles.text, fontSize: 12, fontWeight: "bold" }}>추천 코스: {recommendedCourse.title}</Text>
                     <Text style={styles.text}>{recommendedCourse.description}</Text>
+                    {aiAnalysis?.action_plan && <Text style={styles.text}>{aiAnalysis.action_plan}</Text>}
 
                     <Text style={{ ...styles.text, marginTop: 10 }}>[주요 단계]</Text>
                     {recommendedCourse.stages.slice(0, 3).map((stage, idx) => (
@@ -174,14 +179,58 @@ export function ReportDocument({ dogName, logs, chartImage, recommendedCourse, a
                             {idx + 1}. {stage.title}: {stage.goal}
                         </Text>
                     ))}
-
-                    {aiAnalysis && (
-                        <View style={{ marginTop: 15, padding: 15, backgroundColor: "#fff7ed", borderRadius: 8, borderStyle: "dashed", borderWidth: 1, borderColor: "#fdba74" }}>
-                            <Text style={{ ...styles.text, fontSize: 11, fontWeight: "bold", color: "#c2410c", marginBottom: 8 }}>🐾 {dogName}가 보내는 마음의 편지</Text>
-                            <Text style={{ ...styles.text, fontStyle: "italic", color: "#9a3412" }}>{aiAnalysis.dog_voice}</Text>
-                        </View>
-                    )}
                 </View>
+
+                {aiAnalysis?.top_patterns?.length ? (
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>4. 최근 패턴 핵심 요약</Text>
+                        {aiAnalysis.top_patterns.slice(0, 3).map((pattern, idx) => (
+                            <Text key={`pattern-${idx}`} style={styles.text}>
+                                {idx + 1}. {pattern}
+                            </Text>
+                        ))}
+                    </View>
+                ) : null}
+
+                {aiAnalysis?.next_7_days_plan?.length ? (
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>5. 다음 7일 실행 계획</Text>
+                        {aiAnalysis.next_7_days_plan.slice(0, 3).map((plan, idx) => (
+                            <Text key={`plan-${idx}`} style={styles.text}>
+                                {idx + 1}. {plan}
+                            </Text>
+                        ))}
+                    </View>
+                ) : null}
+
+                {aiAnalysis?.risk_signals?.length ? (
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>6. 악화 신호 체크</Text>
+                        {aiAnalysis.risk_signals.slice(0, 2).map((signal, idx) => (
+                            <Text key={`risk-${idx}`} style={styles.text}>
+                                - {signal}
+                            </Text>
+                        ))}
+                    </View>
+                ) : null}
+
+                {aiAnalysis?.consultation_questions?.length ? (
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>7. 상담 시 질문 가이드</Text>
+                        {aiAnalysis.consultation_questions.slice(0, 2).map((question, idx) => (
+                            <Text key={`question-${idx}`} style={styles.text}>
+                                - {question}
+                            </Text>
+                        ))}
+                    </View>
+                ) : null}
+
+                {aiAnalysis && (
+                    <View style={{ marginTop: 15, padding: 15, backgroundColor: "#fff7ed", borderRadius: 8, borderStyle: "dashed", borderWidth: 1, borderColor: "#fdba74" }}>
+                        <Text style={{ ...styles.text, fontSize: 11, fontWeight: "bold", color: "#c2410c", marginBottom: 8 }}>🐾 {dogName}가 보내는 마음의 편지</Text>
+                        <Text style={{ ...styles.text, color: "#9a3412" }}>{aiAnalysis.dog_voice}</Text>
+                    </View>
+                )}
 
                 {/* Footer */}
                 <Text style={styles.footer}>

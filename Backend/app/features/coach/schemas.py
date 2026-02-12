@@ -29,6 +29,10 @@ class AIAnalysisResponse(BaseModel):
     insight: str
     action_plan: str
     dog_voice: str
+    top_patterns: List[str] = []
+    next_7_days_plan: List[str] = []
+    risk_signals: List[str] = []
+    consultation_questions: List[str] = []
     raw_analysis: Optional[str] = None
 
 class TrainingStatusUpdate(BaseModel):
@@ -83,5 +87,4 @@ class BehaviorSnapshotComparisonResponse(BaseModel):
     avg_intensity: BehaviorComparisonMetric
     log_frequency_per_week: BehaviorComparisonMetric
     overall_trend: str  # improved | worsened | same
-
 

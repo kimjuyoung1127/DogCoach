@@ -3,6 +3,11 @@ import { TRAINING_CURRICULUM, TrainingStage } from '@/data/curriculum';
 import { useDashboardData, useTrainingStatuses } from './useQueries';
 import { useAuth } from './useAuth';
 
+// NOTE:
+// This hook is currently not wired into the active Result/Coach pages.
+// SWAPPED:* compatibility is kept for historical client-side experiments,
+// while current backend TrainingStatus enum does not include SWAPPED values.
+// Treat this as a legacy compatibility layer until status model is unified.
 export interface HiddenStage {
     courseId: string;
     courseTitle: string;

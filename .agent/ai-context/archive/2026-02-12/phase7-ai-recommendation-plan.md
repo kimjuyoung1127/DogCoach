@@ -274,3 +274,90 @@ Implemented time-series behavior snapshot comparison to support
 ### Operational notes
 1. Run SQL section updates in Supabase before using compare endpoint in production.
 2. Compare endpoint requires at least two snapshots for the same `(user, dog, curriculum)`.
+
+---
+
+## Additional Implementation Update (2026-02-12, late-night)
+
+### Scope
+Improved recommendation UX continuity (Result/Coach/Log), stabilized AI analysis API for report generation, and upgraded PDF report quality to be consultation-ready.
+
+### Completed
+1. Personalized challenge accessibility + immediate start flow
+- Files:
+  - `Frontend/src/components/features/coach/ChallengeJourneyMap.tsx`
+  - `Frontend/src/app/(app)/coach/page.tsx`
+  - `Frontend/src/app/(public)/result/page.tsx`
+  - `Frontend/src/components/features/coach/ChallengeOnboardingModal.tsx`
+  - `Frontend/src/data/curriculum/index.ts`
+- Change:
+  - added `unlockMode` (`all | progressive`) and applied `unlockMode="all"` on coach map
+  - result-page onboarding now opens mission overlay directly (no forced redirect to coach)
+  - onboarding copy updated to "recommended start + all days explorable"
+  - issue-to-curriculum mapping hardened to scan all issue candidates (not only first entry)
+
+2. Mission confetti policy refined
+- File: `Frontend/src/components/features/coach/MissionActionOverlay/useMissionAction.ts`
+- Change:
+  - removed confetti on alternative-switch events
+  - confetti now fires only on mission completion action
+
+3. Entry-source-based completion navigation unified
+- Files:
+  - `Frontend/src/app/(app)/log/page.tsx`
+  - `Frontend/src/app/(app)/coach/page.tsx`
+  - `Frontend/src/app/(public)/result/page.tsx`
+- Change:
+  - pass `from=log` when entering coach from log page
+  - on coach completion: if `from=log`, return to `/log?trainingSaved=1&tab=analytics`
+  - result-origin completion now closes overlay without forced dashboard redirect
+
+4. Analytics low-data UX upgraded
+- File: `Frontend/src/components/features/log/AnalyticsView.tsx`
+- Change:
+  - for `< 5` logs, show preview/mock charts with explicit "example data" signaling
+  - added progress indicator and guidance messaging to prevent "app not ready" perception
+
+5. Report analysis API endpoint restored and hardened
+- Files:
+  - `Backend/app/features/coach/router.py`
+  - `Backend/app/features/coach/service.py`
+- Change:
+  - added `POST /coach/analyze/{dog_id}` route with ownership verification
+  - fixed model mismatch bug (`dog.age` -> computed age from `birth_date`)
+
+6. AI analysis output structured + robust fallback
+- Files:
+  - `Backend/app/features/coach/prompts.py`
+  - `Backend/app/features/coach/schemas.py`
+  - `Backend/app/features/coach/service.py`
+- Change:
+  - prompt now enforces JSON-only response contract
+  - response schema expanded with:
+    - `top_patterns`
+    - `next_7_days_plan`
+    - `risk_signals`
+    - `consultation_questions`
+  - implemented JSON extraction/parsing utility and quality guards
+  - added rule-based analysis fallback so placeholder texts are no longer emitted in normal failure paths
+
+7. PDF report content enriched for trainer/vet consultation
+- Files:
+  - `Frontend/src/app/(app)/log/page.tsx`
+  - `Frontend/src/components/features/log/ReportDocument.tsx`
+- Change:
+  - fallback analysis payload now includes concrete action plan/pattern/risk/question fields
+  - PDF sections expanded:
+    - top patterns
+    - next 7-day plan
+    - risk signals
+    - consultation questions
+  - fixed font runtime issue by removing unsupported italic style for `NotoSansKR`
+
+### Validation (late-night)
+- Backend: `python -m compileall app` -> success
+- Frontend: `npm run build` -> success
+
+### Operational notes
+1. Restart backend server after router/service updates to expose `/api/v1/coach/analyze/{dog_id}`.
+2. PDF generation now depends on structured analysis but remains resilient via rule-based fallback when AI output format drifts.

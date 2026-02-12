@@ -143,3 +143,39 @@ Supabase (인프라)
 • [해결됨] 배포 시 재현 절차 부재 - docs/deploy.md에 OG 경로/규격/카카오 캐시 갱신 절차 문서화
 오픈 이슈
 • [낮음] 실제 카카오톡 앱 캐시 반영 시간은 환경별 편차가 있음 - 재수집 후 확인 필요
+[2026-02-13] 대시보드 버그 수정 + UI 안정화
+• 범위: Backend 2파일 + Frontend 6파일 + 삭제 2파일 (총 10파일)
+• 전체 위험도: 높음 (사용자 보고 버그 포함)
+• 최종 판단: 머지 가능
+해결됨
+• [해결됨] Frontend/src/hooks/useQueries.ts - useCreateLog에 dashboard 캐시 낙관적 업데이트 누락 → 새 로그가 목록에 안 보임 - onMutate에서 QUERY_KEYS.dashboard('me') 캐시에 temp 항목 추가, onSuccess에서 temp-id→real UUID 교체, onError에서 롤백
+• [해결됨] Frontend/src/components/features/dashboard/RecentLogList.tsx - 부모 variant stagger 애니메이션이 새 항목에 재실행 안 됨 → 항목이 DOM에 존재하나 opacity: 0 - AnimatePresence + 개별 initial/animate/exit 패턴으로 변경, mode="sync", initial={false}
+• [해결됨] Backend/app/features/dashboard/service.py:17 - raise Exception("Dog not found") → 500 반환 - raise HTTPException(status_code=404)로 변경
+• [해결됨] Backend/app/features/dashboard/service.py:44 - chronic_issues JSON 파싱에 isinstance 가드 누락 → 레거시 리스트 데이터에서 AttributeError - isinstance(issues_data, dict) 체크 추가
+• [해결됨] Backend/app/features/dashboard/router.py:25 - DEBUG print로 request.cookies 전체 stdout 노출 (보안) - 삭제
+• [해결됨] Backend/app/features/dashboard/router.py:51 - 잘못된 X-Timezone 헤더 시 ZoneInfoNotFoundError → 500 - try/except + fallback "Asia/Seoul"
+• [해결됨] Backend/app/features/dashboard/service.py:89-98 - Streak 이진값(0/1)만 계산 - 실제 연속일수 계산으로 개선 (Python 타임존 변환 방식)
+• [해결됨] Frontend/src/app/(app)/dashboard/page.tsx - handleLogCreated/handleLogUpdated에서 중복 invalidateQueries 호출 - 제거 (mutation이 이미 처리)
+• [해결됨] Frontend/src/components/features/dashboard/EditLogDialog.tsx - 미사용 apiClient import + 중복 onClose 호출 - 제거
+• [해결됨] Frontend/src/components/ui/Toast.tsx - FadeIn stacking context에 갇혀 EditLogDialog 뒤에 숨음 - createPortal(document.body)로 렌더링 + z-index: 9999
+• [해결됨] Frontend/src/components/features/dashboard/EditLogDialog.tsx - 내부 콘텐츠 스크롤 필요 (max-h-[55vh]) - 간격/패딩 축소하여 한 화면에 표시 (space-y-4, p-5, max-h-[92dvh])
+• [해결됨] 미사용 파일 삭제 - QuickLogGrid.tsx (mock alert 포함 레거시), DailyBriefing.tsx (미통합 컴포넌트)
+오픈 이슈
+• [낮음] QuickLogWidget console.log/error 디버그 로그 잔존 - 안정화 확인 후 제거 필요
+검증 결과
+• 빌드 확인 필요: cd Frontend && npm run build
+• 수동 확인: 빠른 기록 → 목록 즉시 표시 + 토스트 표시 + EditLogDialog 스크롤 없이 전체 보임
+변경 파일 매트릭스
+Backend (수정 2)
+├─ features/dashboard/router.py       [수정] DEBUG print 삭제, 타임존 검증 추가
+└─ features/dashboard/service.py      [수정] HTTPException, isinstance 가드, streak 연속일수
+
+Frontend (수정 5 + 삭제 2)
+├─ hooks/useQueries.ts                [수정] 낙관적 업데이트 + temp-id→real-id 교체
+├─ components/.../RecentLogList.tsx    [수정] AnimatePresence 패턴 변경
+├─ components/.../EditLogDialog.tsx    [수정] compact layout, import 정리
+├─ components/.../QuickLogWidget.tsx   [수정] 토스트 메시지 개선, 디버그 로그
+├─ components/ui/Toast.tsx            [수정] createPortal + z-index 9999
+├─ app/(app)/dashboard/page.tsx       [수정] 중복 invalidation 제거, debug 로그 제거
+├─ components/.../QuickLogGrid.tsx     [삭제] 미사용 레거시
+└─ components/.../DailyBriefing.tsx    [삭제] 미사용

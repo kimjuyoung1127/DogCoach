@@ -1,9 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, desc
-from app.shared.models import Dog, BehaviorLog
 from app.features.dashboard import schemas
-from datetime import date, timedelta
+from datetime import timedelta
 from zoneinfo import ZoneInfo
+from fastapi import HTTPException
 
 from app.shared.models import Dog, BehaviorLog, DogEnv
 from app.shared.utils.timezone import get_today_with_timezone
@@ -14,7 +14,7 @@ async def get_dashboard_data(db: AsyncSession, dog_id: str, timezone_str: str = 
     dog = result.scalar_one_or_none()
     
     if not dog:
-        raise Exception("Dog not found") 
+        raise HTTPException(status_code=404, detail="Dog not found")
 
     # Calculate Age (using user's timezone for accurate date)
     age_months = 0
@@ -42,14 +42,17 @@ async def get_dashboard_data(db: AsyncSession, dog_id: str, timezone_str: str = 
     
     if dog_env:
         if dog_env.chronic_issues:
-             # Handle new structure: {"top_issues": [...], "other_text": "..."}
-             issues_data = dog_env.chronic_issues
-             top_issues = issues_data.get("top_issues", [])
-             other = issues_data.get("other_text")
-             if other and "etc" in top_issues:
-                 issues = [i if i != "etc" else other for i in top_issues]
-             else:
-                 issues = top_issues
+            # Handle new structure: {"top_issues": [...], "other_text": "..."}
+            issues_data = dog_env.chronic_issues
+            if isinstance(issues_data, dict):
+                top_issues = issues_data.get("top_issues", [])
+                other = issues_data.get("other_text")
+                if other and "etc" in top_issues:
+                    issues = [i if i != "etc" else other for i in top_issues]
+                else:
+                    issues = top_issues
+            else:
+                issues = issues_data  # Legacy: plain list
         
         if dog_env.triggers:
             # Handle new structure: {"ids": [...], "other_text": "..."}
@@ -86,16 +89,40 @@ async def get_dashboard_data(db: AsyncSession, dog_id: str, timezone_str: str = 
     last_log_query = select(BehaviorLog.occurred_at).where(BehaviorLog.dog_id == dog_id).order_by(desc(BehaviorLog.occurred_at)).limit(1)
     last_logged_at = (await db.execute(last_log_query)).scalar_one_or_none()
 
-    # Streak Calculation (using user's timezone for correct day boundary)
+    # Streak Calculation (consecutive days with at least one log)
     current_streak = 0
     if last_logged_at:
         user_today = get_today_with_timezone(timezone_str)
-        last_logged_local = last_logged_at.astimezone(ZoneInfo(timezone_str)).date()
-        diff = user_today - last_logged_local
-        if diff.days <= 1:
-            current_streak = 1  # Active
-        else:
-            current_streak = 0
+        tz = ZoneInfo(timezone_str)
+
+        # Fetch recent log timestamps and convert to user timezone in Python
+        recent_dates_query = (
+            select(BehaviorLog.occurred_at)
+            .where(BehaviorLog.dog_id == dog_id)
+            .order_by(desc(BehaviorLog.occurred_at))
+            .limit(500)
+        )
+        result = await db.execute(recent_dates_query)
+        raw_dates = [row[0] for row in result.all()]
+
+        # Convert to user-local dates and deduplicate
+        log_dates = sorted(
+            {dt.astimezone(tz).date() for dt in raw_dates},
+            reverse=True,
+        )
+
+        # Count consecutive days from today (or yesterday if no log today)
+        if log_dates:
+            expected = user_today
+            # Allow starting from yesterday if no log today yet
+            if log_dates[0] == user_today - timedelta(days=1):
+                expected = user_today - timedelta(days=1)
+            for d in log_dates:
+                if d == expected:
+                    current_streak += 1
+                    expected -= timedelta(days=1)
+                elif d < expected:
+                    break
     
     stats = schemas.QuickLogStats(
         total_logs=total_logs,

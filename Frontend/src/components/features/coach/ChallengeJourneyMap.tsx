@@ -8,10 +8,11 @@ import { TrainingStage } from "@/data/curriculum";
 interface Props {
     stages: TrainingStage[];
     currentDay: number; // 1 to N
+    unlockMode?: "all" | "progressive";
     onDayClick: (stage: TrainingStage) => void;
 }
 
-export function ChallengeJourneyMap({ stages, currentDay, onDayClick }: Props) {
+export function ChallengeJourneyMap({ stages, currentDay, unlockMode = "progressive", onDayClick }: Props) {
     return (
         <div className="relative py-12 flex flex-col items-center">
             {/* 1. Cinematic Connector Line */}
@@ -21,9 +22,10 @@ export function ChallengeJourneyMap({ stages, currentDay, onDayClick }: Props) {
 
             <div className="space-y-12 relative z-10 w-full">
                 {stages.map((stage, idx) => {
-                    const isCompleted = stage.day < currentDay;
-                    const isCurrent = stage.day === currentDay;
-                    const isLocked = stage.day > currentDay;
+                    const isProgressiveMode = unlockMode === "progressive";
+                    const isCompleted = isProgressiveMode && stage.day < currentDay;
+                    const isCurrent = isProgressiveMode ? stage.day === currentDay : stage.day === 1;
+                    const isLocked = isProgressiveMode && stage.day > currentDay;
                     const activeAltId = stage.steps.reduce((acc: string | null, s: any) => s.activeAlternativeId || acc, null);
 
                     return (
@@ -33,7 +35,7 @@ export function ChallengeJourneyMap({ stages, currentDay, onDayClick }: Props) {
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true, margin: "-100px" }}
                             transition={{ delay: idx * 0.05, type: "spring", damping: 12 }}
-                            onClick={() => (isCurrent || isCompleted) && onDayClick(stage)}
+                            onClick={() => !isLocked && onDayClick(stage)}
                             className={cn(
                                 "flex items-center gap-6 relative group/node max-w-sm mx-auto",
                                 idx % 2 === 0 ? "flex-row text-left" : "flex-row-reverse text-right"
@@ -91,7 +93,9 @@ export function ChallengeJourneyMap({ stages, currentDay, onDayClick }: Props) {
                                         ? "bg-brand-lime text-gray-900 border-white/40 scale-110 shadow-brand-lime/30"
                                         : isCompleted
                                             ? "bg-white text-brand-lime border-brand-lime/20"
-                                            : "bg-white/40 backdrop-blur-md text-gray-300 border-white/60"
+                                            : isLocked
+                                                ? "bg-white/40 backdrop-blur-md text-gray-300 border-white/60"
+                                                : "bg-white text-brand-lime border-brand-lime/20"
                                 )}>
                                     {isCompleted ? (
                                         <Check className="w-8 h-8 stroke-[3]" />

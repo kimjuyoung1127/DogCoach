@@ -81,31 +81,83 @@ export function useCreateLog(dogId: string, token?: string | null) {
             return await apiClient.post('/logs', { ...newLog, dog_id: dogId }, { token });
         },
         onMutate: async (newLog) => {
-            // Cancel outgoing refetches
             await queryClient.cancelQueries({ queryKey: QUERY_KEYS.logs(dogId) });
             await queryClient.cancelQueries({ queryKey: QUERY_KEYS.dashboard('me') });
 
-            // Snapshot previous value
             const previousLogs = queryClient.getQueryData(QUERY_KEYS.logs(dogId));
+            const previousDashboard = queryClient.getQueryData<DashboardData>(QUERY_KEYS.dashboard('me'));
 
-            // Optimistically update to the new value
-            queryClient.setQueryData(QUERY_KEYS.logs(dogId), (old: any[] = []) => [
-                {
-                    id: 'temp-id-' + Date.now(),
-                    ...newLog,
-                    occurred_at: newLog.occurred_at || new Date().toISOString(),
-                    dog_id: dogId
-                },
-                ...old,
-            ]);
+            const tempLog = {
+                id: 'temp-id-' + Date.now(),
+                ...newLog,
+                occurred_at: newLog.occurred_at || new Date().toISOString(),
+                dog_id: dogId
+            };
 
-            return { previousLogs };
+            queryClient.setQueryData(QUERY_KEYS.logs(dogId), (old: any[] = []) => [tempLog, ...old]);
+
+            if (previousDashboard) {
+                const updatedDashboard = {
+                    ...previousDashboard,
+                    recent_logs: [
+                        {
+                            id: String(tempLog.id),
+                            behavior: tempLog.behavior,
+                            intensity: tempLog.intensity || 3,
+                            occurred_at: tempLog.occurred_at,
+                            antecedent: tempLog.antecedent || undefined,
+                            consequence: tempLog.consequence || undefined,
+                        },
+                        ...previousDashboard.recent_logs,
+                    ].slice(0, 5),
+                    stats: {
+                        ...previousDashboard.stats,
+                        total_logs: previousDashboard.stats.total_logs + 1,
+                        current_streak: Math.max(previousDashboard.stats.current_streak, 1),
+                        last_logged_at: tempLog.occurred_at,
+                    },
+                };
+                queryClient.setQueryData<DashboardData>(QUERY_KEYS.dashboard('me'), updatedDashboard);
+            }
+
+            return { previousLogs, previousDashboard };
         },
-        onError: (err, newLog, context) => {
+        onError: (_err, _newLog, context) => {
             queryClient.setQueryData(QUERY_KEYS.logs(dogId), context?.previousLogs);
+            if (context?.previousDashboard) {
+                queryClient.setQueryData(QUERY_KEYS.dashboard('me'), context.previousDashboard);
+            }
+        },
+        onSuccess: (data: any) => {
+            // Replace temp ID with real server ID before refetch
+            // This prevents AnimatePresence key mismatch (temp-id → real UUID)
+            try {
+                if (data?.id) {
+                    const realId = String(data.id);
+                    queryClient.setQueryData<DashboardData>(QUERY_KEYS.dashboard('me'), (prev) => {
+                        if (!prev) return prev;
+                        return {
+                            ...prev,
+                            recent_logs: prev.recent_logs.map(log =>
+                                typeof log.id === 'string' && log.id.startsWith('temp-id-')
+                                    ? { ...log, id: realId }
+                                    : log
+                            ),
+                        };
+                    });
+                    queryClient.setQueryData(QUERY_KEYS.logs(dogId), (old: any[] | undefined) =>
+                        (old || []).map(log =>
+                            typeof log.id === 'string' && log.id.startsWith('temp-id-')
+                                ? { ...log, id: data.id }
+                                : log
+                        )
+                    );
+                }
+            } catch (e) {
+                console.error('[useCreateLog] onSuccess ID replace failed:', e);
+            }
         },
         onSettled: () => {
-            // Always refetch after error or success
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.logs(dogId) });
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dashboard('me') });
         },

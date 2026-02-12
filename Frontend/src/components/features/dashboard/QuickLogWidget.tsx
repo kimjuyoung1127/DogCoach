@@ -38,11 +38,13 @@ export const QuickLogWidget = ({ dogId, onLogCreated }: Props) => {
 
         createLog(payload as any, {
             onSuccess: (newLog) => {
-                showToast(`${label} 기록 완료!`, "success");
+                console.log('[QuickLog] onSuccess:', newLog);
+                showToast(`${label} 기록이 저장되었습니다!`, "success");
                 onLogCreated(newLog);
             },
             onError: (error: any) => {
-                showToast("기록 실패: " + (error.message || "Unknown error"), "error");
+                console.error('[QuickLog] onError:', error);
+                showToast("기록 실패: " + (error.message || "알 수 없는 오류"), "error");
             }
         });
     };
@@ -100,6 +102,7 @@ export const QuickLogWidget = ({ dogId, onLogCreated }: Props) => {
                 message={toast.message}
                 isVisible={toast.visible}
                 type={toast.type}
+                duration={3000}
                 onClose={() => setToast(prev => ({ ...prev, visible: false }))}
             />
         </section>

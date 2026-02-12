@@ -6,8 +6,7 @@ import {
     BarChart, Bar, XAxis, YAxis, Tooltip
 } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
-import { Clock, Calendar } from "lucide-react";
-import { LogData } from "./LogCard"; // Assuming LogData type is exported or accessible
+import { Clock, Calendar, Sparkles, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AnalyticsViewProps {
@@ -17,9 +16,52 @@ interface AnalyticsViewProps {
 
 export function AnalyticsView({ logs, id }: AnalyticsViewProps) {
     const [patternTab, setPatternTab] = useState<"hourly" | "daily">("hourly");
+    const logCount = logs?.length ?? 0;
+    const STABLE_INSIGHT_THRESHOLD = 5;
+    const remainingForStableInsight = Math.max(0, STABLE_INSIGHT_THRESHOLD - logCount);
+    const showMockPreview = logCount > 0 && logCount < STABLE_INSIGHT_THRESHOLD;
+
+    const mockRadarData = useMemo(
+        () => [
+            { subject: "외부 소리", A: 6, fullMark: 10 },
+            { subject: "현관 움직임", A: 5, fullMark: 10 },
+            { subject: "혼자 있는 시간", A: 7, fullMark: 10 },
+            { subject: "산책 전 흥분", A: 4, fullMark: 10 },
+            { subject: "낯선 사람", A: 3, fullMark: 10 },
+        ],
+        []
+    );
+
+    const mockHourlyData = useMemo(
+        () =>
+            new Array(24).fill(0).map((_, hour) => {
+                const morning = hour >= 7 && hour <= 9 ? 3 : 0;
+                const evening = hour >= 18 && hour <= 22 ? 4 : 0;
+                const baseline = hour % 6 === 0 ? 1 : 0;
+                return {
+                    hour,
+                    count: morning + evening + baseline,
+                    label: `${hour}시`,
+                };
+            }),
+        []
+    );
+
+    const mockDayData = useMemo(
+        () => [
+            { day: "일", count: 3 },
+            { day: "월", count: 4 },
+            { day: "화", count: 2 },
+            { day: "수", count: 5 },
+            { day: "목", count: 4 },
+            { day: "금", count: 6 },
+            { day: "토", count: 5 },
+        ],
+        []
+    );
 
     // 1. Radar Chart Data: Top 5 Triggers
-    const radarData = useMemo(() => {
+    const realRadarData = useMemo(() => {
         if (!logs || logs.length === 0) return [];
 
         const counts: Record<string, number> = {};
@@ -35,7 +77,7 @@ export function AnalyticsView({ logs, id }: AnalyticsViewProps) {
     }, [logs]);
 
     // 2. Heatmap Data: Frequency by Hour (0-23)
-    const hourlyData = useMemo(() => {
+    const realHourlyData = useMemo(() => {
         const hours = new Array(24).fill(0);
         logs?.forEach(log => {
             const date = new Date(log.occurred_at);
@@ -50,7 +92,7 @@ export function AnalyticsView({ logs, id }: AnalyticsViewProps) {
     }, [logs]);
 
     // 3. Weekly Heatmap Grid (7 days)
-    const dayData = useMemo(() => {
+    const realDayData = useMemo(() => {
         const days = ["일", "월", "화", "수", "목", "금", "토"];
         const counts = new Array(7).fill(0);
         logs?.forEach(log => {
@@ -62,14 +104,55 @@ export function AnalyticsView({ logs, id }: AnalyticsViewProps) {
 
     if (!logs || logs.length === 0) {
         return (
-            <div className="text-center py-10 text-gray-400 text-sm">
-                데이터가 충분하지 않아요.
+            <div className="glass p-8 rounded-[2.5rem] border border-white/60 ring-1 ring-black/5 text-center">
+                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-brand-lime/10 border border-brand-lime/20 flex items-center justify-center">
+                    <BarChart3 className="w-7 h-7 text-brand-lime" />
+                </div>
+                <h4 className="text-lg font-black text-gray-900 mb-2">분석 준비 중이에요</h4>
+                <p className="text-sm text-gray-500 font-medium leading-relaxed break-keep">
+                    아직 기록이 없어 차트를 그릴 수 없어요.<br />
+                    첫 기록 1개만 추가해도 기본 패턴을 바로 보여드려요.
+                </p>
+                <div className="mt-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-lime/10 border border-brand-lime/20">
+                    <Sparkles className="w-3.5 h-3.5 text-brand-lime" />
+                    <span className="text-[10px] font-black text-brand-lime uppercase tracking-widest">데이터 수집 대기 중</span>
+                </div>
             </div>
         );
     }
 
     return (
         <div id={id} className="space-y-8">
+            {remainingForStableInsight > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="glass p-5 rounded-3xl border border-brand-lime/20 bg-brand-lime/5 ring-1 ring-brand-lime/10"
+                >
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="w-9 h-9 rounded-xl bg-white border border-brand-lime/20 flex items-center justify-center">
+                            <Sparkles className="w-4 h-4 text-brand-lime" />
+                        </div>
+                        <div>
+                            <p className="text-xs font-black text-gray-900">초기 인사이트 모드</p>
+                            <p className="text-[10px] text-gray-500 font-medium">
+                                데이터가 쌓이면 이런 모습으로 분석돼요. 현재는 예시 차트로 미리 보여드려요.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="h-2 bg-white/70 rounded-full overflow-hidden shadow-inner mb-2">
+                        <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${Math.min((logCount / STABLE_INSIGHT_THRESHOLD) * 100, 100)}%` }}
+                            className="h-full bg-brand-lime rounded-full"
+                        />
+                    </div>
+                    <p className="text-[10px] font-black text-brand-lime uppercase tracking-widest">
+                        현재 {logCount}개 기록 · 안정 분석까지 {remainingForStableInsight}개 남음
+                    </p>
+                </motion.div>
+            )}
+
             {/* 1. Radar Chart: Major Causes */}
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -80,12 +163,17 @@ export function AnalyticsView({ logs, id }: AnalyticsViewProps) {
                     <span className="text-[10px] font-black text-brand-lime uppercase tracking-[0.2em] mb-1">Causes Analysis</span>
                     <h4 className="text-xl font-black text-gray-900 tracking-tight flex items-center gap-2">
                         주요 원인 분석
+                        {showMockPreview && (
+                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-100 uppercase tracking-widest">
+                                예시 데이터
+                            </span>
+                        )}
                     </h4>
                 </div>
 
                 <div className="h-72 w-full relative">
                     <ResponsiveContainer width="100%" height="100%">
-                        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={showMockPreview ? mockRadarData : realRadarData}>
                             <PolarGrid stroke="#e5e7eb" strokeDasharray="3 3" />
                             <PolarAngleAxis dataKey="subject" tick={{ fill: '#9ca3af', fontSize: 10, fontWeight: 700 }} />
                             <PolarRadiusAxis
@@ -110,7 +198,7 @@ export function AnalyticsView({ logs, id }: AnalyticsViewProps) {
                             </defs>
                         </RadarChart>
                     </ResponsiveContainer>
-                    {radarData.length === 0 && (
+                    {!showMockPreview && realRadarData.length === 0 && (
                         <div className="absolute inset-0 flex items-center justify-center text-xs font-black text-gray-300 uppercase tracking-widest">
                             No Data Available
                         </div>
@@ -169,7 +257,7 @@ export function AnalyticsView({ logs, id }: AnalyticsViewProps) {
                                 className="h-full w-full"
                             >
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={hourlyData} margin={{ top: 5, right: 0, left: -25, bottom: 0 }}>
+                                    <BarChart data={showMockPreview ? mockHourlyData : realHourlyData} margin={{ top: 5, right: 0, left: -25, bottom: 0 }}>
                                         <XAxis
                                             dataKey="hour"
                                             tick={{ fontSize: 10, fill: '#9ca3af', fontWeight: 700 }}
@@ -213,12 +301,12 @@ export function AnalyticsView({ logs, id }: AnalyticsViewProps) {
                                 className="h-full w-full pt-4"
                             >
                                 <div className="grid grid-cols-7 gap-3 sm:gap-4 h-full">
-                                    {dayData.map((d, i) => (
+                                    {(showMockPreview ? mockDayData : realDayData).map((d, i) => (
                                         <div key={i} className="flex flex-col items-center gap-4">
                                             <div className="relative w-full flex-1 bg-gray-50/50 rounded-full overflow-hidden border border-gray-100/50 shadow-inner">
                                                 <motion.div
                                                     initial={{ height: 0 }}
-                                                    animate={{ height: `${Math.min((d.count / (Math.max(...dayData.map(x => x.count)) || 1)) * 100, 100)}%` }}
+                                                    animate={{ height: `${Math.min((d.count / (Math.max(...(showMockPreview ? mockDayData : realDayData).map(x => x.count)) || 1)) * 100, 100)}%` }}
                                                     transition={{ duration: 1, delay: 0.1 + (i * 0.05), type: "spring", damping: 15 }}
                                                     className="absolute bottom-0 w-full bg-gradient-to-t from-brand-orange to-orange-400 rounded-full shadow-[0_0_15px_rgba(249,115,22,0.3)]"
                                                 />
