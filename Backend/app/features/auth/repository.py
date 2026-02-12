@@ -9,6 +9,15 @@ async def get_user_by_id(db: AsyncSession, user_id: UUID) -> Optional[User]:
     result = await db.execute(stmt)
     return result.scalars().first()
 
+
+async def get_user_role_by_id(db: AsyncSession, user_id: UUID) -> Optional[str]:
+    stmt = select(User.role).where(User.id == user_id)
+    result = await db.execute(stmt)
+    role = result.scalar_one_or_none()
+    if role is None:
+        return None
+    return role.value if hasattr(role, "value") else str(role)
+
 async def get_latest_dog_by_user(db: AsyncSession, user_id: UUID) -> Optional[Dog]:
     stmt = (
         select(Dog)

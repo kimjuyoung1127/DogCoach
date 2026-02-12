@@ -62,6 +62,7 @@ export default function ResultPage() {
                     <MissionActionOverlay
                         isOpen={showMissionOverlay}
                         curriculumId={curriculum.id}
+                        dogId={dashboardData?.dog_profile?.id}
                         mission={firstStage}
                         onComplete={handleMissionComplete}
                         onClose={() => setShowMissionOverlay(false)}

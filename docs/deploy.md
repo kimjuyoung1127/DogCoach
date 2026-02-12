@@ -56,6 +56,8 @@ Note:
    - After login, `POST /api/v1/auth/migrate-guest` returns `migrated_count > 0`.
 6. Auth endpoints:
    - `/api/v1/auth/me`, `/api/v1/logs/{dog_id}`, `/api/v1/coach/*` work with token.
+7. Admin-only endpoint:
+   - `/api/v1/coach/cost-status` must return `403` for non-admin users.
 
 ## 5) Demo Runbook
 1. Warm up Render 5-10 minutes before demo (`/health` ping).

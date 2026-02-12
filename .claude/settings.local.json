@@ -4,7 +4,17 @@
       "Bash(git mv:*)",
       "Bash(npm run build:*)",
       "Bash(find \"c:\\\\DogCoach\\\\Backend\\\\app\"\" -maxdepth 2 -type d 2>/dev/null || powershell -Command \"Get-ChildItem -Path 'c:\\\\DogCoach\\\\Backend\\\\app\\\\' -Directory -Recurse -Depth 1)",
-      "Bash(Select-Object FullName \")"
+      "Bash(Select-Object FullName \")",
+      "Bash(curl -s -X POST \"https://api.supabase.com/v1/projects/kvknerzsqgmmdmyxlorl/database/query\" ^)",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__apply_migration",
+      "mcp__supabase__get_advisors",
+      "Bash(git status:*)",
+      "Bash(gh --version:*)",
+      "Bash(winget install:*)",
+      "Bash(export PATH=\"$PATH:/c/Program Files/GitHub CLI\")",
+      "Bash(gh auth:*)",
+      "Bash(git check-ignore:*)"
     ]
   }
 }

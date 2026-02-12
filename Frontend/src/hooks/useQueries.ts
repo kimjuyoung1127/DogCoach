@@ -2,6 +2,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { QUERY_KEYS } from "@/lib/query-keys";
 import { DashboardData } from "@/components/features/dashboard/types";
+import type { TrainingAlternative } from "@/data/curriculum/types";
+import type {
+    RecommendationResponse,
+    CostStatus,
+    RecommendationFeedbackAction,
+} from "@/components/features/ai-recommendations/types";
 
 // ==========================================
 // QUERIES
@@ -179,4 +185,148 @@ export function useDeleteTrainingStatus(token?: string | null) {
     });
 }
 
+// 7. Fetch C alternative for challenge modal (on-demand)
+export function useFetchCAlternative(token?: string | null) {
+    return useMutation({
+        mutationFn: async ({
+            dog_id,
+            issue = "general",
+            window_days = 7,
+        }: {
+            dog_id: string;
+            issue?: string;
+            window_days?: 7 | 15 | 30;
+        }): Promise<TrainingAlternative> => {
+            const response = await apiClient.post<RecommendationResponse>(
+                '/coach/recommendations',
+                { dog_id, window_days, issue, force_refresh: false },
+                { token: token || undefined, credentials: 'include' },
+            );
 
+            const top = response.recommendations?.[0];
+            if (!top) {
+                throw new Error("No recommendation returned");
+            }
+
+            return {
+                id: "C",
+                title: top.title || "Plan C",
+                description:
+                    top.description ||
+                    "짧은 세션으로 난도를 낮추고 성공 기준을 다시 맞춰 진행해보세요.",
+            };
+        },
+    });
+}
+
+
+// ==========================================
+// AI RECOMMENDATIONS
+// ==========================================
+
+// 8. AI Recommendations (generate or return cached)
+export function useAIRecommendations(
+    dogId: string | undefined,
+    windowDays: number = 7,
+    enabled: boolean = true,
+    token?: string | null,
+) {
+    return useQuery({
+        queryKey: QUERY_KEYS.aiRecommendations(dogId || '', windowDays),
+        queryFn: async () => {
+            return await apiClient.post<RecommendationResponse>(
+                '/coach/recommendations',
+                { dog_id: dogId, window_days: windowDays, issue: 'general', force_refresh: false },
+                { token: token || undefined, credentials: 'include' },
+            );
+        },
+        enabled: enabled && !!dogId,
+        staleTime: windowDays === 7 ? 1000 * 60 * 60 * 72 : 1000 * 60 * 60 * 168,
+    });
+}
+
+// 9. Latest cached recommendations (no generation, GET only)
+export function useLatestRecommendations(
+    dogId: string | undefined,
+    windowDays: number,
+    enabled: boolean = false,
+    token?: string | null,
+) {
+    return useQuery({
+        queryKey: QUERY_KEYS.aiRecommendations(dogId || '', windowDays),
+        queryFn: async () => {
+            return await apiClient.get<RecommendationResponse>(
+                `/coach/recommendations/latest?dog_id=${dogId}&window_days=${windowDays}`,
+                { token: token || undefined, credentials: 'include' },
+            );
+        },
+        enabled: enabled && !!dogId,
+        staleTime: 1000 * 60 * 60 * 168,
+    });
+}
+
+// 10. Submit recommendation feedback (no LLM call)
+export function useSubmitRecommendationFeedback(token?: string | null) {
+    return useMutation({
+        mutationFn: async ({ snapshotId, ...data }: {
+            snapshotId: string;
+            recommendation_index: number;
+            action: RecommendationFeedbackAction;
+            note?: string;
+        }) => {
+            return await apiClient.post(
+                `/coach/recommendations/${snapshotId}/feedback`,
+                data,
+                { token: token || undefined, credentials: 'include' },
+            );
+        },
+    });
+}
+
+// 11. Create Behavior Snapshot (on training start)
+export function useCreateBehaviorSnapshot(token?: string | null) {
+    return useMutation({
+        mutationFn: async ({ dogId, curriculumId }: { dogId: string; curriculumId: string }) => {
+            if (!token) throw new Error("Authentication required");
+            return await apiClient.post('/coach/behavior-snapshot', {
+                dog_id: dogId,
+                curriculum_id: curriculumId,
+            }, { token, credentials: 'include' });
+        },
+    });
+}
+
+// 12. Compare Behavior Snapshots (baseline vs latest)
+export function useBehaviorSnapshotComparison(
+    dogId: string | undefined,
+    curriculumId: string | undefined,
+    enabled: boolean = true,
+    token?: string | null,
+) {
+    return useQuery({
+        queryKey: ['behavior_snapshot_comparison', dogId || '', curriculumId || ''],
+        queryFn: async () => {
+            if (!dogId || !curriculumId || !token) return null;
+            return await apiClient.get<any>(
+                `/coach/behavior-snapshot/compare?dog_id=${dogId}&curriculum_id=${curriculumId}`,
+                { token, credentials: 'include' },
+            );
+        },
+        enabled: enabled && !!dogId && !!curriculumId && !!token,
+        staleTime: 1000 * 60 * 5,
+    });
+}
+
+// 13. AI Cost Status
+export function useAICostStatus(token?: string | null) {
+    return useQuery({
+        queryKey: QUERY_KEYS.aiCostStatus(),
+        queryFn: async () => {
+            return await apiClient.get<CostStatus>(
+                '/coach/cost-status',
+                { token: token || undefined, credentials: 'include' },
+            );
+        },
+        staleTime: 1000 * 60 * 5,
+    });
+}

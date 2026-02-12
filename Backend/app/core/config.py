@@ -51,7 +51,25 @@ class Settings(BaseSettings):
     # Third Party
     OPENAI_API_KEY: str
     KAKAO_API_KEY: str | None = None
-    AI_API_URL: str = "http://localhost:11434" # Default for local Ollama
+    AI_API_URL: str = "http://localhost:11434"  # Default for local Ollama
+
+    # AI Recommendation Cost Control
+    OPENAI_MODEL: str = "gpt-4o-mini"
+    AI_DAILY_BUDGET_USD: float = 5.0
+    AI_MONTHLY_BUDGET_USD: float = 30.0
+    AI_USER_DAILY_LIMIT: int = 6
+    AI_USER_BURST_LIMIT: int = 2
+    AI_USER_BURST_WINDOW_MIN: int = 10
+    AI_TTL_7D_HOURS: int = 72
+    AI_TTL_15D_HOURS: int = 168
+    AI_TTL_30D_HOURS: int = 168
+    AI_LLM_TIMEOUT_SEC: int = 8
+    AI_MAX_RETRIES: int = 1
+    AI_TEMPERATURE: float = 0.2
+    AI_TOP_P: float = 1.0
+    AI_MAX_INPUT_TOKENS: int = 1200
+    AI_MAX_OUTPUT_TOKENS: int = 260
+    AI_PLANB_REGEN_PER_USER_PER_DAY: int = 1
 
     @property
     def is_production(self) -> bool:

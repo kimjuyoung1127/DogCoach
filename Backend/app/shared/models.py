@@ -269,3 +269,103 @@ class UserTrainingStatus(Base):
 
     user = relationship("User")
 
+
+# --- Phase 7: AI Recommendation System ---
+
+class AIRecommendationSnapshot(Base):
+    __tablename__ = "ai_recommendation_snapshots"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    dog_id = Column(UUID(as_uuid=True), ForeignKey("dogs.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    anonymous_sid = Column(String(255), nullable=True)
+    window_days = Column(Integer, nullable=False)  # 7, 15, or 30
+    dedupe_key = Column(String(64), nullable=False, unique=True)  # sha256 hex
+    prompt_version = Column(String(20), nullable=False, default="PROMPT_V1")
+    model = Column(String(50), nullable=False, default="gpt-4o-mini")
+    summary_hash = Column(String(64), nullable=False)
+    issue = Column(String(100), nullable=False)
+
+    # Output
+    recommendations = Column(JSONB, nullable=False)
+    rationale = Column(Text, nullable=False)
+    period_comparison = Column(Text, nullable=True)
+    source = Column(String(20), nullable=False, default="ai")  # "ai" or "rule"
+
+    # Cost tracking
+    input_tokens = Column(Integer, default=0)
+    output_tokens = Column(Integer, default=0)
+    cost_usd = Column(Numeric(10, 6), default=0)
+    latency_ms = Column(Integer, default=0)
+
+    # TTL
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    __table_args__ = (
+        Index('idx_rec_dog_window_created', 'dog_id', 'window_days', created_at.desc()),
+        Index('idx_rec_user_created', 'user_id', 'created_at'),
+        Index('idx_rec_expires', 'expires_at'),
+    )
+
+
+class AIRecommendationFeedback(Base):
+    __tablename__ = "ai_recommendation_feedback"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    snapshot_id = Column(UUID(as_uuid=True), ForeignKey("ai_recommendation_snapshots.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    anonymous_sid = Column(String(255), nullable=True)
+    recommendation_index = Column(Integer, nullable=False)  # 0, 1, 2
+    action = Column(String(50), nullable=False)  # "archive", "helpful", "not_helpful"
+    note = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class AICostUsageDaily(Base):
+    __tablename__ = "ai_cost_usage_daily"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    usage_date = Column(Date, nullable=False, unique=True)
+    total_calls = Column(Integer, default=0)
+    total_input_tokens = Column(Integer, default=0)
+    total_output_tokens = Column(Integer, default=0)
+    total_cost_usd = Column(Numeric(10, 6), default=0)
+    rule_fallback_count = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class TrainingBehaviorSnapshot(Base):
+    __tablename__ = "training_behavior_snapshots"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    dog_id = Column(UUID(as_uuid=True), ForeignKey("dogs.id", ondelete="CASCADE"), nullable=False)
+    curriculum_id = Column(String(50), nullable=False)
+    snapshot_date = Column(Date, nullable=False)
+    total_logs = Column(Integer, default=0)
+    avg_intensity = Column(Numeric(4, 2), default=0)
+    log_frequency_per_week = Column(Numeric(4, 2), default=0)
+    trigger_distribution = Column(JSONB, default={})
+    hourly_distribution = Column(JSONB, default={})
+    weekly_distribution = Column(JSONB, default={})
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    __table_args__ = (
+        Index('idx_behavior_snapshot_user_dog_curriculum', 'user_id', 'dog_id', 'curriculum_id'),
+        Index('idx_behavior_snapshot_created_at', 'created_at'),
+    )
+
+
+class AICostUsageMonthly(Base):
+    __tablename__ = "ai_cost_usage_monthly"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    usage_month = Column(Date, nullable=False, unique=True)  # First day of month
+    total_calls = Column(Integer, default=0)
+    total_cost_usd = Column(Numeric(10, 6), default=0)
+    budget_limit_usd = Column(Numeric(10, 2), default=30)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+

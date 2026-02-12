@@ -1,14 +1,17 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar as CalendarIcon, BarChart2, List, ChevronLeft, ChevronRight, FileDown, Sparkles, Loader2 } from "lucide-react";
 import { LogCard } from "@/components/features/log/LogCard";
 import { AnalyticsView } from "@/components/features/log/AnalyticsView";
 import { RecommendationSection } from "@/components/features/log/RecommendationSection";
+import { TrainingHistoryAccordion } from "@/components/features/log/TrainingHistoryAccordion";
+import { ChallengeOnboardingModal } from "@/components/features/coach/ChallengeOnboardingModal";
 import { ReportDocument } from "@/components/features/log/ReportDocument";
 import { cn } from "@/lib/utils";
-import { useDogLogs, useDashboardData } from "@/hooks/useQueries";
+import { useDogLogs, useDashboardData, useCreateBehaviorSnapshot } from "@/hooks/useQueries";
 import { useAuth } from "@/hooks/useAuth";
 import { pdf } from "@react-pdf/renderer";
 import { toPng } from "html-to-image";
@@ -20,16 +23,41 @@ import { PremiumBackground } from "@/components/shared/ui/PremiumBackground";
 export default function LogPage() {
     const [activeTab, setActiveTab] = useState<"timeline" | "analytics">("timeline");
     const { token } = useAuth();
+    const router = useRouter();
     const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
     const [aiAnalysis, setAiAnalysis] = useState<any>(null);
+    const [showOnboarding, setShowOnboarding] = useState(false);
+    const [pendingCourseId, setPendingCourseId] = useState<string | null>(null);
 
     // Fetch Data
     const { data: dashboardData } = useDashboardData(!!token, token);
     const dogId = dashboardData?.dog_profile?.id;
     const dogName = dashboardData?.dog_profile?.name || "반려견";
     const { data: logs, isLoading } = useDogLogs(dogId, token);
+    const createSnapshot = useCreateBehaviorSnapshot(token);
 
     const displayLogs = logs || [];
+
+    // Handle "맞춤 코칭 플랜 시작하기" button
+    const handleStartTraining = (courseId: string) => {
+        const hasOnboarded = typeof window !== "undefined" && localStorage.getItem("taillog_training_onboarded");
+        if (!hasOnboarded) {
+            setPendingCourseId(courseId);
+            setShowOnboarding(true);
+        } else {
+            navigateToCoach(courseId);
+        }
+    };
+
+    const navigateToCoach = async (courseId: string) => {
+        // Create behavior snapshot (fire-and-forget, skip if already exists)
+        if (dogId && courseId) {
+            createSnapshot.mutate({ dogId, curriculumId: courseId }, {
+                onError: () => { /* 409 = already exists, ignore */ },
+            });
+        }
+        router.push("/coach?highlight=true");
+    };
 
     // PDF Generation Handler
     const handleDownloadReport = async () => {
@@ -215,7 +243,10 @@ export default function LogPage() {
                             className="space-y-6"
                         >
                             {/* Recommendation Section (First for emphasis) */}
-                            <RecommendationSection logs={displayLogs} dogName={dogName} />
+                            <RecommendationSection logs={displayLogs} dogName={dogName} onStartTraining={handleStartTraining} />
+
+                            {/* Training History Accordion */}
+                            <TrainingHistoryAccordion token={token} />
 
                             {/* Vet Report Button */}
                             <button
@@ -243,6 +274,20 @@ export default function LogPage() {
                     )}
                 </AnimatePresence>
             </main>
+
+            {/* Onboarding Modal (first visit only) */}
+            <ChallengeOnboardingModal
+                isOpen={showOnboarding}
+                onStart={() => {
+                    setShowOnboarding(false);
+                    if (typeof window !== "undefined") {
+                        localStorage.setItem("taillog_training_onboarded", "true");
+                    }
+                    if (pendingCourseId) {
+                        navigateToCoach(pendingCourseId);
+                    }
+                }}
+            />
         </div>
     );
 }

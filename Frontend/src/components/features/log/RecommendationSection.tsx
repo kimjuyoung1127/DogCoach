@@ -8,9 +8,10 @@ import { motion } from "framer-motion";
 interface RecommendationSectionProps {
     logs: any[];
     dogName: string;
+    onStartTraining?: (courseId: string) => void;
 }
 
-export function RecommendationSection({ logs, dogName }: RecommendationSectionProps) {
+export function RecommendationSection({ logs, dogName, onStartTraining }: RecommendationSectionProps) {
     const recommendedCourse = useMemo(() => {
         if (!logs || logs.length === 0) return TRAINING_CURRICULUM[0];
 
@@ -90,7 +91,10 @@ export function RecommendationSection({ logs, dogName }: RecommendationSectionPr
                             </div>
                         </div>
 
-                        <button className="w-full bg-gray-900 text-white p-5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 active:scale-[0.98] transition-all hover:bg-black hover:shadow-xl hover:shadow-black/10 group/btn">
+                        <button
+                            onClick={() => onStartTraining?.(recommendedCourse.id)}
+                            className="w-full bg-gray-900 text-white p-5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 active:scale-[0.98] transition-all hover:bg-black hover:shadow-xl hover:shadow-black/10 group/btn"
+                        >
                             <div className="w-8 h-8 bg-brand-lime rounded-full flex items-center justify-center group-hover/btn:scale-110 transition-transform">
                                 <Play className="w-4 h-4 text-gray-900 fill-current ml-0.5" />
                             </div>

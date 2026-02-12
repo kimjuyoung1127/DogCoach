@@ -1,7 +1,8 @@
+from datetime import date, timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
-from typing import List
-from app.shared.models import Dog, DogEnv, BehaviorLog, UserTrainingStatus
+from sqlalchemy import select, delete, func as sqlfunc
+from typing import List, Optional
+from app.shared.models import Dog, DogEnv, BehaviorLog, UserTrainingStatus, TrainingBehaviorSnapshot
 from sqlalchemy.dialects.postgresql import insert
 
 from app.features.coach import schemas, templates, prompts
@@ -231,5 +232,150 @@ async def delete_training_status(
     await db.execute(stmt)
     await db.commit()
     return True
+
+
+async def create_behavior_snapshot(
+    db: AsyncSession,
+    user_id: str,
+    dog_id: str,
+    curriculum_id: str,
+) -> Optional[TrainingBehaviorSnapshot]:
+    # Compute stats from behavior_logs (last 30 days)
+    cutoff = date.today() - timedelta(days=30)
+    logs_query = select(BehaviorLog).where(
+        BehaviorLog.dog_id == dog_id,
+        BehaviorLog.occurred_at >= cutoff,
+    )
+    result = await db.execute(logs_query)
+    logs = result.scalars().all()
+
+    total_logs = len(logs)
+    avg_intensity = 0.0
+    trigger_dist: dict = {}
+    hourly_dist: dict = {}
+    weekly_dist: dict = {}
+
+    if total_logs > 0:
+        intensities = [l.intensity for l in logs if l.intensity is not None]
+        avg_intensity = round(sum(intensities) / len(intensities), 2) if intensities else 0.0
+
+        for log in logs:
+            if log.antecedent:
+                trigger_dist[log.antecedent] = trigger_dist.get(log.antecedent, 0) + 1
+            if log.occurred_at:
+                h = str(log.occurred_at.hour)
+                hourly_dist[h] = hourly_dist.get(h, 0) + 1
+                d = str(log.occurred_at.weekday())
+                weekly_dist[d] = weekly_dist.get(d, 0) + 1
+
+    freq_per_week = round(total_logs / 4.3, 2) if total_logs > 0 else 0.0
+
+    snapshot = TrainingBehaviorSnapshot(
+        user_id=user_id,
+        dog_id=dog_id,
+        curriculum_id=curriculum_id,
+        snapshot_date=date.today(),
+        total_logs=total_logs,
+        avg_intensity=avg_intensity,
+        log_frequency_per_week=freq_per_week,
+        trigger_distribution=trigger_dist,
+        hourly_distribution=hourly_dist,
+        weekly_distribution=weekly_dist,
+    )
+    db.add(snapshot)
+    await db.commit()
+    await db.refresh(snapshot)
+    return snapshot
+
+
+async def get_behavior_snapshot(
+    db: AsyncSession,
+    user_id: str,
+    dog_id: str,
+    curriculum_id: str,
+) -> Optional[TrainingBehaviorSnapshot]:
+    return await db.scalar(
+        select(TrainingBehaviorSnapshot)
+        .where(
+            TrainingBehaviorSnapshot.user_id == user_id,
+            TrainingBehaviorSnapshot.dog_id == dog_id,
+            TrainingBehaviorSnapshot.curriculum_id == curriculum_id,
+        )
+        .order_by(TrainingBehaviorSnapshot.created_at.desc())
+    )
+
+
+def _metric_trend(delta: float) -> str:
+    if delta < 0:
+        return "improved"
+    if delta > 0:
+        return "worsened"
+    return "same"
+
+
+def _build_metric(baseline: float, latest: float) -> schemas.BehaviorComparisonMetric:
+    delta = round(latest - baseline, 2)
+    base = baseline if baseline != 0 else 1.0
+    change_rate_pct = round((delta / base) * 100, 2)
+    return schemas.BehaviorComparisonMetric(
+        baseline=round(baseline, 2),
+        latest=round(latest, 2),
+        delta=delta,
+        change_rate_pct=change_rate_pct,
+        trend=_metric_trend(delta),
+    )
+
+
+async def get_behavior_snapshot_comparison(
+    db: AsyncSession,
+    user_id: str,
+    dog_id: str,
+    curriculum_id: str,
+) -> Optional[schemas.BehaviorSnapshotComparisonResponse]:
+    snapshots = (
+        await db.execute(
+            select(TrainingBehaviorSnapshot)
+            .where(
+                TrainingBehaviorSnapshot.user_id == user_id,
+                TrainingBehaviorSnapshot.dog_id == dog_id,
+                TrainingBehaviorSnapshot.curriculum_id == curriculum_id,
+            )
+            .order_by(TrainingBehaviorSnapshot.created_at.asc())
+        )
+    ).scalars().all()
+
+    if len(snapshots) < 2:
+        return None
+
+    baseline = snapshots[0]
+    latest = snapshots[-1]
+    days_between = (latest.snapshot_date - baseline.snapshot_date).days
+
+    intensity_metric = _build_metric(float(baseline.avg_intensity or 0), float(latest.avg_intensity or 0))
+    frequency_metric = _build_metric(
+        float(baseline.log_frequency_per_week or 0),
+        float(latest.log_frequency_per_week or 0),
+    )
+
+    trend_scores = [intensity_metric.trend, frequency_metric.trend]
+    improved = trend_scores.count("improved")
+    worsened = trend_scores.count("worsened")
+    overall = "same"
+    if improved > worsened:
+        overall = "improved"
+    elif worsened > improved:
+        overall = "worsened"
+
+    return schemas.BehaviorSnapshotComparisonResponse(
+        curriculum_id=curriculum_id,
+        baseline_snapshot_id=baseline.id,
+        latest_snapshot_id=latest.id,
+        baseline_date=baseline.snapshot_date,
+        latest_date=latest.snapshot_date,
+        days_between=days_between,
+        avg_intensity=intensity_metric,
+        log_frequency_per_week=frequency_metric,
+        overall_trend=overall,
+    )
 
 

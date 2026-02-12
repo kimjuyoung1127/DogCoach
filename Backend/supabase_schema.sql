@@ -226,3 +226,180 @@ CREATE TRIGGER trg_dog_env_updated_at BEFORE UPDATE ON dog_env FOR EACH ROW EXEC
 CREATE TRIGGER trg_behavior_logs_updated_at BEFORE UPDATE ON behavior_logs FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER trg_action_tracker_updated_at BEFORE UPDATE ON action_tracker FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER trg_user_settings_updated_at BEFORE UPDATE ON user_settings FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================
+-- 6. Phase 7: AI Recommendation System Tables
+-- ============================================
+
+CREATE TABLE ai_recommendation_snapshots (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    dog_id UUID NOT NULL REFERENCES dogs(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    anonymous_sid VARCHAR(255),
+    window_days INTEGER NOT NULL,
+    dedupe_key VARCHAR(64) NOT NULL UNIQUE,
+    prompt_version VARCHAR(20) NOT NULL DEFAULT 'PROMPT_V1',
+    model VARCHAR(50) NOT NULL DEFAULT 'gpt-4o-mini',
+    summary_hash VARCHAR(64) NOT NULL,
+    issue VARCHAR(100) NOT NULL,
+    recommendations JSONB NOT NULL,
+    rationale TEXT NOT NULL,
+    period_comparison TEXT,
+    source VARCHAR(20) NOT NULL DEFAULT 'ai',
+    input_tokens INTEGER DEFAULT 0,
+    output_tokens INTEGER DEFAULT 0,
+    cost_usd NUMERIC(10,6) DEFAULT 0,
+    latency_ms INTEGER DEFAULT 0,
+    expires_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX idx_rec_dog_window_created ON ai_recommendation_snapshots(dog_id, window_days, created_at DESC);
+CREATE UNIQUE INDEX idx_rec_dedupe_key ON ai_recommendation_snapshots(dedupe_key);
+CREATE INDEX idx_rec_user_created ON ai_recommendation_snapshots(user_id, created_at);
+CREATE INDEX idx_rec_expires ON ai_recommendation_snapshots(expires_at);
+
+CREATE TABLE ai_recommendation_feedback (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    snapshot_id UUID NOT NULL REFERENCES ai_recommendation_snapshots(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    anonymous_sid VARCHAR(255),
+    recommendation_index INTEGER NOT NULL,
+    action VARCHAR(50) NOT NULL,
+    note TEXT,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX idx_feedback_snapshot ON ai_recommendation_feedback(snapshot_id);
+
+CREATE TABLE ai_cost_usage_daily (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    usage_date DATE NOT NULL UNIQUE,
+    total_calls INTEGER DEFAULT 0,
+    total_input_tokens INTEGER DEFAULT 0,
+    total_output_tokens INTEGER DEFAULT 0,
+    total_cost_usd NUMERIC(10,6) DEFAULT 0,
+    rule_fallback_count INTEGER DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE ai_cost_usage_monthly (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    usage_month DATE NOT NULL UNIQUE,
+    total_calls INTEGER DEFAULT 0,
+    total_cost_usd NUMERIC(10,6) DEFAULT 0,
+    budget_limit_usd NUMERIC(10,2) DEFAULT 30,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- RLS
+ALTER TABLE ai_recommendation_snapshots ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ai_recommendation_feedback ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ai_cost_usage_daily ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ai_cost_usage_monthly ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Service role full access" ON ai_recommendation_snapshots FOR ALL USING (auth.role() = 'service_role');
+CREATE POLICY "Service role full access" ON ai_recommendation_feedback FOR ALL USING (auth.role() = 'service_role');
+CREATE POLICY "Service role full access" ON ai_cost_usage_daily FOR ALL USING (auth.role() = 'service_role');
+CREATE POLICY "Service role full access" ON ai_cost_usage_monthly FOR ALL USING (auth.role() = 'service_role');
+
+-- updated_at triggers for cost tables
+CREATE TRIGGER trg_ai_cost_daily_updated_at BEFORE UPDATE ON ai_cost_usage_daily FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER trg_ai_cost_monthly_updated_at BEFORE UPDATE ON ai_cost_usage_monthly FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================
+-- 7. Hotfix: user_training_status (for coach/status)
+-- ============================================
+
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'training_status') THEN
+        CREATE TYPE training_status AS ENUM (
+            'COMPLETED',
+            'SKIPPED_INEFFECTIVE',
+            'SKIPPED_ALREADY_DONE',
+            'HIDDEN_BY_AI'
+        );
+    END IF;
+END$$;
+
+CREATE TABLE IF NOT EXISTS user_training_status (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    curriculum_id VARCHAR(50) NOT NULL,
+    stage_id VARCHAR(50) NOT NULL,
+    step_number INTEGER NOT NULL,
+    status training_status NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_training_status_user_id ON user_training_status(user_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_user_training_status_unique_step
+    ON user_training_status(user_id, curriculum_id, stage_id, step_number);
+
+ALTER TABLE user_training_status ENABLE ROW LEVEL SECURITY;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_policies
+        WHERE schemaname = 'public'
+          AND tablename = 'user_training_status'
+          AND policyname = 'Service role full access'
+    ) THEN
+        CREATE POLICY "Service role full access"
+            ON user_training_status
+            FOR ALL
+            USING (auth.role() = 'service_role');
+    END IF;
+END$$;
+
+-- ============================================
+-- 8. Training Behavior Snapshots (for before/after comparison)
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS training_behavior_snapshots (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    dog_id UUID NOT NULL REFERENCES dogs(id) ON DELETE CASCADE,
+    curriculum_id VARCHAR(50) NOT NULL,
+    snapshot_date DATE NOT NULL,
+    total_logs INTEGER DEFAULT 0,
+    avg_intensity NUMERIC(4,2) DEFAULT 0,
+    log_frequency_per_week NUMERIC(4,2) DEFAULT 0,
+    trigger_distribution JSONB DEFAULT '{}',
+    hourly_distribution JSONB DEFAULT '{}',
+    weekly_distribution JSONB DEFAULT '{}',
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_behavior_snapshot_unique
+    ON training_behavior_snapshots(user_id, dog_id, curriculum_id);
+
+-- Allow time-series snapshots (multiple rows per curriculum over time)
+DROP INDEX IF EXISTS idx_behavior_snapshot_unique;
+CREATE INDEX IF NOT EXISTS idx_behavior_snapshot_user_dog_curriculum
+    ON training_behavior_snapshots(user_id, dog_id, curriculum_id);
+CREATE INDEX IF NOT EXISTS idx_behavior_snapshot_created_at
+    ON training_behavior_snapshots(created_at);
+
+ALTER TABLE training_behavior_snapshots ENABLE ROW LEVEL SECURITY;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_policies
+        WHERE schemaname = 'public'
+          AND tablename = 'training_behavior_snapshots'
+          AND policyname = 'Service role full access'
+    ) THEN
+        CREATE POLICY "Service role full access"
+            ON training_behavior_snapshots
+            FOR ALL
+            USING (auth.role() = 'service_role');
+    END IF;
+END$$;

@@ -23,3 +23,31 @@ ay-close-checklist.md
 5) 내일 시작 전 확인
 • [x] 최신 session log에서 다음 작업 1~2개 확정
 • [x] 필요 환경변수/실행 경로 정리
+---
+
+Day Close Checklist (2026-02-12, prepared by Codex)
+
+1) Release safety
+- [x] Frontend production build passed (`npm run build`)
+- [x] Backend compile passed (`python -m compileall app`)
+- [ ] Supabase SQL section for `training_behavior_snapshots` index migration applied
+
+2) Phase 7 doc sync
+- [x] `phase7-ai-recommendation-plan.md` updated with end-of-day implementation:
+  - time-series snapshots
+  - compare endpoint
+  - API contract changes
+  - validation results
+
+3) Deploy/env checks (tomorrow first)
+- [ ] Verify `NEXT_PUBLIC_API_URL` in Vercel
+- [ ] Verify Render backend env and restart after SQL apply
+- [ ] Smoke test:
+  1. login -> log page
+  2. start training (snapshot created)
+  3. create second snapshot later / with test data
+  4. compare endpoint returns trend
+
+4) Known risks to verify next session
+- [ ] Existing clients calling `GET /coach/behavior-snapshot/{curriculum_id}` must now include `dog_id` query
+- [ ] Compare endpoint requires at least 2 snapshots for same `(user, dog, curriculum)`

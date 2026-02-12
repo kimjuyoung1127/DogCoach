@@ -114,6 +114,11 @@ app/
 - 페이지네이션: OFFSET 대신 cursor-based 사용
 - 대량 INSERT: batch로 묶기
 
+### AI Recommendation (Phase 7)
+- 입력 제한: `Literal` 또는 `Enum`을 사용하여 window_days, feedback action 등 고정 값 강제
+- 보안: `cost-status` 등 민감 엔드포인트는 `ADMIN` 권한 체크 필수 (`get_user_role_by_id`)
+- 데이터 가공: `log_summaries` 누락 시 `behavior_logs` 기반 fallback 요약(<=1200자) 로직 준수
+
 ---
 
 ## 5) 인증/보안 규칙

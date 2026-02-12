@@ -48,12 +48,14 @@ if settings.BACKEND_CORS_ORIGINS:
 from app.features.log.router import router as log_router
 from app.features.dashboard.router import router as dashboard_router
 from app.features.coach.router import router as coach_router
+from app.features.ai_recommendations.router import router as ai_rec_router
 
 # Include Feature Routers
 app.include_router(auth_router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
 app.include_router(onboarding_router, prefix=f"{settings.API_V1_STR}/onboarding", tags=["onboarding"])
 app.include_router(dashboard_router, prefix=f"{settings.API_V1_STR}/dashboard", tags=["dashboard"])
 app.include_router(coach_router, prefix=f"{settings.API_V1_STR}/coach", tags=["coach"])
+app.include_router(ai_rec_router, prefix=f"{settings.API_V1_STR}/coach", tags=["ai-recommendations"])
 app.include_router(log_router, prefix=f"{settings.API_V1_STR}/logs", tags=["log"])
 
 @app.get("/")
