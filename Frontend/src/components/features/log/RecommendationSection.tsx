@@ -60,7 +60,7 @@ export function RecommendationSection({ logs, dogName, onStartTraining }: Recomm
                     <div className="flex justify-between items-start mb-6">
                         <div className="space-y-2">
                             <span className="inline-block px-3 py-1 bg-brand-lime/10 text-brand-lime text-[10px] font-black rounded-full uppercase tracking-widest border border-brand-lime/20 shadow-sm">
-                                AI Optimized
+                                AI 추천
                             </span>
                             <h4 className="text-2xl font-black text-gray-900 leading-tight tracking-tight">
                                 {recommendedCourse.title}
@@ -76,8 +76,8 @@ export function RecommendationSection({ logs, dogName, onStartTraining }: Recomm
                         {/* Stage Preview */}
                         <div className="bg-white/40 backdrop-blur-sm rounded-3xl p-5 space-y-3 border border-white/60 shadow-inner">
                             <div className="flex items-center justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                <span>Curriculum Preview</span>
-                                <span className="text-brand-lime">Total {recommendedCourse.stages.length} Stages</span>
+                                <span>커리큘럼 미리보기</span>
+                                <span className="text-brand-lime">총 {recommendedCourse.stages.length}단계</span>
                             </div>
                             <div className="space-y-3">
                                 {recommendedCourse.stages.slice(0, 2).map((stage, idx) => (

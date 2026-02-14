@@ -29,7 +29,23 @@
       "Bash(npm --version:*)",
       "Bash(npm install:*)",
       "Bash(npm run dev:*)",
-      "Bash(python -m pytest:*)"
+      "Bash(python -m pytest:*)",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(echo \"\n\n### [2026-02-14 Evening] Settings Page UX Improvements\n- 목표:\n  - 설정 페이지 UX 개선 \\(준비중 팝업, 계정 삭제, PWA 설치 등\\)\n  - 강아지 프로필 API 연동\n- 완료 작업 \\(12/16 - 75%\\):\n  **Phase 1: 기본 모달 & 텍스트 정리**\n  1. ComingSoonModal 컴포넌트 생성 \\(Frontend/src/components/shared/modals/\\)\n  2. ConfirmDialog 컴포넌트 생성\n  3. SubscriptionSection: \"\"전문 도그 위스퍼러 1:1 채팅\"\" 제거\n  4. NotificationSection: \"\"사업자 등록/채널 승인\"\" 텍스트 제거\n  \n  **Phase 2: 준비중 버튼 연결**\n  5. SubscriptionSection 3개 버튼에 ComingSoonModal 연결\n     - Pro 구독, 구독 관리, 프로모션 코드\n  \n  **Phase 3: 반려견 프로필 \\(Backend + Frontend\\)**\n  6. Backend dogs feature 생성 \\(router, service, schemas\\)\n  7. GET /api/v1/dogs/profile 엔드포인트 추가\n  8. Frontend useDogProfile 훅 추가\n  9. DataSection 버튼 연결 \\(/dog/profile로 이동\\)\n  10. DogProfileFull 타입 추가\n  \n  **Phase 4: 계정 삭제**\n  11. Backend DELETE /auth/me 엔드포인트 추가\n  12. Frontend useDeleteAccount 훅 + ConfirmDialog 연동\n  \n  **Phase 6: PWA 설치**\n  13. usePWAInstall 훅 생성\n  14. AppInfoSection PWA 버튼 연결\n\n- 남은 작업 \\(4개\\):\n  1. Dog Profile 페이지 생성 \\(/dog/profile\\)\n  2. Supabase Storage 설정 \\(dog-profiles 버킷\\)\n  3. Survey Photo Upload UI \\(Step1Profile\\)\n  4. Dashboard Photo Display\n\n- 검증:\n  - Backend 컴파일: ✅ 성공 \\(dogs, auth features\\)\n  - Frontend 빌드: 대기 중\n- 결과:\n  - 진행 중 \\(75% 완료\\)\n\")",
+      "Bash(python:*)",
+      "Bash(powershell.exe -Command \"[Environment]::SetEnvironmentVariable\\(''SUPABASE_ACCESS_TOKEN'', ''sbp_2ac7f49ef0efa25075f5d70352676bdc16e13d66'', ''User''\\)\")",
+      "Bash(export SUPABASE_ACCESS_TOKEN:*)",
+      "mcp__supabase__get_project_url",
+      "mcp__supabase__execute_sql",
+      "mcp__supabase__list_migrations",
+      "Bash(tasklist:*)",
+      "Bash(taskkill:*)",
+      "Bash(git restore:*)",
+      "Bash(grep:*)",
+      "Bash(curl:*)",
+      "Bash(nslookup:*)",
+      "Bash(git rm:*)"
     ]
   }
 }

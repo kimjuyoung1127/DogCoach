@@ -160,7 +160,7 @@ export function AnalyticsView({ logs, id }: AnalyticsViewProps) {
                 className="glass p-7 rounded-[2.5rem] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/60 relative overflow-hidden ring-1 ring-black/5"
             >
                 <div className="flex flex-col mb-6">
-                    <span className="text-[10px] font-black text-brand-lime uppercase tracking-[0.2em] mb-1">Causes Analysis</span>
+                    <span className="text-[10px] font-black text-brand-lime uppercase tracking-[0.2em] mb-1">원인 분석</span>
                     <h4 className="text-xl font-black text-gray-900 tracking-tight flex items-center gap-2">
                         주요 원인 분석
                         {showMockPreview && (
@@ -183,7 +183,7 @@ export function AnalyticsView({ logs, id }: AnalyticsViewProps) {
                                 axisLine={false}
                             />
                             <Radar
-                                name="Frequency"
+                                name="빈도"
                                 dataKey="A"
                                 stroke="#4ADE80"
                                 strokeWidth={3}
@@ -200,7 +200,7 @@ export function AnalyticsView({ logs, id }: AnalyticsViewProps) {
                     </ResponsiveContainer>
                     {!showMockPreview && realRadarData.length === 0 && (
                         <div className="absolute inset-0 flex items-center justify-center text-xs font-black text-gray-300 uppercase tracking-widest">
-                            No Data Available
+                            데이터 없음
                         </div>
                     )}
                 </div>
@@ -215,7 +215,7 @@ export function AnalyticsView({ logs, id }: AnalyticsViewProps) {
             >
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-brand-orange uppercase tracking-[0.2em] mb-1">Pattern Insights</span>
+                        <span className="text-[10px] font-black text-brand-orange uppercase tracking-[0.2em] mb-1">패턴 인사이트</span>
                         <h4 className="text-xl font-black text-gray-900 tracking-tight">
                             행동 패턴 분석
                         </h4>

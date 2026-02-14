@@ -52,7 +52,7 @@ export function BottomNav() {
                                 isActive ? "text-brand-lime" : "text-gray-400 hover:text-gray-600"
                             )}
                         >
-                            <Icon className={cn("w-6 h-6 mb-1", item.label === "코칭" && "rotate-45")} strokeWidth={isActive ? 2.5 : 2} />
+                            <Icon className={cn("w-6 h-6 mb-1", item.label === "코칭" && "rotate-[60deg]")} strokeWidth={isActive ? 2.5 : 2} />
                             <span className="text-[10px] font-medium">{item.label}</span>
                         </Link>
                     );

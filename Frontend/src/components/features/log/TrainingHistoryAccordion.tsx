@@ -23,9 +23,14 @@ function DifficultyBadge({ difficulty }: { difficulty: string }) {
         Medium: "bg-amber-50 text-amber-600 border-amber-100",
         Hard: "bg-red-50 text-red-600 border-red-100",
     };
+    const labelMap: Record<string, string> = {
+        Easy: "쉬움",
+        Medium: "보통",
+        Hard: "어려움",
+    };
     return (
         <span className={`text-[8px] font-black px-1.5 py-0.5 rounded border ${colorMap[difficulty] || colorMap.Medium}`}>
-            {difficulty}
+            {labelMap[difficulty] || difficulty}
         </span>
     );
 }
@@ -75,7 +80,7 @@ function CurriculumCard({ summary }: { summary: CurriculumSummary }) {
                 <span className="ml-auto flex gap-2">
                     <span className="text-brand-lime">완료 {summary.completedSteps}</span>
                     {summary.skippedSteps > 0 && <span className="text-amber-500">스킵 {summary.skippedSteps}</span>}
-                    {summary.alternativeUsedCount > 0 && <span className="text-purple-500">Plan B {summary.alternativeUsedCount}</span>}
+                    {summary.alternativeUsedCount > 0 && <span className="text-purple-500">대안 플랜 {summary.alternativeUsedCount}</span>}
                 </span>
             </div>
 
@@ -94,7 +99,7 @@ function CurriculumCard({ summary }: { summary: CurriculumSummary }) {
                             <AccordionTrigger className="py-3 hover:no-underline">
                                 <div className="flex items-center gap-3 flex-1 min-w-0">
                                     {stageStatusIcon}
-                                    <span className="text-xs font-black text-gray-500 shrink-0">Day {stage.day}</span>
+                                    <span className="text-xs font-black text-gray-500 shrink-0">{stage.day}일차</span>
                                     <span className="text-xs font-bold text-gray-700 truncate">{stage.title}</span>
                                     <span className="text-[10px] text-gray-400 font-medium shrink-0 ml-auto mr-2">
                                         {stage.completedSteps}/{stage.totalSteps}
@@ -111,7 +116,7 @@ function CurriculumCard({ summary }: { summary: CurriculumSummary }) {
                                                     <span className="text-xs font-bold text-gray-700 truncate">{step.title}</span>
                                                     {step.usedAlternative && (
                                                         <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-purple-50 text-purple-600 border border-purple-100 shrink-0">
-                                                            Plan B
+                                                            대안 플랜
                                                         </span>
                                                     )}
                                                 </div>

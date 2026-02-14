@@ -49,7 +49,7 @@ export function LogCard({ log }: Props) {
                         {log.behavior.includes("짖음") || log.behavior.includes("Barking") ? "🔊" : "📝"}
                     </div>
                     <div>
-                        <div className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Entry Log</div>
+                        <div className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">행동 기록</div>
                         <div className="flex items-center gap-2">
                             <Clock className="w-3.5 h-3.5 text-brand-lime" />
                             <span className="text-sm font-black text-gray-900">{log.time}</span>
@@ -60,7 +60,7 @@ export function LogCard({ log }: Props) {
                     </div>
                 </div>
                 <div className={cn("px-4 py-2 rounded-2xl text-[10px] font-black text-white uppercase tracking-widest shadow-lg shadow-black/5 ring-1 ring-inset ring-white/20", getIntensityColor(log.intensity))}>
-                    Intensity {log.intensity}
+                    강도 {log.intensity}
                 </div>
             </div>
 
@@ -71,7 +71,7 @@ export function LogCard({ log }: Props) {
                 <ABCStep
                     char="A"
                     title={log.antecedent}
-                    label="Antecedent"
+                    label="선행자극"
                     desc="원인 및 상황"
                     color="bg-blue-500"
                 />
@@ -79,7 +79,7 @@ export function LogCard({ log }: Props) {
                 <ABCStep
                     char="B"
                     title={log.behavior}
-                    label="Behavior"
+                    label="문제 행동"
                     desc={`${log.duration} 동안 지속`}
                     active
                     intensityBg={getIntensityBg(log.intensity)}
@@ -89,7 +89,7 @@ export function LogCard({ log }: Props) {
                 <ABCStep
                     char="C"
                     title={log.consequence}
-                    label="Consequence"
+                    label="반응·결과"
                     desc="보호자의 대처"
                     color="bg-purple-500"
                 />
@@ -106,7 +106,7 @@ export function LogCard({ log }: Props) {
                             <Sparkles className="w-5 h-5 text-brand-lime" />
                         </div>
                         <div>
-                            <div className="text-[10px] font-black text-brand-lime uppercase tracking-[0.2em] mb-1">TailLog AI Coach</div>
+                            <div className="text-[10px] font-black text-brand-lime uppercase tracking-[0.2em] mb-1">TailLog 코치</div>
                             <p className="text-xs font-bold text-gray-700 leading-relaxed break-keep">
                                 {log.aiComment}
                             </p>
