@@ -10,13 +10,13 @@ function getApiBaseUrl(): string {
     process.env.NEXT_PUBLIC_API_BASE_URL ||
     "";
 
-  const trimmed = raw.trim().replace(/\/+$/, "");
+  let trimmed = raw.trim().replace(/\/+$/, "");
 
-  // Prevent Mixed Content: if the page is HTTPS, force the API base URL to HTTPS too.
-  if (typeof window !== "undefined" && window.location?.protocol === "https:") {
-    if (trimmed.startsWith("http://")) {
-      return `https://${trimmed.slice("http://".length)}`;
-    }
+  // CRITICAL: Always enforce HTTPS to prevent Mixed Content errors
+  // This must run on both SSR and client side
+  if (trimmed.startsWith("http://")) {
+    trimmed = `https://${trimmed.slice("http://".length)}`;
+    console.warn(`[API] Forced HTTP → HTTPS: ${trimmed}`);
   }
 
   return trimmed;
