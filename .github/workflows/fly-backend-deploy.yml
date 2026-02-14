@@ -26,6 +26,14 @@ jobs:
       - name: Setup flyctl
         uses: superfly/flyctl-actions/setup-flyctl@v1
 
+      - name: Debug backend context
+        working-directory: Backend
+        run: |
+          pwd
+          ls -la
+          test -f requirements.txt
+          echo "requirements.txt exists"
+
       - name: Deploy to Fly
         working-directory: Backend
         run: flyctl deploy --config fly.toml --remote-only
