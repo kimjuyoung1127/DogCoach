@@ -153,7 +153,7 @@ export function MissionActionOverlay({ isOpen, curriculumId, dogId, mission, onC
                                                     </Button>
                                                 </ScaleButton>
                                             )}
-                                            <ScaleButton asChild className={currentStep === 0 ? "w-full" : "flex-[2]"}>
+                                            <ScaleButton asChild className={currentStep === 0 ? "w-full" : "flex-[2] min-w-0"}>
                                                 <Button
                                                     onClick={handleConfirmSwap}
                                                     disabled={isPending || swapping}
@@ -166,8 +166,8 @@ export function MissionActionOverlay({ isOpen, curriculumId, dogId, mission, onC
                                                         </motion.div>
                                                     ) : (
                                                         <>
-                                                            {currentStep === totalSteps - 1 ? `${planLabel}로 미션 완료` : `${planLabel}로 진행하고 다음 단계`}
-                                                            <ArrowRight className="w-5 h-5" />
+                                                            <span className="truncate">{currentStep === totalSteps - 1 ? `${planLabel}로 완료` : `${planLabel}로 다음`}</span>
+                                                            <ArrowRight className="w-5 h-5 shrink-0" />
                                                         </>
                                                     )}
                                                 </Button>
@@ -183,10 +183,10 @@ export function MissionActionOverlay({ isOpen, curriculumId, dogId, mission, onC
                                                     </Button>
                                                 </ScaleButton>
                                             )}
-                                            <ScaleButton asChild className={currentStep === 0 ? "w-full" : "flex-[2]"}>
+                                            <ScaleButton asChild className={currentStep === 0 ? "w-full" : "flex-[2] min-w-0"}>
                                                 <Button onClick={handleNext} disabled={swapping || isPending} variant="brand" className="w-full rounded-2xl py-6 text-lg font-black gap-2 shadow-xl shadow-brand-lime/20">
-                                                    {currentStep === totalSteps - 1 ? "미션 완료" : "다음 단계로"}
-                                                    <ArrowRight className="w-5 h-5" />
+                                                    <span className="truncate">{currentStep === totalSteps - 1 ? "미션 완료" : "다음 단계로"}</span>
+                                                    <ArrowRight className="w-5 h-5 shrink-0" />
                                                 </Button>
                                             </ScaleButton>
                                         </>
