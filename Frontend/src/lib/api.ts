@@ -51,6 +51,11 @@ async function request<T>(
     throw new Error(text || `HTTP ${res.status}`);
   }
 
+  // Handle 204 No Content (empty response from DELETE)
+  if (res.status === 204) {
+    return undefined as T;
+  }
+
   return (await res.json()) as T;
 }
 
