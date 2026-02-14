@@ -1,0 +1,32 @@
+name: Deploy dogcoach-api to Fly.io
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "Backend/**"
+      - ".github/workflows/fly-backend-deploy.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: fly-backend-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@v1
+
+      - name: Deploy to Fly
+        run: flyctl deploy --config Backend/fly.toml --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
