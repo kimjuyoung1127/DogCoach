@@ -1,5 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.datastructures import Headers
 from app.core.config import settings
 from app.features.auth.router import router as auth_router
 from app.features.onboarding.router import router as onboarding_router
@@ -9,6 +12,19 @@ app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
+
+# Trust Fly.io proxy headers (X-Forwarded-Proto) for HTTPS redirects
+class ProxyHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        # Fly.io sets X-Forwarded-Proto header
+        forwarded_proto = request.headers.get("x-forwarded-proto")
+        if forwarded_proto == "https":
+            # Override request.url.scheme so FastAPI generates HTTPS URLs in redirects
+            request.scope["scheme"] = "https"
+        response = await call_next(request)
+        return response
+
+app.add_middleware(ProxyHeadersMiddleware)
 
 # Register Global Exception Handlers
 app.add_exception_handler(DomainException, domain_exception_handler)
