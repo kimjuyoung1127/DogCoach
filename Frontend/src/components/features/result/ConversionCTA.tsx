@@ -5,8 +5,17 @@ import { motion } from "framer-motion";
 import { MessageCircle, Download, Sparkles } from "lucide-react";
 import { supabase } from '@/lib/supabase';
 
-export function ConversionCTA() {
+interface ConversionCTAProps {
+    isAuthenticated: boolean;
+}
+
+export function ConversionCTA({ isAuthenticated }: ConversionCTAProps) {
     const [loading, setLoading] = useState(false);
+
+    // Hide CTA if user is already authenticated
+    if (isAuthenticated) {
+        return null;
+    }
 
     const handleKakaoLogin = async () => {
         try {
@@ -14,7 +23,7 @@ export function ConversionCTA() {
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'kakao',
                 options: {
-                    redirectTo: `${window.location.origin}/auth/callback`,
+                    redirectTo: `${window.location.origin}/auth/callback?returnTo=/result`,
                 },
             });
 
