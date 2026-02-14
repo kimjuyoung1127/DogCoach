@@ -1,70 +1,54 @@
 'use client';
 
-import { useState } from 'react';
 import { SubscriptionSection } from '@/components/features/settings/SubscriptionSection';
 import { NotificationSection } from '@/components/features/settings/NotificationSection';
 import { AccountSection } from '@/components/features/settings/AccountSection';
 import { AiPreferenceSettings } from '@/components/features/settings/AiPreferenceSettings';
 import { DataSection } from '@/components/features/settings/DataSection';
 import { AppInfoSection } from '@/components/features/settings/AppInfoSection';
-import { UserSettings, Subscription, UserProfile } from '@/lib/types';
+import { PremiumBackground } from '@/components/shared/ui/PremiumBackground';
+import { useAuth } from '@/hooks/useAuth';
+import { useUserProfile } from '@/hooks/useQueries';
 
-// Mock Data for Initial State
-const MOCK_SUBSCRIPTION: Subscription = {
-    id: 'sub-1',
-    user_id: 'user-1',
-    plan_type: 'FREE',
+// Default settings structure for when backend is ready
+const DEFAULT_NOTIFICATION_PREF = {
+    channels: { alimtalk: true, push: true, email: false },
+    types: { reminder: true, weekly_report: true, marketing: false },
+    quiet_hours: { enabled: false, start: '22:00', end: '07:00' },
+    remind_time: '20:00'
+};
+
+const DEFAULT_AI_PERSONA = {
+    tone: 'EMPATHETIC' as const,
+    perspective: 'COACH' as const
+};
+
+const DEFAULT_SUBSCRIPTION = {
+    id: '',
+    user_id: '',
+    plan_type: 'FREE' as const,
     is_active: false,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
 };
 
-const MOCK_SETTINGS: UserSettings = {
-    id: 'set-1',
-    user_id: 'user-1',
-    notification_pref: {
-        channels: { alimtalk: true, push: true, email: false },
-        types: { reminder: true, weekly_report: true, marketing: false },
-        quiet_hours: { enabled: false, start: '22:00', end: '07:00' },
-        remind_time: '20:00'
-    },
-    ai_persona: {
-        tone: 'EMPATHETIC',
-        perspective: 'COACH'
-    },
-    marketing_agreed: false,
-    updated_at: new Date().toISOString()
-};
-
-const MOCK_USER: UserProfile = {
-    id: 'user-1',
-    role: 'USER',
-    status: 'ACTIVE',
-    timezone: 'Asia/Seoul',
-    phone_number: '010-1234-5678',
-    provider: 'kakao',
-    created_at: new Date().toISOString()
-};
-
-import { PremiumBackground } from '@/components/shared/ui/PremiumBackground';
-
 export default function SettingsPage() {
-    const [settings, setSettings] = useState<UserSettings>(MOCK_SETTINGS);
-    const [subscription, setSubscription] = useState<Subscription>(MOCK_SUBSCRIPTION);
-    const [user, setUser] = useState<UserProfile>(MOCK_USER);
+    const { token } = useAuth();
+    const { data: userProfile } = useUserProfile(token);
 
-    const handleSettingsUpdate = (key: keyof UserSettings, value: any) => {
-        setSettings(prev => ({ ...prev, [key]: value }));
-        console.log('Settings Updated:', key, value);
-    };
+    // TODO: Add useUserSettings hook when backend is ready
+    // const { data: userSettings } = useUserSettings(token);
+    // TODO: Add useSubscription hook when backend is ready
+    // const { data: subscription } = useSubscription(token);
 
-    const handlePhoneUpdate = async (phone: string) => {
-        await new Promise(r => setTimeout(r, 500));
-        setUser(prev => ({ ...prev, phone_number: phone }));
+    const handleSettingsUpdate = (key: string, value: any) => {
+        // TODO: Implement API mutation when backend is ready
+        console.log('Settings will be updated via API:', key, value);
     };
 
     const handleTimezoneUpdate = async (tz: string) => {
-        setUser(prev => ({ ...prev, timezone: tz }));
+        // TODO: Implement API mutation when backend is ready
+        console.log('Timezone will be updated via API:', tz);
     };
 
     return (
@@ -85,9 +69,9 @@ export default function SettingsPage() {
                 {/* 1. 멤버십 (Bento Card) */}
                 <section id="subscription" className="transition-all hover:translate-y-[-2px] duration-500">
                     <SubscriptionSection
-                        subscription={subscription}
-                        onUpgrade={() => console.log('Upgrade clicked')}
-                        onManageSubscription={() => console.log('Manage clicked')}
+                        subscription={DEFAULT_SUBSCRIPTION}
+                        onUpgrade={() => console.log('구독 준비 중')}
+                        onManageSubscription={() => console.log('구독 관리 준비 중')}
                     />
                 </section>
 
@@ -96,7 +80,7 @@ export default function SettingsPage() {
                     {/* 2. 알림 */}
                     <section id="notifications">
                         <NotificationSection
-                            settings={settings.notification_pref}
+                            settings={DEFAULT_NOTIFICATION_PREF}
                             onUpdate={(newPref) => handleSettingsUpdate('notification_pref', newPref)}
                         />
                     </section>
@@ -104,8 +88,7 @@ export default function SettingsPage() {
                     {/* 3. 계정 */}
                     <section id="account">
                         <AccountSection
-                            user={user}
-                            onUpdatePhone={handlePhoneUpdate}
+                            timezone={userProfile?.timezone || 'Asia/Seoul'}
                             onUpdateTimezone={handleTimezoneUpdate}
                         />
                     </section>
@@ -113,14 +96,14 @@ export default function SettingsPage() {
                     {/* 4. AI 설정 */}
                     <section id="ai-preference">
                         <AiPreferenceSettings
-                            preference={settings.ai_persona}
+                            preference={DEFAULT_AI_PERSONA}
                             onUpdate={(newPersona) => handleSettingsUpdate('ai_persona', newPersona)}
                         />
                     </section>
 
                     {/* 5. 데이터 */}
                     <section id="data">
-                        <DataSection isPro={subscription.plan_type !== 'FREE'} />
+                        <DataSection isPro={false} />
                     </section>
 
                     {/* 6. 앱 정보 */}

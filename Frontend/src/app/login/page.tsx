@@ -4,6 +4,9 @@ import { supabase } from '@/lib/supabase';
 import { apiClient } from '@/lib/api';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { PremiumBackground } from '@/components/shared/ui/PremiumBackground';
+import { motion } from 'framer-motion';
+import { Sparkles } from 'lucide-react';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -61,30 +64,66 @@ export default function LoginPage() {
 
     if (checking) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
-                <div className="w-8 h-8 border-4 border-brand-lime border-t-transparent rounded-full animate-spin" />
+            <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+                <PremiumBackground />
+                <div className="relative z-10 w-8 h-8 border-4 border-brand-lime border-t-transparent rounded-full animate-spin" />
             </div>
         );
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
-            <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-6 shadow-xl text-center">
-                <h2 className="text-3xl font-bold tracking-tight text-gray-900">
-                    Welcome to DogCoach
-                </h2>
-                <p className="text-gray-500">
-                    Sign in to start your journey with your furry friend.
-                </p>
+        <div className="relative flex min-h-screen items-center justify-center p-4">
+            <PremiumBackground />
 
-                <div className="mt-8">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="relative z-10 w-full max-w-md space-y-8"
+            >
+                {/* Logo & Title */}
+                <div className="text-center space-y-4">
+                    <motion.div
+                        initial={{ scale: 0.8 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                        className="inline-flex items-center gap-2 mb-6"
+                    >
+                        <div className="w-12 h-12 rounded-2xl bg-brand-lime flex items-center justify-center shadow-lg">
+                            <span className="text-2xl">🐶</span>
+                        </div>
+                    </motion.div>
+
+                    <h1 className="text-4xl font-black text-gray-900 tracking-tight">
+                        Tail<span className="text-brand-lime">Log</span>
+                    </h1>
+
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-white/80 shadow-sm">
+                        <Sparkles className="w-4 h-4 text-brand-lime" />
+                        <p className="text-sm font-bold text-gray-700">
+                            AI 기반 반려견 행동 교정 솔루션
+                        </p>
+                    </div>
+                </div>
+
+                {/* Login Card */}
+                <div className="glass p-8 rounded-[2.5rem] border border-white/60 shadow-xl ring-1 ring-black/5 space-y-6">
+                    <div className="text-center space-y-2">
+                        <h2 className="text-2xl font-black text-gray-900">
+                            시작하기
+                        </h2>
+                        <p className="text-sm font-bold text-gray-500">
+                            Google 계정으로 간편하게 시작하세요
+                        </p>
+                    </div>
+
                     <button
                         onClick={handleGoogleLogin}
                         disabled={loading}
-                        className="flex w-full items-center justify-center gap-3 rounded-lg bg-white px-4 py-3 text-gray-700 shadow-md ring-1 ring-gray-200 transition-all hover:bg-gray-50 hover:ring-gray-300 disabled:opacity-70"
+                        className="flex w-full items-center justify-center gap-3 rounded-2xl bg-white px-6 py-4 text-gray-700 shadow-md ring-1 ring-gray-200 transition-all hover:bg-gray-50 hover:ring-gray-300 hover:shadow-lg active:scale-[0.98] disabled:opacity-70 font-bold"
                     >
                         {loading ? (
-                            <span>Loading...</span>
+                            <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
                         ) : (
                             <>
                                 <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -105,12 +144,18 @@ export default function LoginPage() {
                                         fill="#EA4335"
                                     />
                                 </svg>
-                                <span className="font-medium">Sign in with Google</span>
+                                <span>Google로 시작하기</span>
                             </>
                         )}
                     </button>
+
+                    <div className="pt-4 border-t border-gray-100">
+                        <p className="text-[10px] font-bold text-gray-400 text-center leading-relaxed">
+                            로그인 시 개인정보 처리방침 및 서비스 이용약관에 동의하게 됩니다
+                        </p>
+                    </div>
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 }

@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 
 export function SubscriptionSection({ subscription, onUpgrade, onManageSubscription }: Props) {
     const isPro = subscription?.plan_type === 'PRO_MONTHLY' || subscription?.plan_type === 'PRO_YEARLY';
+    const contestMode = process.env.NEXT_PUBLIC_ENABLE_PRO_FEATURES === 'true';
 
     return (
         <div className="space-y-6">
@@ -89,26 +90,41 @@ export function SubscriptionSection({ subscription, onUpgrade, onManageSubscript
                                     ))}
                                 </div>
 
-                                <button
-                                    onClick={onUpgrade}
-                                    className="w-full bg-gray-900 text-white p-5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 active:scale-[0.98] transition-all hover:bg-black hover:shadow-xl hover:shadow-black/20 group/btn"
-                                >
-                                    지금 Pro 시작하기 (7일 무료)
-                                    <div className="w-8 h-8 bg-brand-lime rounded-full flex items-center justify-center group-hover/btn:scale-110 transition-transform">
-                                        <Crown className="w-4 h-4 text-gray-900 fill-current" />
+{contestMode ? (
+                                    <div className="p-6 bg-brand-lime/10 border-2 border-brand-lime/30 rounded-2xl">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="px-2 py-1 bg-brand-lime text-gray-900 rounded text-[9px] font-black uppercase">
+                                                공모전 시연 모드
+                                            </div>
+                                        </div>
+                                        <p className="text-xs font-bold text-gray-600 leading-relaxed">
+                                            심사용 데모 환경입니다. 실제 구독 기능은 사업자 등록 및 결제 모듈 연동 후 활성화됩니다.
+                                        </p>
                                     </div>
-                                </button>
+                                ) : (
+                                    <>
+                                        <button
+                                            onClick={onUpgrade}
+                                            className="w-full bg-gray-900 text-white p-5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 active:scale-[0.98] transition-all hover:bg-black hover:shadow-xl hover:shadow-black/20 group/btn"
+                                        >
+                                            지금 Pro 시작하기 (7일 무료)
+                                            <div className="w-8 h-8 bg-brand-lime rounded-full flex items-center justify-center group-hover/btn:scale-110 transition-transform">
+                                                <Crown className="w-4 h-4 text-gray-900 fill-current" />
+                                            </div>
+                                        </button>
 
-                                <div className="flex gap-2 p-2 bg-white/30 backdrop-blur-sm rounded-2xl border border-white/60 focus-within:ring-2 focus-within:ring-brand-lime/30 transition-all">
-                                    <input
-                                        type="text"
-                                        placeholder="초대/프로모션 코드"
-                                        className="flex-1 px-4 bg-transparent text-xs font-bold focus:outline-none placeholder:text-gray-400"
-                                    />
-                                    <button className="px-4 py-2 bg-white/50 text-gray-500 rounded-xl text-xs font-black hover:bg-white hover:text-gray-900 transition-all">
-                                        적용
-                                    </button>
-                                </div>
+                                        <div className="flex gap-2 p-2 bg-white/30 backdrop-blur-sm rounded-2xl border border-white/60 focus-within:ring-2 focus-within:ring-brand-lime/30 transition-all">
+                                            <input
+                                                type="text"
+                                                placeholder="초대/프로모션 코드"
+                                                className="flex-1 px-4 bg-transparent text-xs font-bold focus:outline-none placeholder:text-gray-400"
+                                            />
+                                            <button className="px-4 py-2 bg-white/50 text-gray-500 rounded-xl text-xs font-black hover:bg-white hover:text-gray-900 transition-all">
+                                                적용
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         )}
                     </div>

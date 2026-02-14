@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { DashboardHeader } from "@/components/features/dashboard/DashboardHeader";
 import { EditLogDialog } from "@/components/features/dashboard/EditLogDialog";
+import { CreateLogDialog } from "@/components/features/dashboard/CreateLogDialog";
 import { MainDashboardTab } from "@/components/features/dashboard/MainDashboardTab";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -16,18 +17,33 @@ import { useDashboardData } from "@/hooks/useQueries";
 
 import { PremiumBackground } from "@/components/shared/ui/PremiumBackground";
 
-export default function DashboardPage() {
+function DashboardContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { token } = useAuth();
     const [editingLog, setEditingLog] = useState<any | null>(null);
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
     const { data, isLoading, error, refetch } = useDashboardData(!!token, token);
+
+    // Detect openDetailLog query parameter
+    useEffect(() => {
+        if (searchParams.get('openDetailLog') === '1') {
+            setIsCreateDialogOpen(true);
+        }
+    }, [searchParams]);
 
     const handleLogCreated = (newLog?: any) => {
         // Cache invalidation handled by useCreateLog.onSettled
         if (newLog) {
             setEditingLog(newLog);
         }
+    };
+
+    const handleCreateSuccess = () => {
+        setIsCreateDialogOpen(false);
+        // Remove query parameter after successful creation
+        router.replace('/dashboard');
     };
 
     const handleLogUpdated = () => {
@@ -97,6 +113,32 @@ export default function DashboardPage() {
                     />
                 )}
             </AnimatePresence>
+
+            {/* Create Log Dialog */}
+            <AnimatePresence>
+                {isCreateDialogOpen && (
+                    <CreateLogDialog
+                        key="create-log-dialog"
+                        open={isCreateDialogOpen}
+                        onClose={() => {
+                            setIsCreateDialogOpen(false);
+                            router.replace('/dashboard');
+                        }}
+                        onCreate={handleCreateSuccess}
+                        envTriggers={data.env_triggers || []}
+                        envConsequences={data.env_consequences || []}
+                        dogId={data.dog_profile.id}
+                    />
+                )}
+            </AnimatePresence>
         </div>
+    );
+}
+
+export default function DashboardPage() {
+    return (
+        <Suspense fallback={<DashboardSkeleton />}>
+            <DashboardContent />
+        </Suspense>
     );
 }

@@ -12,7 +12,7 @@ export function BottomNav() {
     const navItems = [
         { href: "/dashboard", label: "홈", icon: Home },
         { href: "/log", label: "기록", icon: FileText },
-        { href: "/quick-log", label: "빠른 기록", icon: Plus, isFab: true }, // FAB
+        { href: "/dashboard?openDetailLog=1", label: "빠른 기록", icon: Plus, isFab: true }, // FAB
         { href: "/coach", label: "코칭", icon: BrainCircuit },
         { href: "/settings", label: "설정", icon: Settings },
     ];
@@ -26,7 +26,8 @@ export function BottomNav() {
         >
             <div className="flex items-end justify-between px-6 h-16 max-w-md mx-auto relative">
                 {navItems.map((item) => {
-                    const isActive = pathname === item.href;
+                    const itemPath = item.href.split("?")[0];
+                    const isActive = pathname === itemPath;
                     const Icon = item.icon;
 
                     if (item.isFab) {
@@ -51,7 +52,7 @@ export function BottomNav() {
                                 isActive ? "text-brand-lime" : "text-gray-400 hover:text-gray-600"
                             )}
                         >
-                            <Icon className="w-6 h-6 mb-1" strokeWidth={isActive ? 2.5 : 2} />
+                            <Icon className={cn("w-6 h-6 mb-1", item.label === "코칭" && "rotate-45")} strokeWidth={isActive ? 2.5 : 2} />
                             <span className="text-[10px] font-medium">{item.label}</span>
                         </Link>
                     );

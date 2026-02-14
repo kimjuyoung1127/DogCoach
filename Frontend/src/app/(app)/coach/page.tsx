@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ChallengeJourneyMap } from "@/components/features/coach/ChallengeJourneyMap";
 import { MissionActionOverlay } from "@/components/features/coach/MissionActionOverlay";
-import { Trophy, Zap, ChevronRight, BookOpen, Sparkles, CheckCircle2 } from "lucide-react";
+import { Zap, ChevronRight, BookOpen, Sparkles, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TRAINING_CURRICULUM, TrainingStage, mapIssueToCurriculum } from "@/data/curriculum";
 import { cn } from "@/lib/utils";
@@ -27,8 +27,6 @@ export default function CoachPage() {
     const { data: dashboardData } = useDashboardData(!!token, token);
     const dogId = dashboardData?.dog_profile?.id;
 
-    const [xp, setXp] = useState(300);
-    const [level] = useState(3);
     const [currentCourseId, setCurrentCourseId] = useState<string>(TRAINING_CURRICULUM[0].id);
     const [currentDay] = useState(1);
     const [selectedMission, setSelectedMission] = useState<TrainingStage | null>(null);
@@ -53,9 +51,6 @@ export default function CoachPage() {
 
     const handleMissionComplete = (reaction: string) => {
         setSelectedMission(null);
-        if (reaction) {
-            setXp((prev) => prev + 100);
-        }
 
         // Keep post-completion navigation consistent with entry source.
         if (entrySource === "log") {
@@ -66,38 +61,17 @@ export default function CoachPage() {
     return (
         <div className="min-h-screen bg-gray-50 pb-32">
             <header className="bg-white/80 backdrop-blur-md p-6 border-b border-gray-100 sticky top-0 z-30">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex flex-col">
-                        <h1 className="text-2xl font-black text-gray-900 leading-tight">훈련 아카데미</h1>
-                        {shouldHighlight && (
-                            <motion.span
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                className="text-[10px] font-black text-brand-lime-darker tracking-tight"
-                            >
-                                {dashboardData?.dog_profile.name} 맞춤 과정이 추천되었습니다.
-                            </motion.span>
-                        )}
-                    </div>
-                    <div className="flex items-center gap-1.5 text-brand-lime font-black bg-brand-lime/10 px-3 py-1 rounded-full text-xs shadow-sm ring-1 ring-brand-lime/20">
-                        <Trophy className="w-3.5 h-3.5" />
-                        <span>Level {level}</span>
-                    </div>
-                </div>
-
-                <div className="space-y-1.5">
-                    <div className="flex justify-between text-[10px] text-gray-400 font-black uppercase tracking-wider">
-                        <span>보호자 레벨</span>
-                        <span>{xp} / 500 XP</span>
-                    </div>
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden shadow-inner">
-                        <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${(xp / 500) * 100}%` }}
-                            transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                            className="h-full bg-brand-lime rounded-full shadow-[0_0_8px_rgba(74,222,128,0.5)]"
-                        />
-                    </div>
+                <div className="flex flex-col">
+                    <h1 className="text-2xl font-black text-gray-900 leading-tight">훈련 아카데미</h1>
+                    {shouldHighlight && (
+                        <motion.span
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="text-[10px] font-black text-brand-lime-darker tracking-tight"
+                        >
+                            {dashboardData?.dog_profile.name} 맞춤 과정이 추천되었습니다.
+                        </motion.span>
+                    )}
                 </div>
             </header>
 

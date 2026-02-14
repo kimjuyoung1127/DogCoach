@@ -58,7 +58,7 @@ export function Sidebar() {
             <nav className="flex-1 p-4 space-y-1">
                 {/* Quick Action */}
                 <Link
-                    href="/quick-log"
+                    href="/dashboard?openDetailLog=1"
                     className="flex items-center gap-3 px-4 py-3 mb-6 bg-brand-lime/10 text-brand-lime rounded-xl hover:bg-brand-lime/20 transition-colors font-bold"
                 >
                     <Plus className="w-5 h-5" />
@@ -80,7 +80,7 @@ export function Sidebar() {
                                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                             )}
                         >
-                            <Icon className="w-5 h-5" />
+                            <Icon className={cn("w-5 h-5", item.label === "AI 코칭" && "rotate-45")} />
                             <span className="text-sm font-medium">{item.label}</span>
                         </Link>
                     );

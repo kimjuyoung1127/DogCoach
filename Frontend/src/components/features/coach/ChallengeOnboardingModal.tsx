@@ -33,7 +33,7 @@ export function ChallengeOnboardingModal({ isOpen, onStart }: ChallengeOnboardin
                 <div className="p-10 text-center bg-gradient-to-b from-brand-lime/10 to-white">
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-lime text-white rounded-full text-[10px] font-black uppercase tracking-widest mb-4 shadow-sm">
                         <Sparkles className="w-3 h-3" />
-                        Personalized Challenge
+                        맞춤형 훈련
                     </div>
                     <h2 className="text-3xl font-black text-gray-900 mb-2 break-keep leading-tight">추천 훈련 바로 시작,<br />원하는 Day는 자유 선택</h2>
                     <p className="text-sm text-gray-500 font-medium break-keep">Day 1부터 시작해도 좋고, 필요한 미션부터 골라도 됩니다.</p>
@@ -76,7 +76,7 @@ export function ChallengeOnboardingModal({ isOpen, onStart }: ChallengeOnboardin
                                 )}>
                                     <step.icon className={cn("w-6 h-6", step.recommended ? "stroke-[2.5]" : "stroke-[1.8]")} />
                                 </div>
-                                <span className="text-[10px] font-black tracking-tighter">DAY {step.day}</span>
+                                <span className="text-[10px] font-black tracking-tighter">{step.day}일차</span>
                                 {step.recommended && (
                                     <span className="text-[8px] font-black uppercase tracking-widest text-brand-lime">추천 시작</span>
                                 )}

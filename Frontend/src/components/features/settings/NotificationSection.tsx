@@ -54,12 +54,24 @@ export function NotificationSection({ settings, onUpdate }: Props) {
                 <div className="glass p-8 rounded-[2.5rem] border border-white/60 shadow-sm transition-all hover:shadow-md ring-1 ring-black/5">
                     <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6">Delivery Channels</h3>
                     <div className="space-y-4">
-                        <SmoothToggle
-                            label="카카오 알림톡"
-                            description="AI 분석 보고서 및 긴급 미션"
-                            checked={settings.channels.alimtalk}
-                            onCheckedChange={(v) => handleChannelChange('alimtalk', v)}
-                        />
+                        <div className="opacity-50 pointer-events-none">
+                            <div className="flex items-center justify-between p-6 bg-white/40 backdrop-blur-sm rounded-[2rem] border border-white/60 shadow-inner">
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-black text-gray-900">카카오 알림톡</span>
+                                        <div className="px-2 py-0.5 bg-gray-200 text-gray-600 rounded text-[9px] font-black uppercase">
+                                            준비중
+                                        </div>
+                                    </div>
+                                    <span className="text-[10px] font-bold text-gray-500">
+                                        카카오 연동 준비 중입니다. 사업자 등록/채널 승인 후 사용 가능합니다.
+                                    </span>
+                                </div>
+                                <div className="w-12 h-6 bg-gray-100 border border-gray-200 rounded-full relative">
+                                    <div className="absolute top-[4px] left-[4px] bg-white rounded-full h-4 w-4 shadow-sm"></div>
+                                </div>
+                            </div>
+                        </div>
                         <SmoothToggle
                             label="앱 푸시"
                             description="데일리 기록 리마인더 및 응원"

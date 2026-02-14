@@ -1,16 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { translate } from "@/lib/localization";
-import { RecentLog } from "./types";
 import { useAuth } from "@/hooks/useAuth";
-import { useUpdateLog } from "@/hooks/useQueries";
-import { Check, X, Info, Sparkles, Calendar, Clock, RotateCcw } from "lucide-react";
+import { useCreateLog } from "@/hooks/useQueries";
+import { X, Info, Sparkles, Calendar, Clock, RotateCcw } from "lucide-react";
 
 interface Props {
-    log: RecentLog | null;
     open: boolean;
     onClose: () => void;
-    onUpdate: () => void;
+    onCreate: () => void;
     envTriggers: string[];
     envConsequences: string[];
     dogId: string;
@@ -29,34 +27,20 @@ const TagChip = ({ label, selected, onClick }: { label: string, selected: boolea
     </button>
 );
 
-export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envConsequences, dogId }: Props) => {
+export const CreateLogDialog = ({ open, onClose, onCreate, envTriggers, envConsequences, dogId }: Props) => {
     const { token } = useAuth();
-    const { mutate: updateLog, isPending } = useUpdateLog(dogId, token);
+    const { mutate: createLog, isPending } = useCreateLog(dogId, token);
 
+    // Initialize with default values
+    const now = new Date();
+    const [behavior, setBehavior] = useState<string>("기타");
     const [intensity, setIntensity] = useState<number>(5);
     const [antecedent, setAntecedent] = useState<string>("");
     const [consequence, setConsequence] = useState<string>("");
-    const [occurredAtDate, setOccurredAtDate] = useState<string>("");
-    const [occurredAtTime, setOccurredAtTime] = useState<string>("");
+    const [occurredAtDate, setOccurredAtDate] = useState<string>(now.toISOString().split('T')[0]);
+    const [occurredAtTime, setOccurredAtTime] = useState<string>(now.toTimeString().split(' ')[0].substring(0, 5));
 
-    // Initialize state when log changes
-    useEffect(() => {
-        if (log) {
-            setIntensity(log.intensity || 5);
-            setAntecedent(log.antecedent || "");
-            setConsequence(log.consequence || "");
-
-            // Handle ISO string to split date and time for inputs
-            const dt = new Date(log.occurred_at);
-            const dateStr = dt.toISOString().split('T')[0];
-            const timeStr = dt.toTimeString().split(' ')[0].substring(0, 5); // HH:mm
-
-            setOccurredAtDate(dateStr);
-            setOccurredAtTime(timeStr);
-        }
-    }, [log]);
-
-    if (!open || !log) return null;
+    if (!open) return null;
 
     const handleSave = () => {
         if (!token) return;
@@ -64,20 +48,18 @@ export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envCo
         // Combine date and time
         const combinedDateTime = new Date(`${occurredAtDate}T${occurredAtTime}`).toISOString();
 
-        updateLog({
-            logId: log.id,
-            data: {
-                intensity,
-                antecedent,
-                consequence,
-                occurred_at: combinedDateTime
-            }
+        createLog({
+            behavior,
+            intensity,
+            antecedent,
+            consequence,
+            occurred_at: combinedDateTime
         }, {
             onSuccess: () => {
-                onUpdate();
+                onCreate();
             },
             onError: (error) => {
-                alert("수정 실패: " + error.message);
+                alert("생성 실패: " + error.message);
             }
         });
     };
@@ -184,7 +166,7 @@ export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envCo
                         />
                     </div>
 
-                    {/* Behavior Section (Read-only/Refinable) */}
+                    {/* Behavior Section */}
                     <div className="bg-gradient-to-br from-brand-lime/10 to-brand-lime/5 p-4 rounded-2xl border border-brand-lime/10 relative overflow-hidden group">
                         <div className="absolute -right-4 -top-4 w-16 h-16 bg-white/40 rounded-full blur-xl" />
 
@@ -195,7 +177,13 @@ export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envCo
                             </div>
                         </div>
 
-                        <div className="text-base font-black text-gray-900 mb-2 relative z-10 px-1">{log.behavior}</div>
+                        <input
+                            type="text"
+                            placeholder="행동을 입력해주세요..."
+                            value={behavior}
+                            onChange={(e) => setBehavior(e.target.value)}
+                            className="w-full text-base font-black text-gray-900 mb-2 relative z-10 px-1 bg-transparent border-b-2 border-gray-200 focus:border-brand-lime focus:outline-none transition-colors"
+                        />
 
                         <input
                             type="range"
@@ -244,7 +232,7 @@ export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envCo
                     disabled={isSaving}
                     className="w-full py-3.5 bg-gray-900 text-brand-lime font-black rounded-2xl active:scale-95 transition-all shadow-xl shadow-gray-200 disabled:opacity-50 text-sm"
                 >
-                    {isSaving ? "저장 중..." : "수정 완료"}
+                    {isSaving ? "저장 중..." : "기록 완료"}
                 </button>
             </motion.div>
         </motion.div>
