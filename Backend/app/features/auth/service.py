@@ -17,6 +17,30 @@ async def get_my_profile(db: AsyncSession, user_id: str) -> schemas.UserResponse
         # If user exists in Auth but not in public.users, they might need onboarding
         raise NotFoundException("User profile not found. Please complete onboarding.")
 
+    # Populate provider and kakao_sync_id from Supabase Auth
+    from app.core.security import supabase
+    try:
+        auth_user = supabase.auth.admin.get_user_by_id(str(uuid_obj))
+        if auth_user and auth_user.user:
+            identities = auth_user.user.identities or []
+
+            # First-time login: populate provider
+            if identities and not user.provider:
+                user.provider = identities[0].get('provider')  # 'kakao' or 'google'
+
+                # For Kakao: store kakao_sync_id
+                if user.provider == 'kakao' and not user.kakao_sync_id:
+                    identity_data = identities[0].get('identity_data', {})
+                    kakao_id = identity_data.get('sub') or identity_data.get('provider_id')
+                    if kakao_id:
+                        user.kakao_sync_id = str(kakao_id)
+
+                await db.commit()
+                await db.refresh(user)
+    except Exception as e:
+        # Best-effort: don't fail if provider population fails
+        print(f"Warning: Could not populate provider/kakao_sync_id: {e}")
+
     response = schemas.UserResponse.model_validate(user)
 
     # Fetch latest dog
@@ -60,3 +84,23 @@ async def migrate_guest_data(
         migrated_count=count,
         dog_ids=[str(did) for did in dog_ids]
     )
+
+
+
+async def delete_user_account(db: AsyncSession, user_id: str) -> None:
+    """
+    Permanently delete user and all related data via CASCADE.
+    """
+    try:
+        uuid_obj = UUID(user_id)
+    except ValueError:
+        raise BadRequestException("Invalid User ID format")
+
+    user = await repository.get_user_by_id(db, uuid_obj)
+
+    if not user:
+        raise NotFoundException("User not found")
+
+    await db.delete(user)
+    await db.commit()
+

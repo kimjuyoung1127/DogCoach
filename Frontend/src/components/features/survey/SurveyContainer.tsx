@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { PageTransition } from "@/components/ui/animations/PageTransition";
@@ -16,11 +16,13 @@ import { Step7Temperament } from "./Step7Temperament";
 import { SurveyControls } from "./SurveyControls";
 import { KakaoSyncModal } from "./KakaoSyncModal";
 import { SurveyLoading } from "./SurveyLoading";
-
+import { ValidationErrorModal } from "@/components/shared/modals/ValidationErrorModal";
 
 import { useAuth } from "@/hooks/useAuth";
 import { useSubmitSurvey } from "@/hooks/useQueries";
 import { mapSurveyDataToSubmission } from "./survey-mapper";
+import { saveSurveyState, restoreSurveyState, clearSurveyState } from "@/lib/survey-storage";
+import { supabase } from "@/lib/supabase";
 
 export function SurveyContainer() {
     const router = useRouter();
@@ -35,11 +37,26 @@ export function SurveyContainer() {
     // Loading State
     const [isAnalyzing, setIsAnalyzing] = useState(false);
 
+    // Validation Error Modal
+    const [validationErrors, setValidationErrors] = useState<string[]>([]);
+    const [showValidationModal, setShowValidationModal] = useState(false);
+
     const TOTAL_STEPS = 7;
     const IS_DEBUG = process.env.NODE_ENV === 'development';
 
     // Direction State for Transitions
     const [direction, setDirection] = useState<"forward" | "back">("forward");
+
+    // Restore survey state after OAuth redirect
+    useEffect(() => {
+        const restored = restoreSurveyState();
+        if (restored) {
+            setData(restored.data);
+            setStep(restored.currentStep);
+            setHasSeenKakaoModal(true);
+            clearSurveyState();
+        }
+    }, []);
 
     const updateData = (newData: Partial<SurveyData>) => {
         setData((prev) => ({ ...prev, ...newData }));
@@ -63,6 +80,14 @@ export function SurveyContainer() {
             setStep(step + 1);
             window.scrollTo({ top: 0, behavior: "smooth" });
         } else {
+            // Final validation before submission
+            const errors = validateAllRequiredFields(data);
+            if (errors.length > 0) {
+                setValidationErrors(errors);
+                setShowValidationModal(true);
+                return;
+            }
+
             // Survey Completed -> Start Analysis
             console.log("Survey Completed:", data);
             setIsAnalyzing(true);
@@ -93,13 +118,37 @@ export function SurveyContainer() {
         }
     };
 
-    const handleKakaoConfirm = () => {
-        alert("카카오 계정으로 저장되었습니다! (Mock Action)");
+    const handleKakaoConfirm = async () => {
+        try {
+            // 현재 설문 상태 저장
+            saveSurveyState(data, step);
 
-        setShowKakaoModal(false);
-        setHasSeenKakaoModal(true);
-        setDirection("forward");
-        proceedNext();
+            setShowKakaoModal(false);
+
+            // 카카오 OAuth 트리거
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'kakao',
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback?returnTo=/survey`,
+                },
+            });
+
+            if (error) {
+                console.error('Kakao OAuth error:', error);
+                alert('카카오 로그인 중 오류가 발생했습니다');
+                clearSurveyState();
+            }
+            // OAuth 리다이렉트 자동 발생
+        } catch (error) {
+            console.error('Kakao sync error:', error);
+            alert('카카오 로그인 연결에 실패했습니다');
+            clearSurveyState();
+
+            // Fallback: 로그인 없이 계속
+            setHasSeenKakaoModal(true);
+            setDirection("forward");
+            proceedNext();
+        }
     };
 
     const handleKakaoClose = () => {
@@ -136,6 +185,12 @@ export function SurveyContainer() {
                     onConfirm={handleKakaoConfirm}
                 />
 
+                <ValidationErrorModal
+                    isOpen={showValidationModal}
+                    onClose={() => setShowValidationModal(false)}
+                    errors={validationErrors}
+                />
+
                 {IS_DEBUG && (
                     <div className="absolute top-4 left-4 bg-red-100 text-red-600 px-2 py-1 rounded text-xs font-bold z-50 opacity-50 hover:opacity-100 transition-opacity cursor-pointer" onClick={() => setStep((s) => (s < TOTAL_STEPS ? s + 1 : 1))}>
                         🚧 DEBUG MODE ON (Click to Skip)
@@ -144,8 +199,8 @@ export function SurveyContainer() {
                 <SurveyProgress currentStep={step} totalSteps={TOTAL_STEPS} />
 
                 <div className="flex-1 container max-w-xl mx-auto px-4 relative flex flex-col items-center">
-                    <div className="w-full h-[720px] bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-2xl shadow-gray-200/50 border border-white/50 overflow-hidden flex flex-col">
-                        <div className="flex-1 overflow-y-auto no-scrollbar p-6 md:p-10 relative">
+                    <div className="w-full min-h-[720px] h-auto bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-2xl shadow-gray-200/50 border border-white/50 overflow-visible flex flex-col">
+                        <div className="flex-1 p-6 md:p-10 relative">
                             <PageTransition
                                 direction={direction}
                                 stepKey={step}
@@ -161,7 +216,7 @@ export function SurveyContainer() {
                             </PageTransition>
                         </div>
 
-                        <div className="p-6 md:p-10 pt-0">
+                        <div className="p-6 md:p-10 pt-2 md:pt-4">
                             <SurveyControls
                                 step={step}
                                 totalSteps={TOTAL_STEPS}
@@ -182,20 +237,49 @@ function validateStep(step: number, data: SurveyData, isDebug: boolean): boolean
 
     switch (step) {
         case 1:
-            return !!data.dogName && !!data.breed && !!data.sex && !!data.weight && !!data.adoptionDate;
+            // 필수: 이름 + 견종만 (나머지는 선택)
+            return !!data.dogName && !!data.breed;
         case 2:
-            return !!data.householdType && !!data.primaryCarer;
+            // 선택사항
+            return true;
         case 3:
+            // 선택사항
             return true;
         case 4:
+            // 필수: 최소 1개 이상의 행동 문제
             return data.chronicIssues.length > 0;
         case 5:
+            // 필수: 최소 1개 이상의 트리거
             return data.triggers.length > 0;
         case 6:
-            return data.pastAttempts.length > 0;
+            // 선택사항
+            return true;
         case 7:
-            return !!data.sensitivityScore;
+            // 선택사항
+            return true;
         default:
             return true;
     }
+}
+
+function validateAllRequiredFields(data: SurveyData): string[] {
+    const errors: string[] = [];
+
+    if (!data.dogName || data.dogName.trim() === '') {
+        errors.push('강아지 이름');
+    }
+
+    if (!data.breed) {
+        errors.push('견종 정보');
+    }
+
+    if (data.chronicIssues.length === 0) {
+        errors.push('주요 행동 문제 (최소 1개)');
+    }
+
+    if (data.triggers.length === 0) {
+        errors.push('문제 발생 상황 (최소 1개)');
+    }
+
+    return errors;
 }

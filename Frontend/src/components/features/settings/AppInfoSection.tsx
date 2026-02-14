@@ -1,7 +1,10 @@
 import { motion } from 'framer-motion';
 import { DownloadCloud, Shield, HelpCircle, FileText } from 'lucide-react';
+import { usePWAInstall } from '@/hooks/usePWAInstall';
+import { cn } from '@/lib/utils';
 
 export function AppInfoSection() {
+    const { isInstallable, isInstalled, promptInstall } = usePWAInstall();
     return (
         <div className="space-y-6">
             <div className="flex items-center gap-2 px-1">
@@ -24,9 +27,20 @@ export function AppInfoSection() {
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mt-1">Version 2.4.0 (Premium)</p>
                     </div>
 
-                    <button className="w-full bg-gray-900 text-white p-5 rounded-3xl font-black text-sm flex items-center justify-center gap-3 active:scale-[0.98] transition-all hover:bg-black hover:shadow-xl hover:shadow-black/20 group/btn">
-                        <DownloadCloud className="w-4 h-4 text-brand-lime" />
-                        홈 화면에 바로가기 설치
+                    <button
+                        onClick={promptInstall}
+                        disabled={!isInstallable || isInstalled}
+                        className={cn(
+                            "w-full p-5 rounded-3xl font-black text-sm flex items-center justify-center gap-3 transition-all",
+                            isInstalled
+                                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                : isInstallable
+                                    ? "bg-gray-900 text-white hover:bg-black hover:shadow-xl hover:shadow-black/20 active:scale-[0.98]"
+                                    : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        )}
+                    >
+                        <DownloadCloud className={cn("w-4 h-4", isInstalled || !isInstallable ? "text-gray-400" : "text-brand-lime")} />
+                        {isInstalled ? '이미 설치됨' : '홈 화면에 바로가기 설치'}
                     </button>
 
                     <div className="pt-4 border-t border-gray-100/50">

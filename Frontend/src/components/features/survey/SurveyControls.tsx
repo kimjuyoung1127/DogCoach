@@ -14,7 +14,7 @@ interface Props {
 
 export function SurveyControls({ step, totalSteps, onNext, onBack, canNext }: Props) {
     return (
-        <div className="w-full mt-8">
+        <div className="w-full mt-2 md:mt-4">
             <div className="flex items-center justify-between gap-4">
                 <motion.button
                     onClick={onBack}

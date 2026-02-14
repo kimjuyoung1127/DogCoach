@@ -5,5 +5,7 @@ export const QUERY_KEYS = {
   aiRecommendations: (dogId: string, windowDays: number) =>
     ["ai-recommendations", dogId, windowDays] as const,
   aiCostStatus: () => ["ai-cost-status"] as const,
+  userSettings: () => ["user-settings"] as const,
+  dogProfile: (dogId: string) => ["dog-profile", dogId] as const,
 };
 

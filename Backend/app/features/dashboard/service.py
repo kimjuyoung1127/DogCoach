@@ -80,6 +80,14 @@ async def get_dashboard_data(db: AsyncSession, dog_id: str, timezone_str: str = 
             else:
                 env_consequences = attempts_data
 
+    # Extract optional metadata from dog_env for completeness check
+    env_info = dog_env.household_info if dog_env else None
+    health_meta = dog_env.health_meta if dog_env else None
+    rewards_meta = dog_env.rewards_meta if dog_env else None
+    past_attempts_meta = dog_env.past_attempts if dog_env else None
+    temperament_meta = dog_env.temperament if dog_env else None
+    profile_meta = dog_env.profile_meta if dog_env else None
+
     # 2. Fetch Stats (Total Logs, Streak)
     # Total Logs
     count_query = select(func.count()).where(BehaviorLog.dog_id == dog_id)
@@ -141,5 +149,11 @@ async def get_dashboard_data(db: AsyncSession, dog_id: str, timezone_str: str = 
         recent_logs=recent_logs,
         issues=issues,
         env_triggers=env_triggers,
-        env_consequences=env_consequences
+        env_consequences=env_consequences,
+        env_info=env_info,
+        health_meta=health_meta,
+        rewards_meta=rewards_meta,
+        past_attempts=past_attempts_meta,
+        temperament=temperament_meta,
+        profile_meta=profile_meta
     )

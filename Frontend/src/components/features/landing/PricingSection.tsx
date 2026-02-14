@@ -9,24 +9,28 @@ const plans = [
     {
         name: "Free",
         price: "0",
-        description: "가볍게 시작하는 행동 기록",
-        features: ["기본 행동 로그 기록", "주간 히트맵(Heatmap) 제공", "커뮤니티 접근 권한"],
+        description: "기록부터 가볍게 시작하는 기본 플랜",
+        features: [
+            "기본 행동 로그 기록",
+            "주간 히트맵 요약",
+            "커뮤니티 인사이트",
+        ],
         cta: "무료로 시작하기",
         href: "/survey",
         popular: false,
     },
     {
         name: "Pro",
-        price: "9,900",
+        price: "6,900",
         period: "/월",
-        description: "AI 코칭으로 확실한 행동 교정",
+        description: "데이터 기반 AI 코칭으로 행동 교정 속도를 높이는 플랜",
         features: [
-            "AI 행동 원인 분석 (ABC 모델)",
-            "맞춤형 일일 코칭 & 미션",
-            "머루가 보내는 알림톡 서비스",
-            "수의사 제출용 PDF 리포트",
+            "ABC 기반 트리거 분석",
+            "맞춤형 일일 미션",
+            "리마인더 알림",
+            "공유 가능한 PDF 리포트",
         ],
-        cta: "7일 무료 체험 시작",
+        cta: "Pro 7일 무료 체험",
         href: "/survey",
         popular: true,
     },
@@ -34,15 +38,16 @@ const plans = [
 
 export function PricingSection() {
     return (
-        <section className="py-24 bg-white">
+        <section id="pricing" className="py-24 bg-white">
             <div className="container px-4 md:px-6 mx-auto">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 break-keep">
-                        오늘의 기록 1분이<br />
-                        <span className="text-brand-orange">내일의 10년 평화를 만듭니다.</span>
+                        오늘 1분 기록이
+                        <br />
+                        <span className="text-brand-orange">다음 10일 행동 변화를 만듭니다.</span>
                     </h2>
                     <p className="text-lg text-gray-600 break-keep">
-                        부담 없는 가격으로, 평생의 행복을 구독하세요.
+                        보호자 루틴에 맞는 플랜을 선택해 시작해보세요.
                     </p>
                 </div>
 
@@ -100,7 +105,7 @@ export function PricingSection() {
 
                 <div className="mt-12 text-center">
                     <p className="text-sm text-gray-400 break-keep">
-                        * 수익금의 일부는 유기견 행동 교정 센터에 기부됩니다.
+                        프로모션 기간에는 가격이 달라질 수 있습니다.
                     </p>
                 </div>
             </div>

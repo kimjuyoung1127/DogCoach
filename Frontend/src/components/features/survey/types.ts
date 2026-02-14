@@ -8,6 +8,7 @@ export interface SurveyData {
     sex: DogSex | null;
     weight: string; // New
     adoptionDate: string; // New
+    profileImageUrl?: string; // Profile photo URL from Supabase Storage
 
     // Step 2: Environment
     householdType: string;
@@ -46,6 +47,7 @@ export const INITIAL_DATA: SurveyData = {
     sex: null,
     weight: '',
     adoptionDate: '',
+    profileImageUrl: '',
     householdType: '',
     familyMembers: [],
     primaryCarer: [],

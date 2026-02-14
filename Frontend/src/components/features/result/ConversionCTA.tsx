@@ -1,7 +1,32 @@
+'use client';
+
+import { useState } from 'react';
 import { motion } from "framer-motion";
 import { MessageCircle, Download, Sparkles } from "lucide-react";
+import { supabase } from '@/lib/supabase';
 
 export function ConversionCTA() {
+    const [loading, setLoading] = useState(false);
+
+    const handleKakaoLogin = async () => {
+        try {
+            setLoading(true);
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'kakao',
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback`,
+                },
+            });
+
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error logging in with Kakao:', error);
+            alert('카카오 로그인 중 오류가 발생했습니다');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <motion.section
             initial={{ opacity: 0, y: 50 }}
@@ -18,11 +43,21 @@ export function ConversionCTA() {
                     </div>
                 </div>
 
-                {/* Primary Button - Kakao Premium */}
-                <button className="w-full bg-[#FEE500] hover:bg-[#FDD835] active:scale-[0.98] text-[#3C1E1E] font-black py-5 px-8 rounded-[1.5rem] shadow-2xl shadow-yellow-200/60 flex items-center justify-center gap-3 transition-all group overflow-hidden relative">
+                {/* Primary Button - Kakao Premium with onClick */}
+                <button
+                    onClick={handleKakaoLogin}
+                    disabled={loading}
+                    className="w-full bg-[#FEE500] hover:bg-[#FDD835] active:scale-[0.98] text-[#3C1E1E] font-black py-5 px-8 rounded-[1.5rem] shadow-2xl shadow-yellow-200/60 flex items-center justify-center gap-3 transition-all group overflow-hidden relative disabled:opacity-70"
+                >
                     <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                    <MessageCircle className="w-6 h-6 fill-[#3C1E1E] relative z-10" />
-                    <span className="text-md relative z-10">리포트 저장하고 매일 코칭받기</span>
+                    {loading ? (
+                        <div className="w-6 h-6 border-2 border-[#3C1E1E]/30 border-t-[#3C1E1E] rounded-full animate-spin relative z-10" />
+                    ) : (
+                        <>
+                            <MessageCircle className="w-6 h-6 fill-[#3C1E1E] relative z-10" />
+                            <span className="text-md relative z-10">리포트 저장하고 매일 코칭받기</span>
+                        </>
+                    )}
                 </button>
 
                 <div className="text-center px-4">

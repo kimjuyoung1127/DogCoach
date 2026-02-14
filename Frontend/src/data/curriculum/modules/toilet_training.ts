@@ -3,7 +3,7 @@ import { TrainingCourse } from "../types";
 
 export const toiletTraining: TrainingCourse = {
     id: "toilet_training",
-    title: "[클린 화장실] 우리 아이 화장실 가이드",
+    title: "우리 아이 화장실 가이드",
     description: "좌절 없는 배변 교육! 정확한 공간 인지와 환경 설정의 비결",
     total_days: 5,
     difficulty: "Easy",

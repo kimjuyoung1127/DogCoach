@@ -8,6 +8,7 @@ import type {
     CostStatus,
     RecommendationFeedbackAction,
 } from "@/components/features/ai-recommendations/types";
+import type { UserSettings, DogProfileFull } from "@/lib/types";
 
 // ==========================================
 // QUERIES
@@ -380,5 +381,85 @@ export function useAICostStatus(token?: string | null) {
             );
         },
         staleTime: 1000 * 60 * 5,
+    });
+}
+
+// 14. User Settings (Query)
+export function useUserSettings(token?: string | null) {
+    return useQuery({
+        queryKey: QUERY_KEYS.userSettings(),
+        queryFn: async () => {
+            if (!token) return null;
+            return await apiClient.get<UserSettings>("/settings/", { token });
+        },
+        enabled: !!token,
+        staleTime: 1000 * 60 * 10, // 10 minutes (settings change infrequently)
+    });
+}
+
+// 15. Update User Settings (Mutation)
+export function useUpdateUserSettings(token?: string | null) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (updates: Partial<UserSettings>) => {
+            if (!token) throw new Error("Authentication required");
+            return await apiClient.patch<UserSettings>("/settings/", updates, { token });
+        },
+        onSuccess: () => {
+            // Precise cache invalidation
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userSettings() });
+        },
+    });
+}
+
+
+// 16. Dog Profile (Full survey data)
+export function useDogProfile(token?: string | null) {
+    return useQuery({
+        queryKey: QUERY_KEYS.dogProfile("me"),
+        queryFn: async () => {
+            if (!token) return null;
+            return await apiClient.get<DogProfileFull>("/dogs/profile", { token });
+        },
+        enabled: !!token,
+        staleTime: 1000 * 60 * 10, // 10 minutes
+    });
+}
+
+
+// 17. Update Dog Profile (Mutation)
+export function useUpdateDogProfile(token?: string | null) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (updateData: Partial<DogProfileFull["basic"] & {
+            household_info?: any;
+            health_meta?: any;
+            rewards_meta?: any;
+            chronic_issues?: any;
+            triggers?: any;
+            past_attempts?: any;
+            temperament?: any;
+        }>) => {
+            if (!token) throw new Error("Authentication required");
+            return await apiClient.put<DogProfileFull>("/dogs/profile", updateData, { token });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dogProfile('me') });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dashboard('me') });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userProfile('me') });
+        },
+    });
+}
+
+
+// 18. Delete Account (Mutation)
+export function useDeleteAccount(token?: string | null) {
+    return useMutation({
+        mutationFn: async () => {
+            if (!token) throw new Error("Authentication required");
+            return await apiClient.delete<void>("/auth/me", { token });
+        },
     });
 }

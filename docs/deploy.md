@@ -1,5 +1,7 @@
 # TailLog Deploy Guide (Vercel + Render)
 
+> Current migration note: for low-risk transition to Fly backend only, see `docs/fly-backend-phase1.md`.
+
 ## 1) Architecture
 - Frontend: Vercel (`Frontend` root)
 - Backend: Render Web Service (`Backend` root)

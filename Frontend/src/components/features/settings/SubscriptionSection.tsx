@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Subscription } from '@/lib/types';
+import { ComingSoonModal } from '@/components/shared/modals/ComingSoonModal';
 
 interface Props {
     subscription?: Subscription;
@@ -15,6 +17,11 @@ import { Star, CheckCircle2, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function SubscriptionSection({ subscription, onUpgrade, onManageSubscription }: Props) {
+    const [comingSoonModal, setComingSoonModal] = useState({ isOpen: false, featureName: '' });
+
+    const handleComingSoon = (featureName: string) => {
+        setComingSoonModal({ isOpen: true, featureName });
+    };
     const isPro = subscription?.plan_type === 'PRO_MONTHLY' || subscription?.plan_type === 'PRO_YEARLY';
     const contestMode = process.env.NEXT_PUBLIC_ENABLE_PRO_FEATURES === 'true';
 
@@ -64,7 +71,7 @@ export function SubscriptionSection({ subscription, onUpgrade, onManageSubscript
                                     </p>
                                 </div>
                                 <button
-                                    onClick={onManageSubscription}
+                                    onClick={() => handleComingSoon('구독 관리')}
                                     className="w-full bg-white/60 border border-white/80 py-4 rounded-2xl text-sm font-black text-gray-700 hover:bg-white transition-all shadow-sm"
                                 >
                                     결제 수단 및 구독 관리
@@ -80,8 +87,7 @@ export function SubscriptionSection({ subscription, onUpgrade, onManageSubscript
                                 <div className="space-y-3 bg-white/40 backdrop-blur-sm p-6 rounded-3xl border border-white/60 shadow-inner">
                                     {[
                                         "실시간 AI 정밀 행동 분석 레이더",
-                                        "맞춤형 주간 훈련 리포트 발급",
-                                        "전문 도그 위스퍼러 1:1 채팅"
+                                        "맞춤형 주간 훈련 리포트 발급"
                                     ].map((feature, i) => (
                                         <div key={i} className="flex items-center gap-3 text-sm font-black text-gray-700">
                                             <CheckCircle2 className="w-5 h-5 text-brand-lime shrink-0" />
@@ -104,7 +110,7 @@ export function SubscriptionSection({ subscription, onUpgrade, onManageSubscript
                                 ) : (
                                     <>
                                         <button
-                                            onClick={onUpgrade}
+                                            onClick={() => handleComingSoon('Pro 구독')}
                                             className="w-full bg-gray-900 text-white p-5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 active:scale-[0.98] transition-all hover:bg-black hover:shadow-xl hover:shadow-black/20 group/btn"
                                         >
                                             지금 Pro 시작하기 (7일 무료)
@@ -119,7 +125,7 @@ export function SubscriptionSection({ subscription, onUpgrade, onManageSubscript
                                                 placeholder="초대/프로모션 코드"
                                                 className="flex-1 px-4 bg-transparent text-xs font-bold focus:outline-none placeholder:text-gray-400"
                                             />
-                                            <button className="px-4 py-2 bg-white/50 text-gray-500 rounded-xl text-xs font-black hover:bg-white hover:text-gray-900 transition-all">
+                                            <button onClick={() => handleComingSoon('프로모션 코드')} className="px-4 py-2 bg-white/50 text-gray-500 rounded-xl text-xs font-black hover:bg-white hover:text-gray-900 transition-all">
                                                 적용
                                             </button>
                                         </div>
@@ -130,6 +136,12 @@ export function SubscriptionSection({ subscription, onUpgrade, onManageSubscript
                     </div>
                 </div>
             </motion.div>
+
+            <ComingSoonModal
+                isOpen={comingSoonModal.isOpen}
+                onClose={() => setComingSoonModal({ isOpen: false, featureName: '' })}
+                featureName={comingSoonModal.featureName}
+            />
         </div>
     );
 }

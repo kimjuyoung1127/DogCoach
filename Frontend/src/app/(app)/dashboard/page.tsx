@@ -7,6 +7,8 @@ import { DashboardHeader } from "@/components/features/dashboard/DashboardHeader
 import { EditLogDialog } from "@/components/features/dashboard/EditLogDialog";
 import { CreateLogDialog } from "@/components/features/dashboard/CreateLogDialog";
 import { MainDashboardTab } from "@/components/features/dashboard/MainDashboardTab";
+import { CoreDataRequiredBanner } from "@/components/features/dashboard/CoreDataRequiredBanner";
+import { EnhancementCard } from "@/components/features/dashboard/EnhancementCard";
 
 import { useAuth } from "@/hooks/useAuth";
 import { DashboardSkeleton } from "@/components/features/dashboard/DashboardSkeleton";
@@ -75,11 +77,65 @@ function DashboardContent() {
         </div>
     );
 
+    // 핵심 데이터 체크 함수
+    const hasCoreData = (data: any) => {
+        return (
+            data.dog_profile?.name &&
+            data.dog_profile?.breed &&
+            data.issues?.length > 0 &&
+            data.env_triggers?.length > 0
+        );
+    };
+
+    // 핵심 데이터 없으면 차단
+    if (!hasCoreData(data)) {
+        return <CoreDataRequiredBanner onResume={() => router.push('/survey')} />;
+    }
+
+    // 선택 데이터 완성도 체크 - 모든 필드 검증 (10개 필드)
+    const hasOptionalData = (data: any) => {
+        // Environment - 모든 서브필드 체크
+        const hasHouseholdType = data.env_info?.household_type;
+        const hasFamilyCount = data.env_info?.family_count !== undefined && data.env_info?.family_count !== null;
+        const hasPrimaryCarer = data.env_info?.primary_carer;
+
+        // Health & Rewards
+        const hasHealthMeta = data.health_meta?.ids?.length > 0;
+        const hasRewardsMeta = data.rewards_meta?.ids?.length > 0;
+
+        // Behavior training
+        const hasPastAttempts = data.past_attempts?.ids?.length > 0;
+        const hasTemperament = data.temperament?.sensitivity_score !== undefined;
+
+        // Profile metadata
+        const hasProfileMeta = data.profile_meta?.weight || data.profile_meta?.adoption_date;
+
+        // Basic profile completeness (birth_date, sex)
+        const hasBirthDate = data.dog_profile?.birth_date;
+        const hasSex = data.dog_profile?.sex;
+
+        // 모든 선택 필드가 채워져야 true
+        return (
+            hasHouseholdType &&
+            hasFamilyCount &&
+            hasPrimaryCarer &&
+            hasHealthMeta &&
+            hasRewardsMeta &&
+            hasPastAttempts &&
+            hasTemperament &&
+            hasProfileMeta &&
+            hasBirthDate &&
+            hasSex
+        );
+    };
+
     return (
         <div className="min-h-screen pb-28">
             <PremiumBackground />
 
             <div className="relative z-10">
+                {!hasOptionalData(data) && <EnhancementCard data={data} />}
+
                 <DashboardHeader data={data} />
 
                 <div className="px-1">

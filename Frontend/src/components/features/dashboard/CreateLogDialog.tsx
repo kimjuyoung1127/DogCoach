@@ -161,7 +161,7 @@ export const CreateLogDialog = ({ open, onClose, onCreate, envTriggers, envConse
                             type="text"
                             placeholder="상황을 직접 입력해주세요..."
                             value={antecedent}
-                            onChange={(e) => setAntecedent(e.target.value)}
+                            onChange={(e) => setAntecedent(translate(e.target.value))}
                             className="w-full text-sm font-bold px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-lime/50 transition-all shadow-inner"
                         />
                     </div>

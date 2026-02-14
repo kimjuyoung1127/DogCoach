@@ -3,7 +3,7 @@ import { TrainingCourse } from "../types";
 
 export const leashWalking: TrainingCourse = {
     id: "leash_walking",
-    title: "[발맞춰 걷기] 매너 있는 산책의 즐거움",
+    title: "매너 있는 산책의 즐거움",
     description: "줄 당김 없는 평화로운 산책! 리드줄은 속박이 아닌 소통의 끈입니다.",
     total_days: 6,
     difficulty: "Medium",

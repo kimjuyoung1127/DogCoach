@@ -60,7 +60,7 @@ export function mapSurveyDataToSubmission(data: SurveyData) {
             sensitivity_score: data.sensitivityScore,
         },
 
-        // Extra (From Survey logic, maybe pass as args if needed)
-        // profile_image_url: ... 
+        // Extra
+        profile_image_url: sanitize(data.profileImageUrl),
     };
 }

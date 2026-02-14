@@ -2,10 +2,11 @@
 
 import { DogSex, SurveyData } from "./types";
 import { cn } from "@/lib/utils";
-import { Calendar, Dog } from "lucide-react";
+import { Calendar, Dog, Camera, X } from "lucide-react";
 import { useState, useMemo } from "react";
 import breedsData from "@/data/breeds.json";
 import { matchSearch } from "@/lib/hangulUtils";
+import { supabase } from "@/lib/supabase";
 
 // Extended interface for JSON data
 interface BreedEntry {
@@ -21,6 +22,9 @@ interface Props {
 
 export function Step1Profile({ data, updateData }: Props) {
     const [showBreeds, setShowBreeds] = useState(false);
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(data.profileImageUrl || null);
+    const [isUploading, setIsUploading] = useState(false);
 
     const filteredBreeds = useMemo(() => {
         if (!data.breed) return (breedsData as BreedEntry[]).slice(0, 50); // Show first 50 if empty
@@ -29,11 +33,124 @@ export function Step1Profile({ data, updateData }: Props) {
             .slice(0, 50); // Limit results for performance
     }, [data.breed]);
 
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('이미지 파일만 업로드 가능합니다.');
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('파일 크기는 5MB 이하여야 합니다.');
+            return;
+        }
+
+        setImageFile(file);
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+
+        // Upload to Supabase Storage
+        await uploadImage(file);
+    };
+
+    const uploadImage = async (file: File) => {
+        setIsUploading(true);
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+            const { data: uploadData, error } = await supabase.storage
+                .from('dog-profiles')
+                .upload(fileName, file, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+            if (error) throw error;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('dog-profiles')
+                .getPublicUrl(fileName);
+
+            updateData({ profileImageUrl: publicUrl });
+        } catch (error) {
+            console.error('Image upload error:', error);
+            alert('이미지 업로드에 실패했습니다. 나중에 다시 시도해주세요.');
+            setImageFile(null);
+            setImagePreview(null);
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleRemoveImage = () => {
+        setImageFile(null);
+        setImagePreview(null);
+        updateData({ profileImageUrl: '' });
+    };
+
     return (
         <div className="space-y-6">
             <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">누구를 위한 교육인가요?</h2>
                 <p className="text-gray-500">맞춤형 교육 과정을 위해 반려견의 기본 정보를 알려주세요.</p>
+            </div>
+
+            {/* Profile Photo Upload */}
+            <div className="flex justify-center mb-6">
+                <div className="space-y-2 text-center">
+                    <label className="text-sm font-bold text-gray-700 block mb-3">프로필 사진 (선택)</label>
+
+                    {imagePreview ? (
+                        <div className="relative inline-block">
+                            <div className="w-32 h-32 rounded-2xl overflow-hidden border-4 border-brand-lime/20 shadow-lg">
+                                <img
+                                    src={imagePreview}
+                                    alt="Preview"
+                                    className="w-full h-full object-cover"
+                                />
+                                {isUploading && (
+                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                        <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    </div>
+                                )}
+                            </div>
+                            <button
+                                onClick={handleRemoveImage}
+                                disabled={isUploading}
+                                className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center shadow-lg transition-colors disabled:opacity-50"
+                            >
+                                <X className="w-4 h-4 text-white" />
+                            </button>
+                        </div>
+                    ) : (
+                        <label className="inline-block w-32 h-32 border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-brand-lime hover:bg-brand-lime/5 transition-all">
+                            <Camera className="w-10 h-10 text-gray-400 mb-2" />
+                            <span className="text-xs text-gray-500 font-medium px-2">사진 추가</span>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                className="hidden"
+                            />
+                        </label>
+                    )}
+
+                    {isUploading && (
+                        <p className="text-xs text-brand-lime font-medium animate-pulse">
+                            업로드 중...
+                        </p>
+                    )}
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

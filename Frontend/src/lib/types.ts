@@ -61,3 +61,23 @@ export interface UserProfile {
     provider?: string;
     created_at: string;
 }
+
+export interface DogProfileFull {
+    basic: {
+        id: string;
+        name: string;
+        breed?: string;
+        birth_date?: string;
+        sex?: string;
+        profile_image_url?: string;
+    };
+    environment: Record<string, any>;
+    health: Record<string, any>;
+    rewards: Record<string, any>;
+    behavior: {
+        chronic_issues?: any[];
+        triggers?: any[];
+    };
+    past_attempts: any[];
+    temperament: Record<string, any>;
+}

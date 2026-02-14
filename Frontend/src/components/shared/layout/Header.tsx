@@ -1,22 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, User as UserIcon, LogOut, LayoutDashboard, Settings } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Menu, User as UserIcon, LogOut, LayoutDashboard } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useDogProfile } from "@/hooks/useQueries";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
 export function Header() {
     const router = useRouter();
-    const { user, loading } = useAuth();
-    const [isMenuOpen, setIsMenuOpen] = useState(false); // Mobile Menu
-    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false); // Desktop User Dropdown
+    const { user, token, loading } = useAuth();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-
-    // Close dropdown when clicking outside
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -34,50 +32,33 @@ export function Header() {
         setIsMenuOpen(false);
     };
 
-    const isLoggedIn = user && !user.is_anonymous;
+    const isLoggedIn = !!user && !user.is_anonymous;
+    const { data: dogProfile } = useDogProfile(token);
+    const hasDog = isLoggedIn && !!dogProfile?.basic?.id;
 
     return (
         <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-100 pt-[env(safe-area-inset-top)] transition-all">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                {/* Logo */}
                 <div className="flex items-center gap-6">
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <motion.div
-                            whileHover={{ rotate: 15, scale: 1.1 }}
-                            className="w-10 h-10 rounded-2xl bg-brand-lime flex items-center justify-center shadow-lg shadow-brand-lime/20"
-                        >
-                            <span className="text-white text-xl">🐾</span>
-                        </motion.div>
-                        <span className="text-2xl font-black text-gray-900 tracking-tight font-outfit group-hover:text-brand-lime transition-colors">
-                            TailLog
-                        </span>
+                    <Link href="/" className="flex items-center group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime/50">
+                        <motion.img
+                            whileHover={{ scale: 1.06, y: -1 }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                            src="/HeaderLogo.png"
+                            alt="TailLog"
+                            className="h-14 md:h-16 w-auto object-contain transition-all duration-200 group-hover:opacity-90 group-hover:drop-shadow-[0_6px_10px_rgba(132,204,22,0.25)]"
+                        />
                     </Link>
-
-                    {/* Global Debug Nav */}
-                    {process.env.NODE_ENV === 'development' && (
-                        <div className="hidden lg:flex items-center gap-1 bg-gray-50 p-1 rounded-xl border border-gray-100">
-                            {[
-                                { name: 'Home', path: '/' },
-                                { name: 'Survey', path: '/survey' },
-                                { name: 'Result', path: '/result' },
-                                { name: 'Dash', path: '/dashboard' }
-                            ].map((route) => (
-                                <Link
-                                    key={route.path}
-                                    href={route.path}
-                                    className="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 hover:bg-white transition-all"
-                                >
-                                    {route.name}
-                                </Link>
-                            ))}
-                        </div>
-                    )}
                 </div>
 
-                {/* Desktop Nav */}
                 <nav className="hidden md:flex items-center gap-8">
-                    <Link href="/about" className="text-gray-600 hover:text-brand-lime transition-colors text-sm font-medium">서비스 소개</Link>
-                    <Link href="/pricing" className="text-gray-600 hover:text-brand-lime transition-colors text-sm font-medium">요금제</Link>
+                    <Link href="/#service-intro" className="text-gray-600 hover:text-brand-lime transition-colors text-sm font-medium">
+                        서비스 소개
+                    </Link>
+                    <Link href="/#pricing" className="text-gray-600 hover:text-brand-lime transition-colors text-sm font-medium">
+                        요금제
+                    </Link>
 
                     {loading ? (
                         // Loading Skeleton
@@ -120,12 +101,16 @@ export function Header() {
                             )}
                         </div>
                     ) : (
-                        // Login Link
-                        <Link href="/login" className="text-gray-600 hover:text-brand-lime transition-colors text-sm font-medium">로그인</Link>
+                        <Link href="/login" className="text-gray-600 hover:text-brand-lime transition-colors text-sm font-medium">
+                            로그인
+                        </Link>
                     )}
 
-                    <Link href="/survey" className="px-5 py-2 rounded-full bg-brand-dark text-white text-sm font-bold hover:bg-gray-800 transition-colors">
-                        무료로 시작하기
+                    <Link
+                        href={hasDog ? "/dashboard" : "/survey"}
+                        className="px-5 py-2 rounded-full bg-brand-dark text-white text-sm font-bold hover:bg-gray-800 transition-colors"
+                    >
+                        {hasDog ? "내 대시보드로 이동" : "무료로 시작하기"}
                     </Link>
                 </nav>
 
@@ -138,12 +123,15 @@ export function Header() {
                 </button>
             </div>
 
-            {/* Mobile Nav Dropdown */}
             {isMenuOpen && (
                 <div className="md:hidden border-t border-gray-100 bg-white">
                     <div className="flex flex-col p-4 space-y-4">
-                        <Link href="/about" className="text-gray-600 font-medium" onClick={() => setIsMenuOpen(false)}>서비스 소개</Link>
-                        <Link href="/pricing" className="text-gray-600 font-medium" onClick={() => setIsMenuOpen(false)}>요금제</Link>
+                        <Link href="/#service-intro" className="text-gray-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                            서비스 소개
+                        </Link>
+                        <Link href="/#pricing" className="text-gray-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                            요금제
+                        </Link>
 
                         {isLoggedIn ? (
                             <>
@@ -160,8 +148,12 @@ export function Header() {
                             <Link href="/login" className="text-gray-600 font-medium" onClick={() => setIsMenuOpen(false)}>로그인</Link>
                         )}
 
-                        <Link href="/survey" className="block text-center py-3 rounded-xl bg-brand-lime text-white font-bold" onClick={() => setIsMenuOpen(false)}>
-                            무료 진단 시작하기
+                        <Link
+                            href={hasDog ? "/dashboard" : "/survey"}
+                            className="block text-center py-3 rounded-xl bg-brand-lime text-white font-bold"
+                            onClick={() => setIsMenuOpen(false)}
+                        >
+                            {hasDog ? "내 대시보드로 이동" : "무료로 시작하기"}
                         </Link>
                     </div>
                 </div>

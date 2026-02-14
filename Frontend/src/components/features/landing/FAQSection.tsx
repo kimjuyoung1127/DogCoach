@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
     Accordion,
@@ -24,17 +25,25 @@ const faqs = [
     },
     {
         question: "병원 리포트는 어떻게 활용하면 되나요?",
-        answer: "분석된 행동 데이터는 수의사와 상담할 때 매우 유용한 객관적 지표가 됩니다. PDF 리포트를 출력하거나 모바일 화면을 직접 보여드림으로써, 말로 설명하기 힘든 증상을 정확히 전달할 수 있습니다.",
+        answer: "분석된 행동 데이터는 훈련사와 수의사와 상담할 때 매우 유용한 객관적 지표가 됩니다. PDF 리포트를 출력하거나 모바일 화면을 직접 보여드림으로써, 말로 설명하기 힘든 증상을 정확히 전달할 수 있습니다.",
     },
     {
         question: "무료 버전과 유료 버전의 차이는 무엇인가요?",
-        answer: "무료 버전은 기초 행동 진단 및 리포트 요약을 제공합니다. 월간 구독 서비스(Premium)를 이용하시면 24시간 실시간 행동 모니터링, 정밀 행동 맵, 그리고 훈련사와의 1:1 채팅 상담권이 포함됩니다.",
+        answer: "무료 버전은 기초 행동 진단 및 리포트 요약을 제공합니다. 월간 구독 서비스(Premium)를 이용하시면 24시간 실시간 행동 모니터링, 모든 훈련법과 코칭서비스가 포함됩니다.",
     },
 ];
 
 export function FAQSection() {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) return null;
+
     return (
-        <section className="py-24 bg-gray-50/50">
+        <section id="faq" className="py-24 bg-gray-50/50">
             <div className="container px-4 md:px-6 mx-auto max-w-4xl">
                 <div className="text-center mb-16">
                     <motion.div
@@ -71,12 +80,7 @@ export function FAQSection() {
                     </Accordion>
                 </motion.div>
 
-                <div className="mt-12 text-center">
-                    <p className="text-gray-500 mb-4">원하시는 답변을 찾지 못하셨나요?</p>
-                    <a href="mailto:support@taillog.ai" className="font-bold text-brand-lime hover:underline underline-offset-4">
-                        1:1 문의하기 →
-                    </a>
-                </div>
+              
             </div>
         </section>
     );

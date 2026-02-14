@@ -62,6 +62,25 @@ export default function LoginPage() {
         }
     };
 
+    const handleKakaoLogin = async () => {
+        try {
+            setLoading(true);
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'kakao',
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback`,
+                },
+            });
+
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error logging in with Kakao:', error);
+            alert('카카오 로그인 중 오류가 발생했습니다');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     if (checking) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
@@ -113,14 +132,15 @@ export default function LoginPage() {
                             시작하기
                         </h2>
                         <p className="text-sm font-bold text-gray-500">
-                            Google 계정으로 간편하게 시작하세요
+                            간편하게 시작하세요
                         </p>
                     </div>
 
+                    {/* Google Login Button */}
                     <button
                         onClick={handleGoogleLogin}
                         disabled={loading}
-                        className="flex w-full items-center justify-center gap-3 rounded-2xl bg-white px-6 py-4 text-gray-700 shadow-md ring-1 ring-gray-200 transition-all hover:bg-gray-50 hover:ring-gray-300 hover:shadow-lg active:scale-[0.98] disabled:opacity-70 font-bold"
+                        className="flex w-full items-center justify-center gap-3 rounded-2xl bg-white px-6 py-4 text-gray-700 shadow-md ring-1 ring-gray-200 transition-all hover:bg-gray-50 hover:ring-gray-300 hover:shadow-lg active:scale-[0.98] disabled:opacity-70 font-bold mb-3"
                     >
                         {loading ? (
                             <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
@@ -145,6 +165,29 @@ export default function LoginPage() {
                                     />
                                 </svg>
                                 <span>Google로 시작하기</span>
+                            </>
+                        )}
+                    </button>
+
+                    {/* Kakao Login Button */}
+                    <button
+                        onClick={handleKakaoLogin}
+                        disabled={loading}
+                        className="flex w-full items-center justify-center gap-3 rounded-2xl bg-[#FEE500] px-6 py-4 text-[#3C1E1E] shadow-md ring-1 ring-[#FEE500] transition-all hover:bg-[#FDD835] hover:shadow-lg active:scale-[0.98] disabled:opacity-70 font-bold"
+                    >
+                        {loading ? (
+                            <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                        ) : (
+                            <>
+                                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                                    <path
+                                        fillRule="evenodd"
+                                        clipRule="evenodd"
+                                        d="M12 3C6.477 3 2 6.372 2 10.5c0 2.548 1.631 4.784 4.097 6.153-.161.607-.527 2.083-.605 2.415-.092.396.145.391.306.284.128-.084 2.069-1.39 2.937-1.977C9.573 17.595 10.755 17.75 12 17.75c5.523 0 10-3.372 10-7.25S17.523 3 12 3z"
+                                        fill="#3C1E1E"
+                                    />
+                                </svg>
+                                <span>카카오로 시작하기</span>
                             </>
                         )}
                     </button>

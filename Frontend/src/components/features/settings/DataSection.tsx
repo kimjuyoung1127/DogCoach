@@ -1,7 +1,12 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { ConfirmDialog } from '@/components/shared/modals/ConfirmDialog';
+import { useAuth } from '@/hooks/useAuth';
+import { useDeleteAccount } from '@/hooks/useQueries';
 
 interface Props {
     isPro?: boolean;
@@ -12,6 +17,24 @@ import { Database, Download, ExternalLink, AlertTriangle, Trash2 } from 'lucide-
 import { cn } from '@/lib/utils';
 
 export function DataSection({ isPro = false }: Props) {
+    const router = useRouter();
+    const { token } = useAuth();
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const deleteMutation = useDeleteAccount(token);
+
+    const handleDeleteAccount = async () => {
+        try {
+            await deleteMutation.mutateAsync();
+            // Clear local auth state
+            localStorage.removeItem('sb-access-token');
+            localStorage.removeItem('sb-refresh-token');
+            // Redirect to landing page
+            router.push('/');
+        } catch (error) {
+            console.error('Account deletion failed:', error);
+            alert('계정 삭제에 실패했습니다. 다시 시도해주세요.');
+        }
+    };
     return (
         <div className="space-y-6">
             <div className="flex items-center gap-2 px-1">
@@ -31,7 +54,7 @@ export function DataSection({ isPro = false }: Props) {
                             <p className="text-xs font-bold text-gray-500">등록된 강아지 정보를 수정하거나 업데이트합니다.</p>
                         </div>
                         <button
-                            onClick={() => window.location.href = '/dog/profile'}
+                            onClick={() => router.push('/dog/profile')}
                             className="bg-white/60 border border-white/80 p-3 rounded-2xl text-gray-500 hover:bg-white hover:text-brand-lime transition-all shadow-sm group-hover:scale-105"
                         >
                             <ExternalLink className="w-5 h-5" />
@@ -85,11 +108,25 @@ export function DataSection({ isPro = false }: Props) {
                             모든 계정 활동과 훈련 데이터를 영구적으로 삭제합니다. 이 작업은 되돌릴 수 없습니다.
                         </p>
                     </div>
-                    <button className="bg-red-500 text-white px-8 py-4 rounded-2xl text-sm font-black hover:bg-red-600 transition-all shadow-lg shadow-red-500/20 active:scale-95">
+                    <button
+                        onClick={() => setDeleteDialogOpen(true)}
+                        className="bg-red-500 text-white px-8 py-4 rounded-2xl text-sm font-black hover:bg-red-600 transition-all shadow-lg shadow-red-500/20 active:scale-95"
+                    >
                         전체 데이터 초기화
                     </button>
                 </div>
             </motion.div>
+
+            <ConfirmDialog
+                isOpen={deleteDialogOpen}
+                onClose={() => setDeleteDialogOpen(false)}
+                onConfirm={handleDeleteAccount}
+                title="정말 삭제하시겠습니까?"
+                message="모든 계정 활동과 훈련 데이터를 영구적으로 삭제합니다. 이 작업은 되돌릴 수 없습니다."
+                confirmText="삭제"
+                cancelText="취소"
+                isDangerous={true}
+            />
         </div>
     );
 }

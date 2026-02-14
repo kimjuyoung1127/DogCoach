@@ -1,6 +1,6 @@
 import { DashboardData } from "./types";
 import { FadeIn } from "@/components/ui/animations/FadeIn";
-import { Trophy, Calendar, Sparkles } from "lucide-react";
+import { Trophy, Calendar, Sparkles, Dog } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Props {
@@ -13,19 +13,44 @@ export const DashboardHeader = ({ data }: Props) => {
             {/* Soft Ambient Flourish */}
             <div className="absolute top-0 right-0 w-[40%] h-full bg-brand-lime/5 blur-[80px] -z-10 rounded-full" />
 
-            <div className="flex flex-col mb-10 relative z-10">
+            <div className="flex gap-6 items-start mb-10 relative z-10">
+                {/* Dog Profile Photo */}
                 <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="inline-flex items-center gap-2 px-3 py-1 bg-white/40 backdrop-blur-md text-brand-lime rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4 border border-white/60 shadow-sm ring-1 ring-black/5 w-fit"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.1 }}
+                    className="flex-shrink-0"
                 >
-                    <Sparkles className="w-3.5 h-3.5 fill-brand-lime/20" />
-                    Insight Dashboard
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-4 border-white/80 shadow-lg ring-1 ring-black/5">
+                        {data.dog_profile.profile_image_url ? (
+                            <img
+                                src={data.dog_profile.profile_image_url}
+                                alt={data.dog_profile.name}
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-brand-lime/20 to-emerald-100 flex items-center justify-center">
+                                <Dog className="w-10 h-10 sm:w-12 sm:h-12 text-brand-lime" />
+                            </div>
+                        )}
+                    </div>
                 </motion.div>
-                <h1 className="text-4xl font-black text-gray-900 leading-[1.1] tracking-tight">
-                    반가워요, <br />
-                    <span className="bg-gradient-to-r from-brand-lime to-emerald-500 bg-clip-text text-transparent">{data.dog_profile.name}</span> <span className="text-gray-300 font-medium">보호자님</span>
-                </h1>
+
+                {/* Greeting Text */}
+                <div className="flex-1 flex flex-col">
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="inline-flex items-center gap-2 px-3 py-1 bg-white/40 backdrop-blur-md text-brand-lime rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4 border border-white/60 shadow-sm ring-1 ring-black/5 w-fit"
+                    >
+                        <Sparkles className="w-3.5 h-3.5 fill-brand-lime/20" />
+                        Insight Dashboard
+                    </motion.div>
+                    <h1 className="text-4xl font-black text-gray-900 leading-[1.1] tracking-tight">
+                        반가워요, <br />
+                        <span className="bg-gradient-to-r from-brand-lime to-emerald-500 bg-clip-text text-transparent">{data.dog_profile.name}</span> <span className="text-gray-300 font-medium">보호자님</span>
+                    </h1>
+                </div>
             </div>
 
             {/* Stats Row with Premium Cards */}

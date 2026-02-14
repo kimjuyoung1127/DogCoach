@@ -4,9 +4,14 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useDogProfile } from "@/hooks/useQueries";
 
 export function HeroSection() {
-    const hasDog = false;
+    const { user, token } = useAuth();
+    const isLoggedIn = !!user && !user.is_anonymous;
+    const { data: dogProfile } = useDogProfile(token);
+    const hasDog = isLoggedIn && !!dogProfile?.basic?.id;
     const dogName = "아이";
     const titleWords = ["아이의", "짖음,", "이제", "'감'이", "아닌", "'데이터'로", "해결하세요."];
 

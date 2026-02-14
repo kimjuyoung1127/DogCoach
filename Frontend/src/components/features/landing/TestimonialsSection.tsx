@@ -2,32 +2,35 @@
 
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/Card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/Avatar";
 import { Star, Quote } from "lucide-react";
 
 const testimonials = [
     {
         name: "김민수 보호자님",
         dogName: "초코",
-        role: "분리불안 해결",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
-        content: "테일로그 덕분에 우리 초코가 왜 짖는지 정확히 알게 되었어요. 데이터를 보니 제가 자리를 비울 때가 아니라, 현관문 밖 소음에 반응한다는 걸 발견했죠. 이제는 맞춤 훈련으로 훨씬 평온해졌습니다.",
+        role: "분리불안 개선",
+        content:
+            "퇴근 직후 짖음이 왜 올라가는지 데이터로 확인하고 나서, 귀가 루틴을 바꿨더니 2주 만에 반응이 크게 줄었어요.",
+        result: "짖음 빈도 -32%",
         rating: 5,
     },
     {
-        name: "이지은 보호자님",
-        dogName: "구름이",
+        name: "이연아 보호자님",
+        dogName: "구름",
         role: "입질 행동 교정",
-        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
-        content: "병원에서도 특별한 원인을 모르겠다고 했는데, 테일로그의 행동 분포도를 보고 규칙적인 에너지 소모가 부족하다는 걸 깨달았습니다. 산책 시간을 조정하고 나서 입질이 거짓말처럼 사라졌어요.",
+        content:
+            "감으로 대응할 때는 매번 실패했는데, 트리거 시간대를 먼저 피하고 대체 행동을 넣으니 입질이 눈에 띄게 줄었습니다.",
+        result: "입질 에피소드 -41%",
         rating: 5,
     },
     {
         name: "박준호 보호자님",
         dogName: "맥스",
         role: "산책 매너 개선",
-        image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop",
-        content: "훈련 리포트를 동물병원 선생님께 보여드렸더니 훨씬 더 정확한 상담이 가능했습니다. 말 못하는 맥스의 마음을 데이터로 통역받는 기분이에요. 정말 강추합니다!",
+        content:
+            "병원 상담 때 리포트를 보여주니 설명이 훨씬 쉬웠어요. 산책 중 끌어당김도 주차별로 줄어드는 게 보여서 동기부여가 됩니다.",
+        result: "리드 당김 -27%",
         rating: 5,
     },
 ];
@@ -47,8 +50,9 @@ export function TestimonialsSection() {
                         <span>리얼 후기</span>
                     </motion.div>
                     <h2 className="text-3xl md:text-5xl font-bold text-gray-900 tracking-tight break-keep">
-                        이미 <span className="text-brand-lime font-outfit">5,000+</span> 보호자님들이<br />
-                        아이들의 진심을 만났습니다
+                        이미 <span className="text-brand-lime font-outfit">5,000+</span> 보호자님이
+                        <br />
+                        기록 기반 훈련을 시작했습니다
                     </h2>
                 </div>
 
@@ -69,10 +73,15 @@ export function TestimonialsSection() {
                                         "{item.content}"
                                     </p>
 
+                                    <div className="inline-flex items-center rounded-full bg-emerald-50 text-emerald-700 px-3 py-1 text-xs font-bold mb-5 w-fit">
+                                        {item.result}
+                                    </div>
+
                                     <div className="flex items-center gap-4 pt-6 border-t border-gray-100">
-                                        <Avatar className="w-12 h-12 border-2 border-white shadow-sm">
-                                            <AvatarImage src={item.image} alt={item.name} />
-                                            <AvatarFallback>{item.name[0]}</AvatarFallback>
+                                        <Avatar className="w-12 h-12 border-2 border-white shadow-sm bg-brand-lime/15">
+                                            <AvatarFallback className="font-black text-brand-dark">
+                                                {item.name[0]}
+                                            </AvatarFallback>
                                         </Avatar>
                                         <div>
                                             <div className="font-bold text-gray-900 text-sm">{item.name}</div>

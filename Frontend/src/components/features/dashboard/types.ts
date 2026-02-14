@@ -28,4 +28,11 @@ export interface DashboardData {
     issues: string[];
     env_triggers: string[];
     env_consequences: string[];
+    // Optional survey completion metadata
+    env_info?: { household_type?: string; [key: string]: any };
+    health_meta?: { ids?: string[]; [key: string]: any };
+    rewards_meta?: { ids?: string[]; [key: string]: any };
+    past_attempts?: { ids?: string[]; [key: string]: any };
+    temperament?: { sensitivity_score?: number; [key: string]: any };
+    profile_meta?: { weight?: number; adoption_date?: string; [key: string]: any };
 }

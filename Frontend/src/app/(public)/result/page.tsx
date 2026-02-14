@@ -51,6 +51,16 @@ export default function ResultPage() {
     const curriculum = mapIssueToCurriculum(issues);
     const firstStage = curriculum.stages[0];
 
+    // 선택 데이터 완성도 체크
+    const hasCompleteProfile = (data: any) => {
+        if (!data) return false;
+        return (
+            data.env_info?.household_type &&
+            data.health_meta?.ids?.length > 0 &&
+            data.past_attempts?.ids?.length > 0
+        );
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 pb-40">
             {/* Challenge Flow Modals (Only active if Unlocked/Pro) */}
@@ -76,12 +86,30 @@ export default function ResultPage() {
                 dogName={dog_profile.name}
                 profileImage={dog_profile.profile_image_url}
                 issueTitle={curriculum.title}
-                issueDescription={curriculum.description}
+                curriculumId={curriculum.id}
                 score={94} // Hardcoded confidence for now
             />
 
             {/* Heatmap Evidence */}
             <BarkingHeatmap />
+
+            {/* Enhancement CTA: 선택 데이터 부족 시 */}
+            {dashboardData && !hasCompleteProfile(dashboardData) && (
+                <div className="px-6 py-4">
+                    <div className="bg-white/80 backdrop-blur p-6 rounded-3xl border border-gray-200 shadow-sm">
+                        <h3 className="font-bold text-gray-900 mb-2">💡 더 정확한 분석을 원하시나요?</h3>
+                        <p className="text-sm text-gray-600 mb-4 break-keep leading-relaxed">
+                            환경/건강 정보를 추가하면 더 세밀한 맞춤 추천을 받을 수 있습니다
+                        </p>
+                        <button
+                            onClick={() => router.push('/survey?enhance=true')}
+                            className="px-4 py-2 bg-brand-lime text-gray-900 rounded-full text-sm font-bold hover:bg-brand-lime-darker transition-colors"
+                        >
+                            추가 정보 입력하기
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Conditional Content: Pro vs Free/Guest */}
             {isPro ? (

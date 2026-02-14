@@ -64,7 +64,7 @@ export function NotificationSection({ settings, onUpdate }: Props) {
                                         </div>
                                     </div>
                                     <span className="text-[10px] font-bold text-gray-500">
-                                        카카오 연동 준비 중입니다. 사업자 등록/채널 승인 후 사용 가능합니다.
+                                        카카오 연동 준비 중입니다.
                                     </span>
                                 </div>
                                 <div className="w-12 h-6 bg-gray-100 border border-gray-200 rounded-full relative">

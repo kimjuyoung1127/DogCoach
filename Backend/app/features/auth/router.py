@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.security import get_current_user_id
@@ -32,3 +32,16 @@ async def migrate_guest_data(
     if not anonymous_sid:
         return schemas.MigrateGuestResponse(migrated_count=0, dog_ids=[])
     return await service.migrate_guest_data(db, user_id, anonymous_sid)
+
+
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_account(
+    user_id: str = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Permanently delete user account and all associated data.
+    CASCADE deletes will handle related records.
+    """
+    await service.delete_user_account(db, user_id)
+    return None

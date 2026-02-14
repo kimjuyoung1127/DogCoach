@@ -43,8 +43,8 @@ export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envCo
     useEffect(() => {
         if (log) {
             setIntensity(log.intensity || 5);
-            setAntecedent(log.antecedent || "");
-            setConsequence(log.consequence || "");
+            setAntecedent(translate(log.antecedent || ""));
+            setConsequence(translate(log.consequence || ""));
 
             // Handle ISO string to split date and time for inputs
             const dt = new Date(log.occurred_at);
@@ -179,7 +179,7 @@ export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envCo
                             type="text"
                             placeholder="상황을 직접 입력해주세요..."
                             value={antecedent}
-                            onChange={(e) => setAntecedent(e.target.value)}
+                            onChange={(e) => setAntecedent(translate(e.target.value))}
                             className="w-full text-sm font-bold px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-lime/50 transition-all shadow-inner"
                         />
                     </div>
@@ -195,7 +195,7 @@ export const EditLogDialog = ({ log, open, onClose, onUpdate, envTriggers, envCo
                             </div>
                         </div>
 
-                        <div className="text-base font-black text-gray-900 mb-2 relative z-10 px-1">{log.behavior}</div>
+                        <div className="text-base font-black text-gray-900 mb-2 relative z-10 px-1">{translate(log.behavior)}</div>
 
                         <input
                             type="range"

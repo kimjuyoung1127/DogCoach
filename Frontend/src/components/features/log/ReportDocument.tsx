@@ -117,6 +117,26 @@ interface ReportDocumentProps {
     };
 }
 
+// Landing preview can reuse this to keep message/data tone aligned with actual report output.
+export const REPORT_SAMPLE_PREVIEW = {
+    dogName: "Mong",
+    logs: [
+        { occurred_at: "2026-02-10T08:10:00Z", antecedent: "doorbell", behavior: "Barking", intensity: 8 },
+        { occurred_at: "2026-02-09T12:35:00Z", antecedent: "stranger", behavior: "Barking", intensity: 7 },
+        { occurred_at: "2026-02-08T21:00:00Z", antecedent: "separation", behavior: "Whining", intensity: 6 },
+    ],
+    summary: {
+        mainTrigger: "초인종 / 방문자",
+        weeklyChange: "-18%",
+        confidence: "89%",
+    },
+    aiAnalysis: {
+        insight: "오후 7시~10시에 현관 자극(초인종/복도 소리)과 짖음이 함께 증가합니다.",
+        action_plan: "현관 벨 소리 노출 강도를 낮춘 단계별 탈감작 + 대체행동(자리 지키기) 루틴이 우선입니다.",
+        dog_voice: "갑자기 큰 소리가 나면 놀라서 먼저 짖게 돼요. 익숙해질 시간을 주세요.",
+    },
+};
+
 export function ReportDocument({ dogName, logs, chartImage, recommendedCourse, aiAnalysis }: ReportDocumentProps) {
     const totalLogs = logs.length;
     const lastLog = logs[0]?.occurred_at ? new Date(logs[0].occurred_at).toLocaleDateString() : "-";

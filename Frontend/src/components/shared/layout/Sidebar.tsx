@@ -34,24 +34,37 @@ export function Sidebar() {
         <aside className="hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 bg-white border-r border-gray-100 z-40">
             {/* Logo Area */}
             <div className="h-16 flex items-center px-6 border-b border-gray-100">
-                <Link href="/dashboard" className="flex items-center gap-1">
-                    <span className="text-xl font-extrabold text-gray-900 tracking-tight">
-                        Tail<span className="text-brand-lime">Log</span>
-                    </span>
+                <Link
+                    href="/dashboard"
+                    className="flex items-center rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime/50"
+                >
+                    <img
+                        src="/SideBarLogo.png"
+                        alt="TailLog"
+                        className="h-14 w-auto object-contain transition-all duration-200 hover:scale-[1.04] hover:-translate-y-0.5 hover:drop-shadow-[0_6px_10px_rgba(132,204,22,0.25)]"
+                    />
                 </Link>
             </div>
 
-            {/* User Profile Summary */}
+            {/* User Profile Summary - Click to view profile */}
             <div className="p-6 border-b border-gray-50">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-lg">
+                <Link
+                    href="/dog/profile"
+                    className="flex items-center gap-3 p-3 -m-3 rounded-xl hover:bg-gray-50 transition-all group cursor-pointer"
+                >
+                    <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-lg group-hover:bg-brand-lime/10 transition-colors">
                         🐶
                     </div>
-                    <div>
-                        <div className="font-bold text-sm text-gray-900">{dogName}</div>
+                    <div className="flex-1">
+                        <div className="font-bold text-sm text-gray-900 group-hover:text-brand-lime transition-colors">{dogName}</div>
                         <div className="text-xs text-gray-500">{displayName}님</div>
                     </div>
-                </div>
+                    <div className="text-gray-400 group-hover:text-brand-lime transition-colors opacity-0 group-hover:opacity-100">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </Link>
             </div>
 
             {/* Navigation Links */}
@@ -80,7 +93,7 @@ export function Sidebar() {
                                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                             )}
                         >
-                            <Icon className={cn("w-5 h-5", item.label === "AI 코칭" && "rotate-45")} />
+                            <Icon className={cn("w-5 h-5", item.label === "AI 코칭" && "rotate-90")} />
                             <span className="text-sm font-medium">{item.label}</span>
                         </Link>
                     );

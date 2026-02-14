@@ -8,7 +8,7 @@ import { DataSection } from '@/components/features/settings/DataSection';
 import { AppInfoSection } from '@/components/features/settings/AppInfoSection';
 import { PremiumBackground } from '@/components/shared/ui/PremiumBackground';
 import { useAuth } from '@/hooks/useAuth';
-import { useUserProfile } from '@/hooks/useQueries';
+import { useUserProfile, useUserSettings, useUpdateUserSettings } from '@/hooks/useQueries';
 
 // Default settings structure for when backend is ready
 const DEFAULT_NOTIFICATION_PREF = {
@@ -36,20 +36,22 @@ export default function SettingsPage() {
     const { token } = useAuth();
     const { data: userProfile } = useUserProfile(token);
 
-    // TODO: Add useUserSettings hook when backend is ready
-    // const { data: userSettings } = useUserSettings(token);
-    // TODO: Add useSubscription hook when backend is ready
-    // const { data: subscription } = useSubscription(token);
+    // User Settings API Integration
+    const { data: userSettings, isLoading } = useUserSettings(token);
+    const updateSettings = useUpdateUserSettings(token);
 
     const handleSettingsUpdate = (key: string, value: any) => {
-        // TODO: Implement API mutation when backend is ready
-        console.log('Settings will be updated via API:', key, value);
+        updateSettings.mutate({ [key]: value });
     };
 
     const handleTimezoneUpdate = async (tz: string) => {
-        // TODO: Implement API mutation when backend is ready
+        // TODO: Implement when /auth/me PATCH is ready
         console.log('Timezone will be updated via API:', tz);
     };
+
+    // Use real data with fallback to defaults
+    const notificationPref = userSettings?.notification_pref ?? DEFAULT_NOTIFICATION_PREF;
+    const aiPersona = userSettings?.ai_persona ?? DEFAULT_AI_PERSONA;
 
     return (
         <div className="min-h-screen pb-32 relative">
@@ -80,7 +82,7 @@ export default function SettingsPage() {
                     {/* 2. 알림 */}
                     <section id="notifications">
                         <NotificationSection
-                            settings={DEFAULT_NOTIFICATION_PREF}
+                            settings={notificationPref}
                             onUpdate={(newPref) => handleSettingsUpdate('notification_pref', newPref)}
                         />
                     </section>
@@ -96,7 +98,7 @@ export default function SettingsPage() {
                     {/* 4. AI 설정 */}
                     <section id="ai-preference">
                         <AiPreferenceSettings
-                            preference={DEFAULT_AI_PERSONA}
+                            preference={aiPersona}
                             onUpdate={(newPersona) => handleSettingsUpdate('ai_persona', newPersona)}
                         />
                     </section>

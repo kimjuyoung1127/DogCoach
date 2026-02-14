@@ -32,3 +32,10 @@ class DashboardResponse(BaseModel):
     issues: List[str] = []
     env_triggers: List[str] = []
     env_consequences: List[str] = []
+    # Optional survey completion metadata
+    env_info: Optional[dict] = None
+    health_meta: Optional[dict] = None
+    rewards_meta: Optional[dict] = None
+    past_attempts: Optional[dict] = None
+    temperament: Optional[dict] = None
+    profile_meta: Optional[dict] = None

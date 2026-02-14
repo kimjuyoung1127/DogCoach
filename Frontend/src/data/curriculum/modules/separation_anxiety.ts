@@ -3,7 +3,7 @@ import { TrainingCourse } from "../types";
 
 export const separationAnxiety: TrainingCourse = {
     id: "separation_anxiety",
-    title: "[나 홀로 집에] 씩씩한 독립심 클래스",
+    title: "씩씩한 독립심 클래스",
     description: "혼자 있는 시간이 두려움이 아닌 휴식이 됩니다. 스스로를 믿는 힘을 키워주세요.",
     total_days: 5,
     difficulty: "Medium",
@@ -38,7 +38,7 @@ export const separationAnxiety: TrainingCourse = {
                 },
                 {
                     step_number: 3,
-                    title: "현관 다녀오기 (빈 손 복귀 매직)",
+                    title: "현관 다녀오기",
                     description: "신발을 신고 도어락 소리를 낸 뒤 현관 밖으로 나가지 않고 바로 돌아오세요. 이 과정을 5회 반복합니다. 나갔다 들어오는 것이 아주 사소하고 일상적인 이벤트임을 알려주는 과정입니다.",
                     success_criteria: "현관 접근에도 짖지 않고, 보호자가 돌아왔을 때 흥분해서 점프하지 않으며 차분히 앉아 있음",
                     tags: ["ignoring", "waiting"],

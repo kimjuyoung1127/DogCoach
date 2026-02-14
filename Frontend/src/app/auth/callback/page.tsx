@@ -27,6 +27,17 @@ export default function AuthCallbackPage() {
 
         setState('success-routing');
 
+        // Check for returnTo parameter (survey flow)
+        const params = new URLSearchParams(window.location.search);
+        const returnTo = params.get('returnTo');
+
+        if (returnTo === '/survey') {
+            // User came from mid-survey - return to survey
+            router.push('/survey');
+            return;
+        }
+
+        // Original logic for normal login flow
         try {
             const profile = await apiClient.get<any>("/auth/me", { token: session.access_token });
 

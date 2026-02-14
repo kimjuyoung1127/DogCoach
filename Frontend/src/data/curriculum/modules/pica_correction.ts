@@ -3,7 +3,7 @@ import { TrainingCourse } from "../types";
 
 export const picaCorrection: TrainingCourse = {
     id: "pica_correction",
-    title: "[맛있는 유혹] 올바른 식습관 교정",
+    title: "올바른 식습관 교정",
     description: "이물질 섭취와 식분증은 생명과 직결됩니다. 안전한 입매무새를 위한 긴급 솔루션!",
     total_days: 5,
     difficulty: "Hard",
