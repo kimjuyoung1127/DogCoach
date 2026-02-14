@@ -35,7 +35,14 @@ export function SurveyControls({ step, totalSteps, onNext, onBack, canNext }: Pr
                     whileHover={canNext ? { scale: 1.02, boxShadow: "0 10px 25px -5px rgba(163, 230, 53, 0.4)" } : {}}
                     whileTap={canNext ? { scale: 0.98 } : {}}
                     animate={!canNext ? { x: [0, -4, 4, -4, 4, 0] } : {}}
-                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                    transition={!canNext ? {
+                        duration: 0.4,
+                        repeat: 0
+                    } : {
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 17
+                    }}
                     className={cn(
                         "flex-1 h-14 rounded-2xl font-black text-white flex items-center justify-center gap-3 transition-all font-outfit text-lg tracking-tight",
                         canNext

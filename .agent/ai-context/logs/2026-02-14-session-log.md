@@ -225,3 +225,36 @@
 - 다음 작업:
   1. Render/CI 빌드 파이프라인에 `npm run check:utf8` 선행 단계 추가
   2. 필요 시 pre-commit hook으로 로컬 커밋 전 자동 검사
+
+### [2026-02-14 Late Night] Fly.io Phase 1 (Backend Only) 배포 및 도메인 인증서
+- 목표:
+  - 프론트(`www.mungai.co.kr`)는 유지하고 백엔드만 Fly로 이전
+  - 신규 API 도메인 `api.mungai.co.kr`로 서비스
+- 변경 파일:
+  - `Backend/fly.toml` - Fly 앱 설정
+  - `Backend/Dockerfile` - 배포용 Dockerfile 복구
+  - `docs/fly-backend-phase1.md` - 런북 추가
+  - `docs/deploy.md` - Fly 런북 링크 추가
+  - `Frontend/next.config.js` - 빈 파일(충돌 리스크) 제거
+- 실행:
+  - `flyctl launch --no-deploy --copy-config --name dogcoach-api --region nrt` (Backend)
+  - `flyctl secrets set ... -a dogcoach-api` (secrets는 값 노출 금지)
+  - `flyctl deploy -a dogcoach-api`
+  - `flyctl certs add api.mungai.co.kr -a dogcoach-api`
+  - `flyctl certs check api.mungai.co.kr -a dogcoach-api`
+- 결과:
+  - Backend deployed: `https://dogcoach-api.fly.dev`
+  - Domain cert: `Status = Issued` / verified and active
+- DNS 트러블슈팅:
+  - `api.mungai.co.kr`에 A/AAAA 또는 CNAME 중 1개 방식만 유지해야 함 (혼용 금지)
+  - 최종 확인: `api.mungai.co.kr` -> `8nkpk08.dogcoach-api.fly.dev` (CNAME)
+
+### [2026-02-14 Late Night] GitHub Actions: main push 시 Fly 자동배포
+- 목표:
+  - `main` 푸시 시 `dogcoach-api` 자동 배포
+- 변경 파일:
+  - `.github/workflows/fly-backend-deploy.yml` - Backend 변경 시만 배포(path filter)
+- 필요 설정:
+  - GitHub Actions secret: `FLY_API_TOKEN`
+- 주의:
+  - 토큰/키는 채팅/로그에 노출 시 즉시 rotate

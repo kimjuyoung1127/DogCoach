@@ -1,8 +1,66 @@
 ﻿# Progress
 
-Last Updated: 2026-02-14
+Last Updated: 2026-02-15
+
+## 2026-02-15
+- 변경: Result 페이지 UX 개선 (BehaviorIssueSummary 추가, 의미 없는 요소 제거).
+- 이유: CoreDataRequiredBanner가 survey?enhance=true로 리다이렉트하며 기존 입력 데이터(이름, 사진) 유실, BarkingHeatmap이 시간대별 목업 데이터 표시 (사용자가 실제로 입력한 적 없음).
+- 변경 파일:
+  - `Frontend/src/app/(public)/result/page.tsx`: hasCompleteProfile 함수 삭제, Enhancement CTA 섹션 삭제, BarkingHeatmap → BehaviorIssueSummary 교체
+  - `Frontend/src/components/features/result/BehaviorIssueSummary.tsx`: 신규 생성 (~75 lines)
+  - `Frontend/src/components/features/result/BarkingHeatmap.tsx`: 삭제
+- 검증:
+  - `cd Frontend && npm run build` → 8.4초, 13 pages 성공
+  - BehaviorIssueSummary가 실제 Survey 데이터(issues) 표시
+  - getLabel(issue, 'issue')로 ID → 한글 라벨 변환
+  - Framer Motion 애니메이션 (stagger delay 0.6 + idx * 0.1)
+- 영향:
+  - Result 페이지에서 실제 Survey 입력 데이터 시각화 (행동 문제 요약)
+  - 혼란스러운 Enhancement CTA 제거로 UX 개선
+  - 의미 없는 시간대별 히트맵 제거
+
+- 변경: API 204 No Content 처리 로직 추가.
+- 이유: DELETE 요청이 빈 응답(204)을 반환할 때 res.json() 호출로 "Unexpected end of JSON input" 에러 발생 (Settings 페이지 계정 삭제 버그).
+- 변경 파일:
+  - `Frontend/src/lib/api.ts`: Lines 54-57에 204 상태 코드 체크 추가
+- 검증:
+  - `cd Frontend && npm run build` → 8.4초, 성공
+- 영향:
+  - Settings 페이지 계정 삭제 기능 정상 작동
+  - 모든 DELETE 요청에서 204 응답 안전하게 처리
+
+- 변경: Google OAuth 동의 화면용 법적 문서 페이지 추가.
+- 이유: Google OAuth 동의 화면 설정 시 개인정보처리방침과 서비스 약관 링크 필수.
+- 변경 파일:
+  - `Frontend/src/app/(public)/privacy/page.tsx`: 개인정보처리방침 페이지 (7개 섹션)
+  - `Frontend/src/app/(public)/terms/page.tsx`: 서비스 이용약관 페이지 (11개 조항)
+- 검증:
+  - `cd Frontend && npm run build` → 8.6초, 15 pages 성공
+  - /privacy, /terms 경로 추가 확인
+- 영향:
+  - Google OAuth 동의 화면 설정 가능
+  - 법적 문서 링크: https://www.mungai.co.kr/privacy, https://www.mungai.co.kr/terms
+  - 승인된 도메인: kvknerzsqgmmdmyxlorl.supabase.co, mungai.co.kr
 
 ## 2026-02-14
+- 변경: Fly.io Phase 1(Backend Only) 배포 완료 및 `api.mungai.co.kr` 인증서 활성화.
+- 이유: `www.mungai.co.kr` 프론트는 유지하면서 백엔드만 저위험으로 Fly로 이전.
+- 검증:
+  - Fly health: `GET https://dogcoach-api.fly.dev/health` -> `{"status":"ok"}`
+  - Fly cert: `flyctl certs check api.mungai.co.kr -a dogcoach-api` -> `Status = Issued`
+- 영향:
+  - `Backend/fly.toml`, `Backend/Dockerfile` 추가/복구
+  - `docs/fly-backend-phase1.md` 런북 추가, `docs/deploy.md`에 안내 링크 추가
+  - DNS: `api.mungai.co.kr`을 Fly 백엔드로 연결 완료(인증서 Issued 확인)
+
+- 변경: GitHub Actions로 `main` 푸시 시 `dogcoach-api` 자동 배포 워크플로우 추가.
+- 이유: 수동 `flyctl deploy` 반복을 제거하고 배포 표준화.
+- 변경 파일:
+  - `.github/workflows/fly-backend-deploy.yml`
+- 주의:
+  - GitHub Secrets에 `FLY_API_TOKEN`이 반드시 필요 (미설정 시 Actions 배포 실패).
+  - 토큰/키는 채팅/로그에 노출되지 않도록 주의 (노출 시 즉시 rotate).
+
 - 변경: UTF 인코딩 재발 방지 가드레일 추가.
 - 이유: 일부 TS/TSX 파일에서 invalid UTF-8로 파싱 실패가 반복되어 저장/검증 단계에서 선제 차단 필요.
 - 검증:

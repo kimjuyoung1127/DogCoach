@@ -37,6 +37,12 @@ export default function AuthCallbackPage() {
             return;
         }
 
+        if (returnTo === '/result') {
+            // User came from result page - return to result
+            router.push('/result');
+            return;
+        }
+
         // Original logic for normal login flow
         try {
             const profile = await apiClient.get<any>("/auth/me", { token: session.access_token });
