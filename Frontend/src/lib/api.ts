@@ -1,20 +1,37 @@
-﻿type RequestOptions = {
+type RequestOptions = {
   token?: string;
   credentials?: RequestCredentials;
   headers?: Record<string, string>;
 };
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "";
+function getApiBaseUrl(): string {
+  const raw =
+    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    "";
+
+  const trimmed = raw.trim().replace(/\/+$/, "");
+
+  // Prevent Mixed Content: if the page is HTTPS, force the API base URL to HTTPS too.
+  if (typeof window !== "undefined" && window.location?.protocol === "https:") {
+    if (trimmed.startsWith("http://")) {
+      return `https://${trimmed.slice("http://".length)}`;
+    }
+  }
+
+  return trimmed;
+}
+
 const API_PREFIX = "/api/v1";
 
 function buildUrl(path: string): string {
+  const apiBaseUrl = getApiBaseUrl();
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   const hasPrefix = normalizedPath.startsWith(API_PREFIX);
   const finalPath = hasPrefix ? normalizedPath : `${API_PREFIX}${normalizedPath}`;
-  const base = API_BASE_URL.endsWith(API_PREFIX)
-    ? API_BASE_URL.slice(0, -API_PREFIX.length)
-    : API_BASE_URL;
+  const base = apiBaseUrl.endsWith(API_PREFIX)
+    ? apiBaseUrl.slice(0, -API_PREFIX.length)
+    : apiBaseUrl;
   return `${base}${finalPath}`;
 }
 
@@ -24,9 +41,10 @@ async function request<T>(
   body?: unknown,
   options: RequestOptions = {}
 ): Promise<T> {
-  if (!API_BASE_URL) {
+  const apiBaseUrl = getApiBaseUrl();
+  if (!apiBaseUrl) {
     throw new Error(
-      "NEXT_PUBLIC_API_URL is required. Set your backend base URL (e.g. https://your-api.onrender.com)."
+      "NEXT_PUBLIC_API_URL is required. Set your backend base URL (e.g. https://api.example.com)."
     );
   }
 
@@ -76,3 +94,4 @@ export const apiClient = {
     return request<T>("DELETE", path, undefined, options);
   },
 };
+
