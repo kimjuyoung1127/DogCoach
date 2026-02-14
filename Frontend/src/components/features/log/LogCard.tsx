@@ -55,11 +55,15 @@ export function LogCard({ log }: Props) {
                             <span className="text-sm font-black text-gray-900">{log.time}</span>
                             <span className="text-gray-300 mx-1">|</span>
                             <MapPin className="w-3.5 h-3.5 text-gray-400" />
-                            <span className="text-sm font-black text-gray-400 uppercase tracking-tight">{log.location}</span>
+                            <span className="text-sm font-black text-gray-400 uppercase tracking-tight">
+                                {log.location.includes(' (')
+                                    ? log.location.split(' (').map((part, i) => i === 0 ? part : <><br />({part}</>)
+                                    : log.location}
+                            </span>
                         </div>
                     </div>
                 </div>
-                <div className={cn("px-4 py-2 rounded-2xl text-[10px] font-black text-white uppercase tracking-widest shadow-lg shadow-black/5 ring-1 ring-inset ring-white/20", getIntensityColor(log.intensity))}>
+                <div className={cn("px-4 py-2 rounded-2xl text-[10px] font-black text-white uppercase tracking-widest shadow-lg shadow-black/5 ring-1 ring-inset ring-white/20 whitespace-nowrap", getIntensityColor(log.intensity))}>
                     강도 {log.intensity}
                 </div>
             </div>
