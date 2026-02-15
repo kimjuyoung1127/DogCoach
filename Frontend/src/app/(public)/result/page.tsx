@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ResultHeader } from "@/components/features/result/ResultHeader";
 import { BehaviorIssueSummary } from "@/components/features/result/BehaviorIssueSummary";
@@ -17,7 +17,10 @@ import { mapIssueToCurriculum } from "@/data/curriculum";
 import { useAuth } from "@/hooks/useAuth";
 import { useDashboardData } from "@/hooks/useQueries";
 
-export default function ResultPage() {
+// Force dynamic rendering to support useSearchParams
+export const dynamic = 'force-dynamic';
+
+function ResultPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { token, user } = useAuth();
@@ -190,5 +193,13 @@ export default function ResultPage() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function ResultPage() {
+    return (
+        <Suspense fallback={<SurveyLoading dogName="분석중" />}>
+            <ResultPageContent />
+        </Suspense>
     );
 }
