@@ -7,11 +7,22 @@ import { useRouter } from 'next/navigation';
 import { PremiumBackground } from '@/components/shared/ui/PremiumBackground';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
+import { copyText, getUserAgent, isAndroid, isIOS, isKakaoTalkInAppBrowser, openInExternalBrowser } from '@/lib/inAppBrowser';
+import { InAppBrowserLoginModal } from '@/components/shared/modals/InAppBrowserLoginModal';
 
 export default function LoginPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [checking, setChecking] = useState(true);
+    const [showInAppModal, setShowInAppModal] = useState(false);
+
+    const [isKakaoInApp] = useState(() => isKakaoTalkInAppBrowser());
+    const [platform] = useState<"android" | "ios" | "other">(() => {
+        const ua = getUserAgent();
+        if (isAndroid(ua)) return "android";
+        if (isIOS(ua)) return "ios";
+        return "other";
+    });
 
     // Check if already logged in (non-anonymous) and redirect
     useEffect(() => {
@@ -39,13 +50,26 @@ export default function LoginPage() {
         checkSession();
     }, [router]);
 
-    const handleGoogleLogin = async () => {
+    const buildRedirectTo = () => {
+        const origin = window.location.origin;
+        const params = new URLSearchParams(window.location.search);
+        const returnTo = params.get('returnTo');
+        return returnTo ? `${origin}/auth/callback?returnTo=${encodeURIComponent(returnTo)}` : `${origin}/auth/callback`;
+    };
+
+    const buildExternalLoginUrlForGoogle = () => {
+        const target = new URL(window.location.href);
+        target.searchParams.set('auto', 'google');
+        return target.toString();
+    };
+
+    const startGoogleOAuth = async () => {
         try {
             setLoading(true);
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: `${window.location.origin}/auth/callback`,
+                    redirectTo: buildRedirectTo(),
                     queryParams: {
                         access_type: 'offline',
                         prompt: 'consent',
@@ -60,6 +84,15 @@ export default function LoginPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleGoogleLogin = async () => {
+        // Google OAuth is blocked in embedded webviews (e.g., KakaoTalk in-app browser).
+        if (isKakaoInApp) {
+            setShowInAppModal(true);
+            return;
+        }
+        await startGoogleOAuth();
     };
 
     const handleKakaoLogin = async () => {
@@ -81,6 +114,23 @@ export default function LoginPage() {
         }
     };
 
+    // If user somehow landed on /login?auto=google in KakaoTalk in-app browser, show the modal (do not auto-start).
+    useEffect(() => {
+        if (!isKakaoInApp) return;
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('auto') === 'google') setShowInAppModal(true);
+    }, [isKakaoInApp]);
+
+    // Auto-start Google OAuth only in non-in-app browsers (loop prevention).
+    useEffect(() => {
+        if (checking) return;
+        if (isKakaoInApp) return;
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('auto') !== 'google') return;
+        startGoogleOAuth();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [checking, isKakaoInApp]);
+
     if (checking) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
@@ -93,6 +143,20 @@ export default function LoginPage() {
     return (
         <div className="relative flex min-h-screen items-center justify-center p-4">
             <PremiumBackground />
+
+            <InAppBrowserLoginModal
+                isOpen={showInAppModal}
+                onClose={() => setShowInAppModal(false)}
+                platform={platform}
+                onOpenExternal={() => {
+                    const url = buildExternalLoginUrlForGoogle();
+                    openInExternalBrowser(url);
+                }}
+                onCopyLink={async () => {
+                    const url = buildExternalLoginUrlForGoogle();
+                    return await copyText(url);
+                }}
+            />
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
