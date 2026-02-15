@@ -57,7 +57,7 @@ export function LogCard({ log }: Props) {
                             <MapPin className="w-3.5 h-3.5 text-gray-400" />
                             <span className="text-sm font-black text-gray-400 uppercase tracking-tight">
                                 {log.location.includes(' (')
-                                    ? log.location.split(' (').map((part, i) => i === 0 ? part : <><br />({part}</>)
+                                    ? log.location.split(' (').map((part, i) => i === 0 ? part : <span key={i}><br />({part}</span>)
                                     : log.location}
                             </span>
                         </div>
