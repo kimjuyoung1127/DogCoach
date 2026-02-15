@@ -23,7 +23,7 @@ export function ConversionCTA({ isAuthenticated }: ConversionCTAProps) {
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'kakao',
                 options: {
-                    redirectTo: `${window.location.origin}/auth/callback?returnTo=/result`,
+                    redirectTo: `${window.location.origin}/auth/callback`,
                 },
             });
 
