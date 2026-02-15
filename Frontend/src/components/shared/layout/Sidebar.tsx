@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Home, FileText, Plus, BrainCircuit, Settings, LogOut, BarChart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProfile } from "@/hooks/useQueries";
+import { supabase } from "@/lib/supabase";
 
 interface UserProfile {
     id: string;
@@ -15,10 +16,16 @@ interface UserProfile {
 
 export function Sidebar() {
     const pathname = usePathname();
+    const router = useRouter();
     const { token, user: supabaseUser } = useAuth();
 
     // Use Query Hook instead of useEffect
     const { data: profile } = useUserProfile(token);
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        router.push("/");
+    };
 
     const navItems = [
         { href: "/dashboard", label: "대시보드", icon: Home },
@@ -97,7 +104,10 @@ export function Sidebar() {
 
             {/* Footer / Logout */}
             <div className="p-4 border-t border-gray-100">
-                <button className="flex items-center gap-3 px-4 py-3 w-full text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 px-4 py-3 w-full text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                >
                     <LogOut className="w-5 h-5" />
                     <span className="text-sm font-medium">로그아웃</span>
                 </button>
