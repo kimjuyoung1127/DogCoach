@@ -34,15 +34,10 @@ export function Sidebar() {
         <aside className="hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 bg-white border-r border-gray-100 z-40">
             {/* Logo Area */}
             <div className="h-16 flex items-center px-6 border-b border-gray-100">
-                <Link
-                    href="/dashboard"
-                    className="flex items-center rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime/50"
-                >
-                    <img
-                        src="/SideBarLogo.png"
-                        alt="TailLog"
-                        className="h-14 w-auto object-contain transition-all duration-200 hover:scale-[1.04] hover:-translate-y-0.5 hover:drop-shadow-[0_6px_10px_rgba(132,204,22,0.25)]"
-                    />
+                <Link href="/dashboard" className="flex items-center gap-1">
+                    <span className="text-xl font-extrabold text-gray-900 tracking-tight">
+                        Tail<span className="text-brand-lime">Log</span>
+                    </span>
                 </Link>
             </div>
 

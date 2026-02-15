@@ -40,15 +40,16 @@ export function Header() {
         <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-100 pt-[env(safe-area-inset-top)] transition-all">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-6">
-                    <Link href="/" className="flex items-center group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime/50">
-                        <motion.img
-                            whileHover={{ scale: 1.06, y: -1 }}
-                            whileTap={{ scale: 0.98 }}
-                            transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                            src="/HeaderLogo.png"
-                            alt="TailLog"
-                            className="h-14 md:h-16 w-auto object-contain transition-all duration-200 group-hover:opacity-90 group-hover:drop-shadow-[0_6px_10px_rgba(132,204,22,0.25)]"
-                        />
+                    <Link href="/" className="flex items-center gap-2 group">
+                        <motion.div
+                            whileHover={{ rotate: 15, scale: 1.1 }}
+                            className="w-10 h-10 rounded-2xl bg-brand-lime flex items-center justify-center shadow-lg shadow-brand-lime/20"
+                        >
+                            <span className="text-white text-xl">🐾</span>
+                        </motion.div>
+                        <span className="text-2xl font-black text-gray-900 tracking-tight font-outfit group-hover:text-brand-lime transition-colors">
+                            TailLog
+                        </span>
                     </Link>
                 </div>
 
