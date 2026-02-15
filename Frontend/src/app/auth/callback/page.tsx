@@ -30,16 +30,29 @@ export default function AuthCallbackPage() {
         // Check for returnTo parameter (survey flow)
         const params = new URLSearchParams(window.location.search);
         const returnTo = params.get('returnTo');
+        const link = params.get('link'); // google | kakao (optional)
 
-        if (returnTo === '/survey') {
+        const allowedReturnTo = returnTo === '/survey' || returnTo === '/result' || returnTo === '/settings';
+
+        if (allowedReturnTo && returnTo === '/survey') {
             // User came from mid-survey - return to survey
             router.push('/survey');
             return;
         }
 
-        if (returnTo === '/result') {
+        if (allowedReturnTo && returnTo === '/result') {
             // User came from result page - return to result
             router.push('/result');
+            return;
+        }
+
+        if (allowedReturnTo && returnTo === '/settings') {
+            // User came from settings for account linking
+            if (link === 'google' || link === 'kakao') {
+                router.push(`/settings?linked=${encodeURIComponent(link)}`);
+            } else {
+                router.push('/settings');
+            }
             return;
         }
 

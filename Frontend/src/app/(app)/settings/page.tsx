@@ -9,6 +9,8 @@ import { AppInfoSection } from '@/components/features/settings/AppInfoSection';
 import { PremiumBackground } from '@/components/shared/ui/PremiumBackground';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserProfile, useUserSettings, useUpdateUserSettings } from '@/hooks/useQueries';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 // Default settings structure for when backend is ready
 const DEFAULT_NOTIFICATION_PREF = {
@@ -33,8 +35,32 @@ const DEFAULT_SUBSCRIPTION = {
 };
 
 export default function SettingsPage() {
+    const router = useRouter();
     const { token } = useAuth();
     const { data: userProfile } = useUserProfile(token);
+
+    const [linkedProvider, setLinkedProvider] = useState<'google' | 'kakao' | null>(null);
+
+    const [showLinkedBanner, setShowLinkedBanner] = useState(false);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const params = new URLSearchParams(window.location.search);
+        const p = params.get('linked');
+        if (p === 'google' || p === 'kakao') setLinkedProvider(p);
+    }, []);
+
+    useEffect(() => {
+        if (!linkedProvider) return;
+        setShowLinkedBanner(true);
+
+        const t1 = window.setTimeout(() => setShowLinkedBanner(false), 3000);
+        const t2 = window.setTimeout(() => router.replace('/settings'), 3200);
+        return () => {
+            window.clearTimeout(t1);
+            window.clearTimeout(t2);
+        };
+    }, [linkedProvider, router]);
 
     // User Settings API Integration
     const { data: userSettings, isLoading } = useUserSettings(token);
@@ -68,6 +94,17 @@ export default function SettingsPage() {
             </header>
 
             <main className="px-6 py-10 container mx-auto max-w-2xl space-y-10 relative z-10">
+                {showLinkedBanner && linkedProvider && (
+                    <div className="glass p-5 rounded-[2rem] border border-white/60 shadow-sm ring-1 ring-black/5">
+                        <div className="text-[10px] font-black text-brand-lime uppercase tracking-[0.2em] mb-1">
+                            Account Linked
+                        </div>
+                        <div className="text-sm font-black text-gray-900 break-keep">
+                            {linkedProvider === 'google' ? 'Google' : 'Kakao'} 연결이 완료되었습니다.
+                        </div>
+                    </div>
+                )}
+
                 {/* 1. 멤버십 (Bento Card) */}
                 <section id="subscription" className="transition-all hover:translate-y-[-2px] duration-500">
                     <SubscriptionSection
