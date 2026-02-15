@@ -1,0 +1,13 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow authenticated pages
+Disallow: /dashboard
+Disallow: /log
+Disallow: /coach
+Disallow: /settings
+Disallow: /dog/
+
+# Sitemap
+Sitemap: https://www.mungai.co.kr/sitemap.xml
