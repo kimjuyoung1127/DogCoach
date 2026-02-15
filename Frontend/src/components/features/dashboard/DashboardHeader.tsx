@@ -2,6 +2,7 @@ import { DashboardData } from "./types";
 import { FadeIn } from "@/components/ui/animations/FadeIn";
 import { Trophy, Calendar, Sparkles, Dog } from "lucide-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 interface Props {
     data: DashboardData;
@@ -15,26 +16,30 @@ export const DashboardHeader = ({ data }: Props) => {
 
             <div className="flex gap-6 items-start mb-10 relative z-10">
                 {/* Dog Profile Photo */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.1 }}
-                    className="flex-shrink-0"
-                >
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-4 border-white/80 shadow-lg ring-1 ring-black/5">
-                        {data.dog_profile.profile_image_url ? (
-                            <img
-                                src={data.dog_profile.profile_image_url}
-                                alt={data.dog_profile.name}
-                                className="w-full h-full object-cover"
-                            />
-                        ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-brand-lime/20 to-emerald-100 flex items-center justify-center">
-                                <Dog className="w-10 h-10 sm:w-12 sm:h-12 text-brand-lime" />
-                            </div>
-                        )}
-                    </div>
-                </motion.div>
+                <Link href="/dog/profile">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        whileTap={{ scale: 0.98 }}
+                        transition={{ delay: 0.1 }}
+                        className="flex-shrink-0 cursor-pointer"
+                    >
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-4 border-white/80 shadow-lg ring-1 ring-black/5 hover:border-brand-lime/50 hover:shadow-xl hover:shadow-brand-lime/10 transition-all duration-300">
+                            {data.dog_profile.profile_image_url ? (
+                                <img
+                                    src={data.dog_profile.profile_image_url}
+                                    alt={data.dog_profile.name}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-brand-lime/20 to-emerald-100 flex items-center justify-center">
+                                    <Dog className="w-10 h-10 sm:w-12 sm:h-12 text-brand-lime" />
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+                </Link>
 
                 {/* Greeting Text */}
                 <div className="flex-1 flex flex-col">
