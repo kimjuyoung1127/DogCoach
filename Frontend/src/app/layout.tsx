@@ -33,32 +33,32 @@ const nanumSquareRound = localFont({
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-  title: "TailLog - Data-Driven Dog Behavior Coaching",
+  title: "TailLog - 반려견 행동 분석 & 훈련 솔루션",
   description:
-    "AI-powered behavior analysis and coaching for dog guardians. Track logs, review insights, and take practical actions.",
+    "AI가 분석하는 우리 강아지 맞춤 행동 교정 서비스",
   manifest: "/manifest.json",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://taillog-nu.vercel.app/"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.mungai.co.kr"
   ),
   openGraph: {
-    title: "TailLog - Data-Driven Dog Behavior Coaching",
+    title: "TailLog - AI 기반 반려견 행동 분석 & 맞춤 솔루션",
     description:
-      "Analyze behavior patterns and get actionable coaching with TailLog.",
+      "반려견의 문제 행동을 기록하고 분석하여 맞춤형 훈련 솔루션을 받아보세요.",
     images: [
       {
-        url: "/og/taillog-share-v2.png",
+        url: "/preview.png",
         width: 1200,
         height: 630,
-        alt: "TailLog share image",
+        alt: "TailLog 공유 이미지",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "TailLog - Data-Driven Dog Behavior Coaching",
+    title: "TailLog - AI 기반 반려견 행동 분석 & 맞춤 솔루션",
     description:
-      "Analyze behavior patterns and get actionable coaching with TailLog.",
-    images: ["/og/taillog-share-v2.png"],
+      "반려견의 문제 행동을 기록하고 분석하여 맞춤형 훈련 솔루션을 받아보세요.",
+    images: ["/preview.png"],
   },
 };
 
