@@ -17,9 +17,8 @@ interface AnalyticsViewProps {
 export function AnalyticsView({ logs, id }: AnalyticsViewProps) {
     const [patternTab, setPatternTab] = useState<"hourly" | "daily">("hourly");
     const logCount = logs?.length ?? 0;
-    const STABLE_INSIGHT_THRESHOLD = 5;
-    const remainingForStableInsight = Math.max(0, STABLE_INSIGHT_THRESHOLD - logCount);
-    const showMockPreview = logCount > 0 && logCount < STABLE_INSIGHT_THRESHOLD;
+    // Always show real data (mock preview disabled)
+    const showMockPreview = false;
 
     const mockRadarData = useMemo(
         () => [
@@ -123,36 +122,6 @@ export function AnalyticsView({ logs, id }: AnalyticsViewProps) {
 
     return (
         <div id={id} className="space-y-8">
-            {remainingForStableInsight > 0 && (
-                <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="glass p-5 rounded-3xl border border-brand-lime/20 bg-brand-lime/5 ring-1 ring-brand-lime/10"
-                >
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="w-9 h-9 rounded-xl bg-white border border-brand-lime/20 flex items-center justify-center">
-                            <Sparkles className="w-4 h-4 text-brand-lime" />
-                        </div>
-                        <div>
-                            <p className="text-xs font-black text-gray-900">초기 인사이트 모드</p>
-                            <p className="text-[10px] text-gray-500 font-medium">
-                                데이터가 쌓이면 이런 모습으로 분석돼요. 현재는 예시 차트로 미리 보여드려요.
-                            </p>
-                        </div>
-                    </div>
-                    <div className="h-2 bg-white/70 rounded-full overflow-hidden shadow-inner mb-2">
-                        <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${Math.min((logCount / STABLE_INSIGHT_THRESHOLD) * 100, 100)}%` }}
-                            className="h-full bg-brand-lime rounded-full"
-                        />
-                    </div>
-                    <p className="text-[10px] font-black text-brand-lime uppercase tracking-widest">
-                        현재 {logCount}개 기록 · 안정 분석까지 {remainingForStableInsight}개 남음
-                    </p>
-                </motion.div>
-            )}
-
             {/* 1. Radar Chart: Major Causes */}
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -161,13 +130,8 @@ export function AnalyticsView({ logs, id }: AnalyticsViewProps) {
             >
                 <div className="flex flex-col mb-6">
                     <span className="text-[10px] font-black text-brand-lime uppercase tracking-[0.2em] mb-1">원인 분석</span>
-                    <h4 className="text-xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+                    <h4 className="text-xl font-black text-gray-900 tracking-tight">
                         주요 원인 분석
-                        {showMockPreview && (
-                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-100 uppercase tracking-widest">
-                                예시 데이터
-                            </span>
-                        )}
                     </h4>
                 </div>
 
