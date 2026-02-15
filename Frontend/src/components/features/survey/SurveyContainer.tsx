@@ -23,13 +23,15 @@ import { useSubmitSurvey } from "@/hooks/useQueries";
 import { mapSurveyDataToSubmission } from "./survey-mapper";
 import { saveSurveyState, restoreSurveyState, clearSurveyState } from "@/lib/survey-storage";
 import { supabase } from "@/lib/supabase";
+import { apiClient } from "@/lib/api";
 
 export function SurveyContainer() {
     const router = useRouter();
-    const { token } = useAuth(); // Get Auth Token
+    const { token, loading: authLoading } = useAuth(); // Get Auth Token and loading state
     const [step, setStep] = useState(1);
     const [data, setData] = useState<SurveyData>(INITIAL_DATA);
     const [showKakaoModal, setShowKakaoModal] = useState(false);
+    const [checkingDog, setCheckingDog] = useState(true); // Check if user already has a dog
 
     // Track if user has seen/interacted with the modal to avoid showing it repeatedly if they back-navigate
     const [hasSeenKakaoModal, setHasSeenKakaoModal] = useState(false);
@@ -56,6 +58,48 @@ export function SurveyContainer() {
             clearSurveyState();
         }
     }, []);
+
+    // Guard: Check if logged-in user already has a dog
+    useEffect(() => {
+        async function checkExistingDog() {
+            // Wait for auth to load
+            if (authLoading) return;
+
+            // Guest user - allow survey
+            if (!token) {
+                setCheckingDog(false);
+                return;
+            }
+
+            try {
+                // Check if user already has a dog registered
+                const profile = await apiClient.get<any>("/auth/me", { token });
+
+                if (profile?.latest_dog_id) {
+                    // User already has a dog - show confirmation dialog
+                    const confirmed = window.confirm(
+                        `이미 강아지 "${profile.latest_dog_name || '정보'}"가 등록되어 있습니다.\n\n대시보드로 이동할까요?`
+                    );
+
+                    if (confirmed) {
+                        router.push('/dashboard');
+                    } else {
+                        // User wants to continue with survey (add new dog)
+                        setCheckingDog(false);
+                    }
+                } else {
+                    // No dog - allow survey
+                    setCheckingDog(false);
+                }
+            } catch (error) {
+                console.error('Error checking dog profile:', error);
+                // Graceful fallback - allow survey on error
+                setCheckingDog(false);
+            }
+        }
+
+        checkExistingDog();
+    }, [token, authLoading, router]);
 
     const updateData = (newData: Partial<SurveyData>) => {
         setData((prev) => ({ ...prev, ...newData }));
@@ -95,9 +139,10 @@ export function SurveyContainer() {
             const payload = mapSurveyDataToSubmission(data);
 
             submitSurvey(payload, {
-                onSuccess: () => {
-                    console.log("SURVEY SUBMISSION SUCCESS!");
-                    router.push('/result');
+                onSuccess: (response: any) => {
+                    console.log("SURVEY SUBMISSION SUCCESS!", response);
+                    const dogName = response?.name || data.dogName;
+                    router.push(`/result?newDog=true&dogName=${encodeURIComponent(dogName)}`);
                 },
                 onError: (error) => {
                     console.error("Survey submission failed:", error);
@@ -158,6 +203,18 @@ export function SurveyContainer() {
 
     if (isAnalyzing) {
         return <SurveyLoading dogName={data.dogName || "반려견"} />;
+    }
+
+    // Show loading while checking auth and dog status
+    if (authLoading || checkingDog) {
+        return (
+            <div className="min-h-screen bg-white flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-12 h-12 border-4 border-brand-lime/30 border-t-brand-lime rounded-full animate-spin mx-auto mb-4" />
+                    <p className="text-gray-500 font-medium">로딩 중...</p>
+                </div>
+            </div>
+        );
     }
 
     return (

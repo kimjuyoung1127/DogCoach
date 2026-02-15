@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ResultHeader } from "@/components/features/result/ResultHeader";
 import { BehaviorIssueSummary } from "@/components/features/result/BehaviorIssueSummary";
 import { ActionPlanCard } from "@/components/features/result/ActionPlanCard";
@@ -11,6 +11,7 @@ import { ChallengeOnboardingModal } from "@/components/features/coach/ChallengeO
 import { MissionActionOverlay } from "@/components/features/coach/MissionActionOverlay";
 import { Check, ArrowRight } from "lucide-react";
 import { SurveyLoading } from "@/components/features/survey/SurveyLoading";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { mapIssueToCurriculum } from "@/data/curriculum";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,6 +19,7 @@ import { useDashboardData } from "@/hooks/useQueries";
 
 export default function ResultPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { token, user } = useAuth();
 
     // Fetch Data (Guest supported via Cookie)
@@ -26,6 +28,10 @@ export default function ResultPage() {
     // Local State for interactions
     const [showChallengeModal, setShowChallengeModal] = useState(false);
     const [showMissionOverlay, setShowMissionOverlay] = useState(false);
+
+    // Toast for new dog notification
+    const [showNewDogToast, setShowNewDogToast] = useState(false);
+    const [dogName, setDogName] = useState('');
 
     // Determine Pro Status
     const userRole = (user as { role?: string } | null)?.role;
@@ -41,6 +47,25 @@ export default function ResultPage() {
         setShowMissionOverlay(false);
     };
 
+    // Check for new dog notification
+    useEffect(() => {
+        if (searchParams.get('newDog') === 'true') {
+            const name = searchParams.get('dogName') || '반려견';
+            setDogName(name);
+            setShowNewDogToast(true);
+
+            // Remove query params from URL
+            window.history.replaceState({}, '', '/result');
+
+            // Auto-dismiss after 4 seconds
+            const timer = setTimeout(() => {
+                setShowNewDogToast(false);
+            }, 4000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [searchParams]);
+
     if (isLoading) {
         return <SurveyLoading dogName="분석중" />;
     }
@@ -53,6 +78,24 @@ export default function ResultPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 pb-40">
+            {/* New Dog Toast Notification */}
+            <AnimatePresence>
+                {showNewDogToast && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-6 py-4 bg-brand-lime/95 backdrop-blur-sm text-white rounded-2xl shadow-2xl border border-white/20 flex items-center gap-3 max-w-sm"
+                    >
+                        <span className="text-2xl">🎉</span>
+                        <div>
+                            <p className="font-black text-sm">새로운 강아지가 추가되었습니다!</p>
+                            <p className="text-xs opacity-90">{dogName}의 분석이 완료되었어요</p>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Challenge Flow Modals (Only active if Unlocked/Pro) */}
             {isPro && (
                 <>

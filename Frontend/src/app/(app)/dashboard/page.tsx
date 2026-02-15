@@ -12,7 +12,7 @@ import { CoreDataRequiredBanner } from "@/components/features/dashboard/CoreData
 import { useAuth } from "@/hooks/useAuth";
 import { DashboardSkeleton } from "@/components/features/dashboard/DashboardSkeleton";
 import { FadeIn } from "@/components/ui/animations/FadeIn";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 import { useDashboardData } from "@/hooks/useQueries";
 
@@ -24,6 +24,14 @@ function DashboardContent() {
     const { token } = useAuth();
     const [editingLog, setEditingLog] = useState<any | null>(null);
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+    const [showMultiDogBanner, setShowMultiDogBanner] = useState(() => {
+        // Check localStorage for banner dismissal
+        if (typeof window !== 'undefined') {
+            const dismissed = localStorage.getItem('multiDogBannerDismissed');
+            return dismissed !== 'true';
+        }
+        return true;
+    });
 
     const { data, isLoading, error, refetch } = useDashboardData(!!token, token);
 
@@ -97,6 +105,34 @@ function DashboardContent() {
 
             <div className="relative z-10">
                 <DashboardHeader data={data} />
+
+                {/* Multi-Dog Feature Coming Soon Banner */}
+                {showMultiDogBanner && (
+                    <div className="container max-w-6xl mx-auto px-4 mb-4">
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex items-center gap-3 px-4 py-3 bg-blue-50/50 border border-blue-200/50 rounded-2xl text-sm"
+                        >
+                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                <span className="text-lg">🚧</span>
+                            </div>
+                            <div className="flex-1">
+                                <p className="font-bold text-blue-900">다견 기능 준비중</p>
+                                <p className="text-xs text-blue-700/80">현재 최신 강아지만 표시됩니다. 곧 여러 강아지를 관리할 수 있어요!</p>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    setShowMultiDogBanner(false);
+                                    localStorage.setItem('multiDogBannerDismissed', 'true');
+                                }}
+                                className="text-blue-400 hover:text-blue-600 text-xs px-2 py-1 font-medium transition-colors"
+                            >
+                                닫기
+                            </button>
+                        </motion.div>
+                    </div>
+                )}
 
                 <div className="px-1">
                     <FadeIn delay={0.1}>
