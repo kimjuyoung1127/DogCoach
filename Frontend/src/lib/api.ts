@@ -12,9 +12,10 @@ function getApiBaseUrl(): string {
 
   let trimmed = raw.trim().replace(/\/+$/, "");
 
-  // CRITICAL: Always enforce HTTPS to prevent Mixed Content errors
-  // This must run on both SSR and client side
-  if (trimmed.startsWith("http://")) {
+  // CRITICAL: Enforce HTTPS to prevent Mixed Content errors in production
+  // Skip HTTPS conversion for localhost to allow local development
+  const isLocalhost = trimmed.includes("localhost") || trimmed.includes("127.0.0.1");
+  if (trimmed.startsWith("http://") && !isLocalhost) {
     trimmed = `https://${trimmed.slice("http://".length)}`;
     console.warn(`[API] Forced HTTP → HTTPS: ${trimmed}`);
   }
