@@ -1,3 +1,7 @@
+/**
+ * 백엔드 API와의 통신을 담당하는 통합 클라이언트입니다.
+ * 자동 인증 토큰 주입, URL 정규화 및 에러 핸들링 기능을 포함합니다.
+ */
 type RequestOptions = {
   token?: string;
   credentials?: RequestCredentials;

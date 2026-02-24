@@ -1,3 +1,7 @@
+"""
+사용자 인증 및 프로필 관리를 담당하는 서비스 레이어입니다.
+Supabase Auth 연동, 프로필 조회, 게스트 데이터 마이그레이션 및 계정 삭제 기능을 수행합니다.
+"""
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.features.auth import repository, schemas

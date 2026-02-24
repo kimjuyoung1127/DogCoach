@@ -1,3 +1,7 @@
+"""
+애플리케이션의 핵심 데이터베이스 스키마 및 SQLAlchemy 모델 정의입니다.
+사용자, 구독, 강아지, 행동 로그, 코칭 결과 및 AI 비용 추적 테이블을 포함합니다.
+"""
 from datetime import datetime
 from enum import Enum as PyEnum
 from typing import Optional, List

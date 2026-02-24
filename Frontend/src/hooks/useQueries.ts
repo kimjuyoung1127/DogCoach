@@ -1,3 +1,7 @@
+/**
+ * 서버 데이터 페칭 및 상태 관리를 위한 TanStack Query(React Query) 훅 집합입니다.
+ * 대시보드, 행동 로그, 코칭 상태 및 AI 추천 데이터의 CRUD 로직을 포함합니다.
+ */
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { QUERY_KEYS } from "@/lib/query-keys";

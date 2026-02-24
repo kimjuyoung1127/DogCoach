@@ -1,3 +1,11 @@
+/**
+ * 사용자 인증 상태를 관리하고 게스트 데이터 마이그레이션을 처리하는 커스텀 훅입니다.
+ * Supabase 세션 감지 및 API 클라이언트 토큰 연동 기능을 수행합니다.
+ */
+/**
+ * 서버 데이터 페칭 및 상태 관리를 위한 TanStack Query(React Query) 훅 집합입니다.
+ * 대시보드, 행동 로그, 코칭 상태 및 AI 추천 데이터의 CRUD 로직을 포함합니다.
+ */
 import { useEffect, useState, useRef } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";

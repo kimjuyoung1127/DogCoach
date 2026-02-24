@@ -1,4 +1,8 @@
-﻿import type { Metadata, Viewport } from "next";
+﻿/**
+ * Frontend 애플리케이션의 루트 레이아웃입니다.
+ * 전역 폰트 설정, 메타데이터 정의 및 Provider들을 감쌉니다.
+ */
+import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
 import localFont from "next/font/local";
 import "../styles/globals.css";

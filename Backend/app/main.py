@@ -1,3 +1,7 @@
+"""
+DogCoach 백엔드 애플리케이션의 엔트리 포인트입니다.
+FastAPI 앱 초기화, 미들웨어 설정 및 주요 라우터를 등록합니다.
+"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware

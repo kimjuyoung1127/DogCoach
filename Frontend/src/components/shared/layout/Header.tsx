@@ -1,3 +1,7 @@
+/**
+ * 대시보드의 코어 탭 영역을 렌더링하는 메인 컴포넌트입니다.
+ * 퀵 로그 위젯과 최근 로그 리스트를 조합하여 사용자에게 요약된 정보를 제공합니다.
+ */
 "use client";
 
 import Link from "next/link";
@@ -9,6 +13,10 @@ import { useDogProfile } from "@/hooks/useQueries";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
+/**
+ * 대시보드 및 페이지 상단에 위치하는 공통 헤더 컴포넌트입니다.
+ * 사용자 프로필, 강아지 선택 및 알림 등 전역 내비게이션 기능을 포함합니다.
+ */
 export function Header() {
     const router = useRouter();
     const { user, token, loading } = useAuth();

@@ -1,3 +1,7 @@
+"""
+코칭 알고리즘 및 행동 로그 분석을 담당하는 서비스 레이어입니다.
+개인화된 코칭 템플릿 제공 및 AI 기반 행동 패턴 분석 기능을 수행합니다.
+"""
 from datetime import date, timedelta
 from collections import Counter
 import json
