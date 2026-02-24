@@ -25,6 +25,16 @@ export default function AuthCallbackPage() {
             return;
         }
 
+        try {
+            await apiClient.post('/auth/migrate-guest', {}, {
+                token: session.access_token,
+                credentials: 'include',
+            });
+        } catch (migrationError) {
+            // Keep callback flow non-blocking even if migration fails.
+            console.warn('Guest migration failed during callback:', migrationError);
+        }
+
         setState('success-routing');
 
         // Check for returnTo parameter (survey flow)
@@ -32,7 +42,11 @@ export default function AuthCallbackPage() {
         const returnTo = params.get('returnTo');
         const link = params.get('link'); // google | kakao (optional)
 
-        const allowedReturnTo = returnTo === '/survey' || returnTo === '/result' || returnTo === '/settings';
+        const allowedReturnTo =
+            returnTo === '/survey' ||
+            returnTo === '/result' ||
+            returnTo === '/settings' ||
+            returnTo === '/dashboard';
 
         if (allowedReturnTo && returnTo === '/survey') {
             // User came from mid-survey - return to survey
@@ -53,6 +67,11 @@ export default function AuthCallbackPage() {
             } else {
                 router.push('/settings');
             }
+            return;
+        }
+
+        if (allowedReturnTo && returnTo === '/dashboard') {
+            router.push('/dashboard');
             return;
         }
 

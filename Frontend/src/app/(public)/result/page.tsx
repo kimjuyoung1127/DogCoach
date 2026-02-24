@@ -172,7 +172,7 @@ function ResultPageContent() {
 
                     <ActionPlanCard
                         stage={firstStage}
-                        onStart={() => router.push('/login')}
+                        onStart={() => router.push('/login?returnTo=/dashboard')}
                         isLocked={true}
                     />
                 </>
