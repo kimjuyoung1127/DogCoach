@@ -3,6 +3,7 @@ DogCoach 백엔드 애플리케이션의 엔트리 포인트입니다.
 FastAPI 앱 초기화, 미들웨어 설정 및 주요 라우터를 등록합니다.
 """
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -35,20 +36,40 @@ app.add_exception_handler(DomainException, domain_exception_handler)
 
 from fastapi import Request
 import logging
+from uuid import uuid4
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("uvicorn")
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
-    logger.info(f"Incoming Request: {request.method} {request.url}")
+    request_id = request.headers.get("x-request-id") or request.headers.get("fly-request-id") or str(uuid4())
+    logger.info(f"[{request_id}] Incoming Request: {request.method} {request.url}")
     try:
         response = await call_next(request)
-        logger.info(f"Request Handled: {response.status_code}")
+        response.headers["X-Request-ID"] = request_id
+        logger.info(f"[{request_id}] Request Handled: {response.status_code}")
         return response
-    except Exception as e:
-        logger.error(f"Request Failed: {str(e)}")
-        raise e
+    except Exception:
+        logger.exception(
+            f"[{request_id}] Request Failed: {request.method} {request.url.path} "
+            f"origin={request.headers.get('origin')} ua={request.headers.get('user-agent')}"
+        )
+        raise
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    request_id = request.headers.get("x-request-id") or request.headers.get("fly-request-id") or str(uuid4())
+    logger.exception(
+        f"[{request_id}] Unhandled Exception: {request.method} {request.url.path} "
+        f"origin={request.headers.get('origin')} ua={request.headers.get('user-agent')}"
+    )
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal Server Error", "request_id": request_id},
+        headers={"X-Request-ID": request_id},
+    )
 
 # Set all CORS enabled origins
 if settings.BACKEND_CORS_ORIGINS:

@@ -15,7 +15,7 @@ async def get_current_dog_id(
     request: Request,
     user_id: Optional[str] = Depends(get_current_user_id_optional),
     db: AsyncSession = Depends(get_db)
-) -> str:
+) -> UUID:
     """
     Helper to resolve the context: Which dog are we looking at?
     1. If user_id (Login), find dog for user.
@@ -26,7 +26,10 @@ async def get_current_dog_id(
 
     query = select(Dog.id)
     if user_id:
-        query = query.where(Dog.user_id == UUID(user_id))
+        try:
+            query = query.where(Dog.user_id == UUID(user_id))
+        except ValueError:
+            raise HTTPException(status_code=401, detail="Invalid user token")
     elif guest_id:
         query = query.where(Dog.anonymous_sid == guest_id)
     else:
@@ -39,13 +42,13 @@ async def get_current_dog_id(
     
     if not dog_id:
          raise HTTPException(status_code=404, detail="No dog profile found. Please complete the survey.")
-         
-    return str(dog_id)
+
+    return dog_id
 
 @router.get("/", response_model=schemas.DashboardResponse)
 async def get_dashboard_summary(
     request: Request,
-    dog_id: str = Depends(get_current_dog_id),
+    dog_id: UUID = Depends(get_current_dog_id),
     db: AsyncSession = Depends(get_db)
 ):
     x_timezone = request.headers.get("X-Timezone", "Asia/Seoul")

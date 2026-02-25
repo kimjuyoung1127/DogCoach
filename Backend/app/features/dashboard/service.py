@@ -4,11 +4,22 @@ from app.features.dashboard import schemas
 from datetime import timedelta
 from zoneinfo import ZoneInfo
 from fastapi import HTTPException
+from uuid import UUID
 
 from app.shared.models import Dog, BehaviorLog, DogEnv
 from app.shared.utils.timezone import get_today_with_timezone
 
-async def get_dashboard_data(db: AsyncSession, dog_id: str, timezone_str: str = "Asia/Seoul") -> schemas.DashboardResponse:
+def _as_string_list(value) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if isinstance(item, (str, int, float))]
+
+
+def _as_object(value):
+    return value if isinstance(value, dict) else None
+
+
+async def get_dashboard_data(db: AsyncSession, dog_id: UUID, timezone_str: str = "Asia/Seoul") -> schemas.DashboardResponse:
     # 1. Fetch Dog Info
     result = await db.execute(select(Dog).where(Dog.id == dog_id))
     dog = result.scalar_one_or_none()
@@ -45,48 +56,48 @@ async def get_dashboard_data(db: AsyncSession, dog_id: str, timezone_str: str = 
             # Handle new structure: {"top_issues": [...], "other_text": "..."}
             issues_data = dog_env.chronic_issues
             if isinstance(issues_data, dict):
-                top_issues = issues_data.get("top_issues", [])
+                top_issues = _as_string_list(issues_data.get("top_issues", []))
                 other = issues_data.get("other_text")
                 if other and "etc" in top_issues:
-                    issues = [i if i != "etc" else other for i in top_issues]
+                    issues = [i if i != "etc" else str(other) for i in top_issues]
                 else:
                     issues = top_issues
             else:
-                issues = issues_data  # Legacy: plain list
+                issues = _as_string_list(issues_data)  # Legacy: plain list
         
         if dog_env.triggers:
             # Handle new structure: {"ids": [...], "other_text": "..."}
             triggers_data = dog_env.triggers
             if isinstance(triggers_data, dict):
-                ids = triggers_data.get("ids", [])
+                ids = _as_string_list(triggers_data.get("ids", []))
                 other = triggers_data.get("other_text")
                 if other and "etc" in ids:
-                    env_triggers = [i if i != "etc" else other for i in ids]
+                    env_triggers = [i if i != "etc" else str(other) for i in ids]
                 else:
                     env_triggers = ids
             else:
-                env_triggers = triggers_data
+                env_triggers = _as_string_list(triggers_data)
             
         if dog_env.past_attempts:
             # Handle new structure: {"ids": [...], "other_text": "..."}
             attempts_data = dog_env.past_attempts
             if isinstance(attempts_data, dict):
-                ids = attempts_data.get("ids", [])
+                ids = _as_string_list(attempts_data.get("ids", []))
                 other = attempts_data.get("other_text")
                 if other and "etc" in ids:
-                    env_consequences = [i if i != "etc" else other for i in ids]
+                    env_consequences = [i if i != "etc" else str(other) for i in ids]
                 else:
                     env_consequences = ids
             else:
-                env_consequences = attempts_data
+                env_consequences = _as_string_list(attempts_data)
 
     # Extract optional metadata from dog_env for completeness check
-    env_info = dog_env.household_info if dog_env else None
-    health_meta = dog_env.health_meta if dog_env else None
-    rewards_meta = dog_env.rewards_meta if dog_env else None
-    past_attempts_meta = dog_env.past_attempts if dog_env else None
-    temperament_meta = dog_env.temperament if dog_env else None
-    profile_meta = dog_env.profile_meta if dog_env else None
+    env_info = _as_object(dog_env.household_info) if dog_env else None
+    health_meta = _as_object(dog_env.health_meta) if dog_env else None
+    rewards_meta = _as_object(dog_env.rewards_meta) if dog_env else None
+    past_attempts_meta = _as_object(dog_env.past_attempts) if dog_env else None
+    temperament_meta = _as_object(dog_env.temperament) if dog_env else None
+    profile_meta = _as_object(dog_env.profile_meta) if dog_env else None
 
     # 2. Fetch Stats (Total Logs, Streak)
     # Total Logs
