@@ -1,0 +1,100 @@
+﻿[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/starlette/middleware/base.py", line 144, in coro
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    await self.app(scope, receive_or_disconnect, send_no_error)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    raise exc
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    await app(scope, receive, sender)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    await self.app(scope, receive, send)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", line 716, in __call__
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    await self.middleware_stack(scope, receive, send)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", line 736, in app
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    await route.handle(scope, receive, send)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", line 290, in handle
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    await self.app(scope, receive, send)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 119, in app
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    raise exc
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    await app(scope, receive, sender)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 105, in app
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    response = await f(request)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]               ^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 421, in app
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    solved_result = await solve_dependencies(
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/fastapi/dependencies/utils.py", line 645, in solve_dependencies
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    solved = await call(**solved_result.values)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/app/app/features/dashboard/router.py", line 40, in get_current_dog_id
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    result = await db.execute(query)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]             ^^^^^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/session.py", line 449, in execute
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    result = await greenlet_spawn(
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]             ^^^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 201, in greenlet_spawn
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    result = context.throw(*sys.exc_info())
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2351, in execute
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    return self._execute_internal(
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]           ^^^^^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2239, in _execute_internal
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    conn = self._connection_for_bind(bind)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2108, in _connection_for_bind
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    return trans._connection_for_bind(engine, execution_options)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "<string>", line 2, in _connection_for_bind
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    ret_value = fn(self, *arg, **kw)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]                ^^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1187, in _connection_for_bind
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    conn = bind.connect()
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]           ^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3293, in connect
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    return self._connection_cls(self)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 143, in __init__
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    self._dbapi_connection = engine.raw_connection()
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]                             ^^^^^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3317, in raw_connection
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    return self.pool.connect()
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]           ^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 448, in connect
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    return _ConnectionFairy._checkout(self)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1272, in _checkout
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    fairy = _ConnectionRecord.checkout(pool)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 712, in checkout
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    rec = pool._do_get()
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]          ^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 306, in _do_get
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    return self._create_connection()
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]           ^^^^^^^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 389, in _create_connection
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    return _ConnectionRecord(self)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]           ^^^^^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 421, in app
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/starlette/_utils.py", line 87, in collapse_excgroups
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1102, in __connect_addr
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    |     return self._connection_cls(self)
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]  File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", line 716, in __call__
+[2m2026-02-25T04:35:10Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]    solved_result = await solve_dependencies(
+[2m2026-02-25T04:35:23Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]INFO:     [f6b68490-903f-4f2d-bb89-ffd5d6b2b4ca] Incoming Request: GET http://172.19.23.82:8000/health
+[2m2026-02-25T04:35:23Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]INFO:     [f6b68490-903f-4f2d-bb89-ffd5d6b2b4ca] Request Handled: 200
+[2m2026-02-25T04:35:23Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]INFO:     172.19.23.81:45786 - "GET /health HTTP/1.1" 200 OK
+[2m2026-02-25T04:35:38Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]INFO:     [4e5c7b6b-0875-4398-ab84-4dfc378e758a] Incoming Request: GET http://172.19.23.82:8000/health
+[2m2026-02-25T04:35:38Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]INFO:     172.19.23.81:46768 - "GET /health HTTP/1.1" 200 OK
+[2m2026-02-25T04:35:38Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]INFO:     [4e5c7b6b-0875-4398-ab84-4dfc378e758a] Request Handled: 200
+[2m2026-02-25T04:35:53Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]INFO:     [98a6b2ad-cac6-4730-aca5-98dfaf2b7de0] Incoming Request: GET http://172.19.23.82:8000/health
+[2m2026-02-25T04:35:53Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]INFO:     [98a6b2ad-cac6-4730-aca5-98dfaf2b7de0] Request Handled: 200
+[2m2026-02-25T04:35:53Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]INFO:     172.19.23.81:37290 - "GET /health HTTP/1.1" 200 OK
+[2m2026-02-25T04:36:08Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]INFO:     [3a075345-004f-4dff-9c6b-29c78ef31850] Incoming Request: GET http://172.19.23.82:8000/health
+[2m2026-02-25T04:36:08Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]INFO:     [3a075345-004f-4dff-9c6b-29c78ef31850] Request Handled: 200
+[2m2026-02-25T04:36:08Z[0m app[1857559c366548] [32mnrt[0m [[34minfo[0m]INFO:     172.19.23.81:59752 - "GET /health HTTP/1.1" 200 OK
